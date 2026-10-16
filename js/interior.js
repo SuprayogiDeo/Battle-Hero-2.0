@@ -16,7 +16,7 @@ const INT_B=[
 {id:'penebang',tpl:'woodcutter',x:1448,y:336,n:['PONDOK PENEBANG','WOODCUTTER HUT'],lv:4},
 {id:'balai',tpl:'hall',x:1240,y:704,n:['BALAI DESA','VILLAGE HALL'],lv:5},
 {id:'nelayan',tpl:'fisher',x:776,y:1184,n:['PONDOK NELAYAN',"FISHERMAN'S HUT"]},
-{id:'res1',tpl:'res1',x:200,y:320,n:['RUMAH PENDUDUK','RESIDENT HOUSE']},
+{id:'penginapan',tpl:'inn',x:200,y:320,n:['PENGINAPAN','INN']},
 {id:'res2',tpl:'res2',x:808,y:320,n:['RUMAH PENDUDUK','RESIDENT HOUSE']},
 {id:'res3',tpl:'res3',x:192,y:208,n:['RUMAH PENDUDUK','RESIDENT HOUSE']},
 {id:'rumah',tpl:'home',x:328,y:208,n:['RUMAH PEMAIN','PLAYER HOUSE']},
@@ -63,6 +63,10 @@ kitchen:{w:11,h:8,fl:['floor_check','floor_check'],wl:'wall_cream',dx:5,win:[7],
 home:{w:11,h:8,fl:['floor_wood_a','floor_wood_b'],wl:'wall_wood',dx:5,win:[5],
  o:[['tw_bedset',1,2,4,1,'bed','ISTIRAHAT'],['fireplace',6,2,2,1,'msg','API','fire'],['chest',9,2,1,1,'storage','PETI'],['tw_lamp',9,5,1,1],['tw_stool',3,5,1,1]],
  d:[['rug_red',5.5,5.6]],hg:[['tw_picture',8.2,1]],gl:[[7,3,60]]},
+/* Penginapan (Step 12): pemilik berdiri di samping meja (tiap objek aksi butuh sel kosong di depannya, lihat test_interior_hud.js); meja/pemilik membuka menu masakan buff (innOpen di npc.js). */
+inn:{w:13,h:9,fl:['floor_wood_a','floor_wood_b'],wl:'wall_wood',dx:6,win:[3,9],
+ o:[['shelf_goods',1,2,2,1,'msg','RAK','pot'],['counter',5,3,3,1,'inn','MENU'],['vendor',8,3,1,1,'inn','PEMILIK'],['fireplace',10,2,2,1,'msg','API','fire'],['tw_stool',2,5,1,1],['tw_stool',10,5,1,1],['w_crates',1,7,1,1],['w_barrel',11,7,1,1]],
+ d:[['rug_red',6.5,6]],hg:[['tw_picture',8.2,1]],gl:[[10,3,70]]},
 woodcutter:{w:9,h:7,fl:['floor_dark','floor_wood_b'],wl:'wall_wood',dx:4,win:[4],
  o:[['logs',1,2,2,1,'msg','KAYU','logs'],['hay',4,2,2,1,'msg','JERAMI','hay'],['chest',7,2,1,1,'storage','PETI'],['w_bench',6,4,1,1]],d:[['rug_green',4.5,4.9]],hg:[],gl:[]},
 fisher:{w:9,h:7,fl:['floor_wood_a','floor_wood_b'],wl:'wall_wood',dx:4,win:[3],
@@ -139,16 +143,17 @@ function intAct(o){
   case'cook':lifeOpenKitchen();break;
   case'storage':lifeOpenStorage();break;
   case'workshop':lifeOpenWorkshop();break;
+  case'inn':innOpen();break;
   case'bed':if(typeof houseSleep==='function')houseSleep();else{sv();wSay(wL(INT_MSG.bed[0],INT_MSG.bed[1]),3)}break;
   case'msg':{if(o.msg==='harga'){wSay(intPriceMsg(),5);break}if(o.msg==='vendor'){wSay(intVendorMsg(),5);break}const m=INT_MSG[o.msg]||INT_MSG.books;wSay(wL(m[0],m[1]),4);break}
  }
 }
-const INT_LAB={KASIR:['KASIR','CASHIER'],PEDAGANG:['BICARA','TALK'],HARGA:['LIHAT','LOOK'],BERITA:['BACA','READ'],'MEJA DAGANG':['LIHAT','LOOK'],TIMBANGAN:['LIHAT','LOOK'],DAPUR:['DAPUR','KITCHEN'],BELI:['BELI','BUY'],GACHA:['GACHA','GACHA'],PERSIAPAN:['HERO','HEROES'],PETI:['PETI','CHEST'],PETA:['LIHAT','LOOK'],DESA:['DESA','VILLAGE'],PESANAN:['PESANAN','ORDERS'],BUKU:['BACA','READ'],TUNGKU:['LIHAT','LOOK'],LANDASAN:['LIHAT','LOOK'],'MEJA KERJA':['MEJA','BENCH'],MASAK:['MASAK','COOK'],BAHAN:['BAHAN','PANTRY'],ISTIRAHAT:['ISTIRAHAT','REST'],API:['LIHAT','LOOK'],KAYU:['LIHAT','LOOK'],JERAMI:['LIHAT','LOOK'],PANCING:['LIHAT','LOOK'],'TEMPAT TIDUR':['TIDUR','REST'],RAK:['LIHAT','LOOK'],KELUAR:['KELUAR','EXIT']};
+const INT_LAB={KASIR:['KASIR','CASHIER'],PEDAGANG:['BICARA','TALK'],HARGA:['LIHAT','LOOK'],BERITA:['BACA','READ'],'MEJA DAGANG':['LIHAT','LOOK'],TIMBANGAN:['LIHAT','LOOK'],DAPUR:['DAPUR','KITCHEN'],BELI:['BELI','BUY'],GACHA:['GACHA','GACHA'],PERSIAPAN:['HERO','HEROES'],PETI:['PETI','CHEST'],PETA:['LIHAT','LOOK'],DESA:['DESA','VILLAGE'],PESANAN:['PESANAN','ORDERS'],BUKU:['BACA','READ'],TUNGKU:['LIHAT','LOOK'],LANDASAN:['LIHAT','LOOK'],'MEJA KERJA':['MEJA','BENCH'],MASAK:['MASAK','COOK'],BAHAN:['BAHAN','PANTRY'],ISTIRAHAT:['ISTIRAHAT','REST'],API:['LIHAT','LOOK'],KAYU:['LIHAT','LOOK'],JERAMI:['LIHAT','LOOK'],PANCING:['LIHAT','LOOK'],'TEMPAT TIDUR':['TIDUR','REST'],RAK:['LIHAT','LOOK'],MENU:['MENU','MENU'],PEMILIK:['MENU','MENU'],KELUAR:['KELUAR','EXIT']};
 const intLabel=l=>{const q=INT_LAB[l];return q?wL(q[0],q[1]):l};
-const INT_NAME={KASIR:'CASHIER',PEDAGANG:'VENDOR',HARGA:'PRICE BOARD',BERITA:'NEWS BOARD','MEJA DAGANG':'MARKET STALL',TIMBANGAN:'SCALE',DAPUR:'KITCHEN COUNTER',BELI:'SHOP COUNTER',GACHA:'GACHA',PERSIAPAN:'HERO PREP',PETI:'CHEST',PETA:'MAP',DESA:'VILLAGE TABLE',PESANAN:'ORDERS BOARD',BUKU:'BOOKS',TUNGKU:'FORGE',LANDASAN:'ANVIL','MEJA KERJA':'WORKBENCH',MASAK:'STOVE',BAHAN:'PANTRY',ISTIRAHAT:'BED',API:'FIREPLACE',KAYU:'LOGS',JERAMI:'HAY',PANCING:'FISHING RODS','TEMPAT TIDUR':'BED',RAK:'SHELF'};
-const INT_NAME_ID={BAHAN:'LEMARI BAHAN',DAPUR:'LOKET DAPUR',BELI:'KASIR TOKO',PERSIAPAN:'PERSIAPAN HERO',DESA:'MEJA DESA',PESANAN:'PAPAN PESANAN',HARGA:'PAPAN HARGA',BERITA:'PAPAN BERITA',MASAK:'KOMPOR'};
+const INT_NAME={KASIR:'CASHIER',PEDAGANG:'VENDOR',HARGA:'PRICE BOARD',BERITA:'NEWS BOARD','MEJA DAGANG':'MARKET STALL',TIMBANGAN:'SCALE',DAPUR:'KITCHEN COUNTER',BELI:'SHOP COUNTER',GACHA:'GACHA',PERSIAPAN:'HERO PREP',PETI:'CHEST',PETA:'MAP',DESA:'VILLAGE TABLE',PESANAN:'ORDERS BOARD',BUKU:'BOOKS',TUNGKU:'FORGE',LANDASAN:'ANVIL','MEJA KERJA':'WORKBENCH',MASAK:'STOVE',BAHAN:'PANTRY',ISTIRAHAT:'BED',API:'FIREPLACE',KAYU:'LOGS',JERAMI:'HAY',PANCING:'FISHING RODS','TEMPAT TIDUR':'BED',RAK:'SHELF',MENU:'MENU',PEMILIK:'INNKEEPER'};
+const INT_NAME_ID={BAHAN:'LEMARI BAHAN',DAPUR:'LOKET DAPUR',BELI:'KASIR TOKO',PERSIAPAN:'PERSIAPAN HERO',DESA:'MEJA DESA',PESANAN:'PAPAN PESANAN',HARGA:'PAPAN HARGA',BERITA:'PAPAN BERITA',MASAK:'KOMPOR',MENU:'MENU MAKANAN'};
 const intObjName=l=>wL(INT_NAME_ID[l]||l,INT_NAME[l]||l);
-const INT_FUN={cashier:1,market:1,gacha:1,heroes:1,village:1,orders:1,cook:1,storage:1,workshop:1,bed:1,news:1};
+const INT_FUN={cashier:1,market:1,gacha:1,heroes:1,village:1,orders:1,cook:1,storage:1,workshop:1,bed:1,news:1,inn:1};
 function intSpark(x,y,a){g.save();g.globalAlpha=a;g.fillStyle='#ffe88a';g.fillRect(x-1,y-4,2,8);g.fillRect(x-4,y-1,8,2);g.fillStyle='#fff';g.fillRect(x-1,y-1,2,2);g.restore()}
 function intCtx(){const n=wI&&intNear();wI&&(wI.near=n);return n?{l:intLabel(n.lab),on:1,f:()=>intAct(n)}:null}
 function intUpdate(dt){

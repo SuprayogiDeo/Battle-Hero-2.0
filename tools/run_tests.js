@@ -30,6 +30,7 @@ run('Fixes 9A-9D: park, farm gate, symmetric gate, door paths, bridge deck, mush
 run('Smith gear upgrade', process.execPath, ['tools/test_smith_upgrade.js']);
 run('Healer services', process.execPath, ['tools/test_healer_services.js']);
 run('Player house', process.execPath, ['tools/test_player_house.js']);
+run('Inn (interior + meals)', process.execPath, ['tools/test_inn.js']);
 run('Map data 10A: Village Hall path, east bridge road, b_res5 bush', process.execPath, ['tools/test_map_10a.js']);
 run('HUD regression (landscape): no visual overlaps, tap targets >= 44 px, text fits', process.execPath, ['tools/test_hud_regression.js']);
 run('World zoom (opt-in ?zoom=): camera, culling, restore-on-error, screen<->world conversion', process.execPath, ['tools/test_world_zoom.js']);

@@ -1,5 +1,16 @@
 # Changelog
 
+## Batch 9B-19 (NPC desa, Nelayan, layanan desa, Rumah Pemain, Penginapan) — 0.4.8-rc.1 — Pandai Besi, Tabib, Nelayan + perahu, Rumah Pemain, Penginapan (cache v74)
+
+- NPC baru di `npc.js` (data-driven lewat `NPCS`, dua bahasa): Pandai Besi, Tabib, Pemilik Penginapan (berkeliling dekat Toko) dan 8 warga ambient tanpa fungsi yang berjalan pelan dan menyapa satu baris acak. Jadwal harian dari `lifeHour()`: jam 06-20 NPC ada di desa, di luar itu pulang (tidak tampil, tidak menghalangi, tidak bisa diajak bicara).
+- Nelayan + Dermaga Desa (platform 4x2 di tile (31,37)) + perahu (`assets/world/boat.png`, `tools/build_boat.py`): pagi memancing di ujung dermaga, siang menjahit jaring, sore berlayar lewat waypoint air, memancing, lalu kembali. Quest ikan harian dari `LIFE_FISH` memberi Umpan Langka; hasil berlayar masuk stok tab IKAN di Toko. Percikan air dan bunyi dayung hanya saat efek (`S.set.fx`) aktif.
+- Pandai Besi: upgrade level gear (`it.fg`, maks 5) dengan emas + batu + kayu (tas dulu, lalu peti); bonus nilai item +5% per level (`iVal` di `progress.js`). Gagal tanpa mengurangi emas/bahan bila bahan atau emas kurang.
+- Tabib: menyembuhkan racun/bakar (60 emas) dan menjual tonik buff sementara; masakan + tonik dibatasi total 15% (`healerBuffSum`). Racun/bakar dari musuh bertahan beberapa stage lalu hilang sendiri.
+- Rumah Pemain (`res4` -> `rumah`, templat `home`): peti = gudang bahan yang tersimpan di save, tempat tidur melewati malam sampai 06:00 (hanya mode jam desa cepat, malam 19:00-06:00).
+- Penginapan (Step 12; `res1` -> `penginapan`, templat `inn` 13x9, registri di `interior.json` dan `tools/build_interiors.py`): pemilik/meja membuka menu masakan buff dari `LIFE_RECIPES` tanpa bahan. Efek sama dengan `lifeCook` (`S.buff`, tiap stat maks 10%). Harga = 60 + (atk+hp)*500 + stage*15 (PLACEHOLDER, belum diseimbangkan). Stok 3 per hidangan per hari (`S.inn`, reset saat `today()` berganti, ikut save). Ditolak tanpa mengurangi emas bila stok habis, emas kurang, atau masakan yang sama masih aktif. Dialog Pemilik Penginapan menunjuk lokasi penginapan.
+- Tes baru (terdaftar di `run_tests.js`): `test_npc_new.js`, `test_smith_upgrade.js`, `test_healer_services.js`, `test_player_house.js`, `test_inn.js` (44 pemeriksaan: registri, pintu, pembelian, stok harian, reset hari, save+load, klik UI).
+- Catatan: perilaku visual (animasi perahu, tata letak interior Penginapan, keseimbangan harga) belum diuji di perangkat nyata. Eksterior Penginapan masih memakai sprite rumah penduduk yang lama.
+
 ## Batch 9B-18 (polish render latar + kebersihan repo) — 0.4.8-rc.1 — gradien di-cache, workflow dipulihkan (cache v73)
 
 - `render.js`: `bg()` tidak lagi membuat 3 gradien statis + 1 gradien radial per obor di setiap frame. Overlay statis (bayangan lantai, vinyet, pita bawah) kini dirender sekali ke kanvas luar-layar (`bgCache`, dibangun ulang hanya saat `VW`/`OX` berubah) dan cahaya obor memakai sprite per tema (`glowSprite`) dengan `globalAlpha` berkedip. Tampilan setara; alokasi objek dan biaya fill per frame turun (angka FPS nyata tetap perlu diukur di HP dengan `?perf=1`).

@@ -108,7 +108,8 @@ r.push(wL('Istirahat yang cukup lebih manjur daripada ramuan apa pun.','A good r
 r.push(wSn?wL('Dingin begini mudah sakit. Pakai baju hangat, ya.','This cold makes people sick easily. Dress warmly.'):wL('Cuaca cerah, waktu yang baik untuk mencari tanaman obat.','Fine weather, a good time to look for medicinal herbs.'))}
 else if(o.id=='innkeeper'){r.push(wL('Selamat datang di penginapan. Kamar hangat selalu siap untuk petualang.','Welcome to the inn. A warm room is always ready for adventurers.'));
 r.push(wL('Banyak pelancong lewat sini. Kabar dari gerbang selalu sampai duluan di mejaku.','Many travelers pass through. News from the gate always reaches my table first.'));
-r.push(wL('Lelah bertarung? Duduk sebentar, nikmati desanya.','Tired from fighting? Sit a while and enjoy the village.'))}
+r.push(wL('Lelah bertarung? Duduk sebentar, nikmati desanya.','Tired from fighting? Sit a while and enjoy the village.'));
+r.push(wL('Masakan hangat dijual di penginapan, di sebelah barat Toko. Stoknya terbatas tiap hari.','Hot meals are sold at the inn, west of the Shop. Stock is limited each day.'))}
 else{r.push(wL('Desa ini tumbuh seiring langkahmu.','This village grows with every step you take.'));
 let nx=null;for(const c in WUN)if(WUN[c]>b&&(!nx||WUN[c]<WUN[nx]))nx=c;
 r.push(nx?wL('Capai stage '+WUN[nx]+' dan '+NB[nx][0]+' akan terbuka.','Reach stage '+WUN[nx]+' and '+NB[nx][1]+' will open.'):wL('Semua bangunan sudah terbuka. Nikmati desanya.','Every building is open. Enjoy the village.'));
@@ -160,6 +161,24 @@ function healerBuy(id){healerEnsure();const b=HEALER_BUFFS.find(q=>q.id===id);if
 function healerTick(){healerEnsure();const t=S.tonic;if(t){if(t.lastStage!=null&&t.lastStage!==stage){t.stages--;if(t.stages<=0)S.tonic=null}if(S.tonic)S.tonic.lastStage=stage}const a=S.ail;if(a.last!=null&&a.last!==stage){a.poison=Math.max(0,a.poison-1);a.burn=Math.max(0,a.burn-1)}a.last=stage}
 function healerApply(){healerEnsure();if(typeof hs==='undefined')return;if(S.ail.poison>0)hs.forEach(h=>{if(!h.dead)h.poison=6});if(S.ail.burn>0)hs.forEach(h=>{if(!h.dead)h.hp=Math.max(1,h.hp-h.mh*.12)})}
 function healerBuffSum(){let a=0,h=0;const m=S.buff;if(m&&m.stages>0){a+=Math.min(.10,m.atk||0);h+=Math.min(.10,m.hp||0)}const t=S.tonic;if(t&&t.stages>0){a+=t.atk||0;h+=t.hp||0}a=Math.min(.15,a);h=Math.min(.15,h);return{atk:a,hp:h,on:a>0||h>0}}
+/* PENGINAPAN (Step 12): menjual masakan buff dari LIFE_RECIPES tanpa bahan. Stok harian per hidangan (reset saat today() berganti, tersimpan di S.inn).
+   Efeknya sama persis dengan lifeCook (S.buff, bonus tiap stat maks 10%, ikut batas gabungan 15% di healerBuffSum). Harga PLACEHOLDER = 60 + (atk+hp)*500 + stage*15. */
+const INN_STOCK=3;
+const innPrice=r=>Math.round(60+(r.atk+r.hp)*500+r.stages*15);
+function innEnsure(){const d=today();if(!S.inn||typeof S.inn!=='object'||S.inn.d!==d)S.inn={d,sold:{}};if(!S.inn.sold||typeof S.inn.sold!=='object')S.inn.sold={}}
+function innLeft(id){innEnsure();return Math.max(0,INN_STOCK-(S.inn.sold[id]|0))}
+function innBuy(id){innEnsure();const r=LIFE_RECIPES.find(q=>q.id===id);if(!r)return'none';
+if(innLeft(id)<=0){say(smithL('Hidangan ini habis hari ini.','Sold out for today.'));return'stock'}
+if(S.buff&&S.buff.id===id&&S.buff.stages>0){say(smithL('Masakan itu masih aktif.','That dish is still active.'));return'active'}
+const g=innPrice(r);if(S.g<g){say(smithL('Emas tidak cukup','Not enough gold'));return'gold'}
+S.g-=g;S.inn.sold[id]=(S.inn.sold[id]|0)+1;S.buff={id:r.id,name:r.name,en:r.en,atk:Math.min(.10,r.atk),hp:Math.min(.10,r.hp),stages:r.stages,lastStage:null};sv();sfx('heal');
+say(smithL('Masakan aktif: '+r.name+' ('+r.stages+' stage)','Dish active: '+r.en+' ('+r.stages+' stages)'));return'ok'}
+function innOpen(){innEnsure();if(st==='world')wFrom=1;if(typeof lifeWorldQuick!='undefined')lifeWorldQuick=false;st='inn';sv()}
+function innRows(){innEnsure();return LIFE_RECIPES.map(r=>{const left=innLeft(r.id),g=innPrice(r),act=!!(S.buff&&S.buff.id===r.id&&S.buff.stages>0);return{k:r.id,t:smithL(r.name,r.en),d:r.desc+' · '+r.stages+smithL(' stage',' stages')+' · '+smithL('Sisa ','Left ')+left+'/'+INN_STOCK,g,act,left,ok:left>0&&!act&&S.g>=g}})}
+function innDraw(){const R=innRows(),b=S.buff&&S.buff.stages>0?S.buff:null;ov(.94);btn(6,5,76,28,'KEMBALI');T(smithL('PENGINAPAN DESA','VILLAGE INN'),95,25,'#fc4',17);
+T(smithL('Emas ','Gold ')+S.g+(b?'  ·  '+smithL('Aktif: ','Active: ')+smithL(b.name,b.en||b.name)+' '+b.stages:''),320,50,'#cde',10,'center');
+R.forEach((r,i)=>{const y=62+i*48;card(20,y,600,42,'#f7c45c',r.ok);T(r.t,32,y+17,'#fff',11);T(r.d+' · '+r.g+smithL(' emas',' gold'),32,y+33,'#9cf',9);btn(500,y+8,112,26,r.act?smithL('AKTIF','ACTIVE'):r.left<=0?smithL('HABIS','SOLD OUT'):smithL('BELI','BUY'),r.ok)})}
+function innClick(x,y){if(y<34&&x<85){goBack();return}innRows().forEach((r,i)=>{const y0=62+i*48;if(x>=500&&x<=612&&y>=y0+8&&y<=y0+34)innBuy(r.k)})}
 function healerOpen(){healerEnsure();if(st==='world')wFrom=1;if(typeof lifeWorldQuick!='undefined')lifeWorldQuick=false;st='healer';sv()}
 function healerRows(){healerEnsure();const A=S.ail,c=[['poison',smithL('Sembuhkan Racun','Cure Poison'),A.poison>0],['burn',smithL('Sembuhkan Luka Bakar','Cure Burn'),A.burn>0]].map(r=>({k:r[0],t:r[1],d:r[2]?smithL('Sakit: ','Afflicted: ')+A[r[0]]+smithL(' stage',' stages'):smithL('Sehat','Healthy'),g:HEALER_CURE,ok:r[2]&&S.g>=HEALER_CURE}));return c.concat(HEALER_BUFFS.map(b=>({k:b.id,buff:1,t:smithL(b.n[0],b.n[1]),d:(b.atk?'ATK +'+Math.round(b.atk*100)+'% ':'')+(b.hp?'HP +'+Math.round(b.hp*100)+'% ':'')+'· '+b.stages+smithL(' stage',' stages'),g:b.g,ok:S.g>=b.g})))}
 function healerDraw(){const R=healerRows(),t=S.tonic;ov(.94);btn(6,5,76,28,'KEMBALI');T(smithL('TABIB DESA','VILLAGE HEALER'),95,25,'#fc4',17);
