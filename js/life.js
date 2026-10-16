@@ -356,3 +356,10 @@ lifeInit();
 addEventListener('keydown',function(e){if(st==='world'&&e.key==='Escape'&&lifeWorldQuick){lifeWorldQuick=false;wjid=null;wjx=wjy=0;e.preventDefault();}});
 
 if(typeof dmgH==='function'){const _healerDmgH=dmgH;dmgH=function(h,a,e){const was=h.dead||h.inv>0;_healerDmgH(h,a,e);if(!was&&e&&e.d){if(e.d.poison)healerInfect('poison');if(e.d.n==='IBLIS MERAH')healerInfect('burn')}}};
+
+/* RUMAH PEMAIN: tempat tidur melewati malam (jam desa mode siklus cepat -> 06:00 lewat fade), peti = gudang bahan (S.materialStorage, ikut save). */
+const HOUSE_NIGHT_FROM=19,HOUSE_WAKE=6;
+const houseIsNight=()=>{const h=typeof wHr==='number'?wHr:9;return h>=HOUSE_NIGHT_FROM||h<HOUSE_WAKE};
+function houseSleep(){const m=(S.set&&S.set.dn)|0;if(m!==0){sv();wSay(wL('Jam desa mengikuti jam asli, jadi malam tidak bisa dilewati. Progres tersimpan.','The village clock follows real time, so the night cannot be skipped. Progress saved.'),4);return'clock'}
+if(!houseIsNight()){sv();wSay(wL('Belum mengantuk. Tidurlah saat malam. Progres tersimpan.','Not sleepy yet. Sleep at night. Progress saved.'),3);return'day'}
+intFade(()=>{wHr=HOUSE_WAKE;sv();wSay(wL('Kamu tidur nyenyak dan bangun di pagi hari. Progres tersimpan.','You slept soundly and woke up in the morning. Progress saved.'),4)});return'ok'}

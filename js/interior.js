@@ -19,7 +19,7 @@ const INT_B=[
 {id:'res1',tpl:'res1',x:200,y:320,n:['RUMAH PENDUDUK','RESIDENT HOUSE']},
 {id:'res2',tpl:'res2',x:808,y:320,n:['RUMAH PENDUDUK','RESIDENT HOUSE']},
 {id:'res3',tpl:'res3',x:192,y:208,n:['RUMAH PENDUDUK','RESIDENT HOUSE']},
-{id:'res4',tpl:'res1',x:328,y:208,n:['RUMAH PENDUDUK','RESIDENT HOUSE']},
+{id:'rumah',tpl:'home',x:328,y:208,n:['RUMAH PEMAIN','PLAYER HOUSE']},
 {id:'res5',tpl:'res2',x:832,y:208,n:['RUMAH PENDUDUK','RESIDENT HOUSE']},
 {id:'res6',tpl:'res3',x:712,y:208,n:['RUMAH PENDUDUK','RESIDENT HOUSE']}];
 /* pesan singkat [ID, EN] */
@@ -139,7 +139,7 @@ function intAct(o){
   case'cook':lifeOpenKitchen();break;
   case'storage':lifeOpenStorage();break;
   case'workshop':lifeOpenWorkshop();break;
-  case'bed':sv();wSay(wL(INT_MSG.bed[0],INT_MSG.bed[1]),3);break;
+  case'bed':if(typeof houseSleep==='function')houseSleep();else{sv();wSay(wL(INT_MSG.bed[0],INT_MSG.bed[1]),3)}break;
   case'msg':{if(o.msg==='harga'){wSay(intPriceMsg(),5);break}if(o.msg==='vendor'){wSay(intVendorMsg(),5);break}const m=INT_MSG[o.msg]||INT_MSG.books;wSay(wL(m[0],m[1]),4);break}
  }
 }
