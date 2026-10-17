@@ -73,9 +73,9 @@ assert.ok(/NPCV=\[\d+,\d+,\d+,\d+\]/.test(src) && src.includes('o.roam'), 'logik
   for (let i = 1; i < BR.length; i++) for (let k = 0; k <= 40; k++) { const x = (BR[i - 1][0] + (BR[i][0] - BR[i - 1][0]) * k / 40) * 32, y = (BR[i - 1][1] + (BR[i][1] - BR[i - 1][1]) * k / 40) * 32;
     [[0, 0], [-18, 0], [18, 0]].forEach(([dx, dy]) => assert.equal(chAt(x + dx, y + dy) === '~' || chAt(x + dx, y + dy) === '+', true, 'segmen perahu ' + i + ' melewati tile solid')); }
   // pagi (jam 7): memancing di ujung dermaga
-  H = 7; for (let i = 0; i < 300; i++) run('npcUpdate(0.1)'); assert.equal(F().st, 'fish', 'jam 7 harus memancing'); assert.deepEqual(tile(F().px, F().py), [30, 37]);
+  H = 7; for (let i = 0; i < 300; i++) run('npcUpdate(0.1)'); assert.equal(F().st, 'fish', 'jam 7 harus memancing'); assert.deepEqual(tile(F().px, F().py), [56, 87]);
   // siang (jam 12): menjahit jaring di dermaga
-  H = 12; for (let i = 0; i < 300; i++) run('npcUpdate(0.1)'); assert.equal(F().st, 'net', 'jam 12 harus memperbaiki jaring'); assert.deepEqual(tile(F().px, F().py), [31, 36]);
+  H = 12; for (let i = 0; i < 300; i++) run('npcUpdate(0.1)'); assert.equal(F().st, 'net', 'jam 12 harus memperbaiki jaring'); assert.deepEqual(tile(F().px, F().py), [57, 86]);
   // sore (jam 17): naik perahu, berlayar, memancing di tengah, kembali
   H = 17; const seen = new Set(); let aboardSteps = 0, fishWater = false;
   for (let i = 0; i < 4000; i++) { run('npcUpdate(0.1)'); const o = F(); seen.add(o.st);
@@ -84,7 +84,7 @@ assert.ok(/NPCV=\[\d+,\d+,\d+,\d+\]/.test(src) && src.includes('o.roam'), 'logik
     else assert.ok(chAt(o.px, o.py) === '+', 'nelayan di luar perahu harus di dermaga, st=' + o.st);
     if (o.st === 'cast') fishWater = true; if (seen.has('rest') && seen.has('cast')) break; }
   ['toboat', 'board', 'sail', 'cast', 'back', 'unboard', 'rest'].forEach(st => assert.ok(seen.has(st), 'tahap sore tidak tercapai: ' + st)); assert.ok(aboardSteps > 100 && fishWater, 'nelayan harus berlayar dan memancing');
-  assert.deepEqual(tile(F().bx, F().by), [33, 37], 'perahu kembali ke tambatan');
+  assert.deepEqual(tile(F().bx, F().by), [59, 87], 'perahu kembali ke tambatan');
   assert.equal(ctx.restocks, 1, 'stok Toko ditambah tepat sekali setelah Nelayan kembali berlayar');
   assert.ok(run("npcLines(NPCS.find(o=>o.id=='fisher'))").some(l => /Ikan Mas/.test(l) && /umpan langka/.test(l)), 'dialog Nelayan menyebut quest ikan dan umpan langka');
   { const rd = f => fs.readFileSync(path.join(root, 'js', f), 'utf8'); assert.ok(/'IKAN'\]/.test(rd('screens.js')) && rd('screens.js').includes('lifeShopFishDraw') && rd('input.js').includes('lifeShopFishClick') && rd('input.js').includes('[0,1,2,3,4]'), 'tab IKAN terpasang di layar Toko (screens.js + input.js)'); }
@@ -108,11 +108,11 @@ assert.ok(/NPCV=\[\d+,\d+,\d+,\d+\]/.test(src) && src.includes('o.roam'), 'logik
 { const vm = require('node:vm'); const mk = hour => { let H = hour; const ctx = { WS: 32, WW: W, WH: I.h, WMAP: I.grid, WFH: 9, WFV: 8, S: { world: { x: 4000, y: 4000 }, set: { lang: 'id', fx: 0 } }, wTalk: null, wDlg: 0, wNpc: null, best: 0, lifeHour: () => H, Anim: undefined, Math, performance, wSolid: () => false, g: new Proxy({}, { get: () => () => {} }), OX: 0, VW: 640, IM: {}, HEROES: new Proxy({}, { get: () => ({ s: 'k', rar: 0 }) }), HID: new Proxy({}, { get: () => 'x' }), RC: ['#fff'], T() {}, spr() {}, t: 0, wL: (a, b) => a, Object };
     vm.createContext(ctx); vm.runInContext(src, ctx); return { ctx, set: h => { H = h; }, run: c => vm.runInContext(c, ctx) }; };
   const tl = (x, y) => [Math.floor(x / 32), Math.floor(y / 32)], step = (e, n) => { for (let i = 0; i < n; i++) e.run('npcUpdate(0.1)'); }, F = e => e.run("NPCS.find(o=>o.id=='fisher')");
-  { const e = mk(6); step(e, 400); const o = F(e); assert.equal(e.run("npcAwake(NPCS.find(o=>o.id=='fisher'))"), true, 'jam 06 Nelayan sudah bangun'); assert.equal(o.act, 'fish'); assert.equal(o.st, 'fish', 'jam 06 memancing'); assert.deepEqual(tl(o.px, o.py), [30, 37], 'jam 06 di ujung dermaga'); assert.equal(o.aboard, 0); }
-  { const e = mk(12); step(e, 400); const o = F(e); assert.equal(o.act, 'net'); assert.equal(o.st, 'net', 'jam 12 menjaring'); assert.deepEqual(tl(o.px, o.py), [31, 36], 'jam 12 menjahit jaring di dermaga'); }
+  { const e = mk(6); step(e, 400); const o = F(e); assert.equal(e.run("npcAwake(NPCS.find(o=>o.id=='fisher'))"), true, 'jam 06 Nelayan sudah bangun'); assert.equal(o.act, 'fish'); assert.equal(o.st, 'fish', 'jam 06 memancing'); assert.deepEqual(tl(o.px, o.py), [56, 87], 'jam 06 di ujung dermaga'); assert.equal(o.aboard, 0); }
+  { const e = mk(12); step(e, 400); const o = F(e); assert.equal(o.act, 'net'); assert.equal(o.st, 'net', 'jam 12 menjaring'); assert.deepEqual(tl(o.px, o.py), [57, 86], 'jam 12 menjahit jaring di dermaga'); }
   { const e = mk(20); step(e, 50); const o = F(e); assert.equal(e.run("npcAwake(NPCS.find(o=>o.id=='fisher'))"), false, 'jam 20 Nelayan pulang'); assert.equal(o.gone, 1);
     assert.equal(e.run('npcHit(' + o.px + ',' + o.py + ')'), false, 'jam 20 tidak menghalangi'); assert.equal(e.run('npcNear(' + o.px + ',' + o.py + ')'), null, 'jam 20 tidak bisa diajak bicara');
-    assert.equal(o.aboard, 0); assert.deepEqual(tl(o.bx, o.by), [33, 37], 'jam 20 perahu tertambat'); }
+    assert.equal(o.aboard, 0); assert.deepEqual(tl(o.bx, o.by), [59, 87], 'jam 20 perahu tertambat'); }
   { const e = mk(17); for (let i = 0; i < 2000 && !(F(e).st === 'sail' && F(e).wi >= 1); i++) step(e, 1); assert.equal(F(e).aboard, 1, 'sedang berlayar sebelum jam 20'); e.set(20); step(e, 5); const o = F(e);
-    assert.equal(o.aboard, 0, 'jam 20 Nelayan turun dari perahu'); assert.deepEqual(tl(o.bx, o.by), [33, 37], 'jam 20 perahu kembali ke tambatan'); e.set(6); step(e, 400); assert.equal(F(e).st, 'fish', 'pagi berikutnya kembali memancing'); assert.deepEqual(tl(F(e).px, F(e).py), [30, 37]); } }
+    assert.equal(o.aboard, 0, 'jam 20 Nelayan turun dari perahu'); assert.deepEqual(tl(o.bx, o.by), [59, 87], 'jam 20 perahu kembali ke tambatan'); e.set(6); step(e, 400); assert.equal(F(e).st, 'fish', 'pagi berikutnya kembali memancing'); assert.deepEqual(tl(F(e).px, F(e).py), [56, 87]); } }
 console.log('PASS: NPC baru tidak solid, dekat Toko, roam dalam batas desa; jendela simetris, jadwal jam 12/jam 2, 8 warga ambient, Nelayan + perahu, efek fx (percikan+dayung), jadwal Nelayan 06/12/20');

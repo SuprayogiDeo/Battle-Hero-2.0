@@ -1,5 +1,12 @@
 # Changelog
 
+## Batch 9B-20 (Nelayan pindah ke Dermaga tenggara) — 0.4.8-rc.1 — Dermaga Desa dihapus, Nelayan + perahu di fishing_pier (cache v75)
+
+- `npc.js`: Nelayan dan perahunya pindah dari Dermaga Desa (31,37) ke Dermaga tenggara (`fishing_pier`, platform 7x7 di (55,82), dekat Pondok Nelayan). Rumah NPC (56,87); titik pancing (56,87), jaring (57,86), naik perahu (58,87); tambatan perahu (59.5,87.7) di air sebelah timur ujung dermaga; rute berlayar (60.5,89.7), (63.5,91.7), (68.5,92.7), seluruhnya air. Jadwal 06-11 memancing, 11-16 jaring, 16-20 berlayar tidak berubah. Menggantikan lokasi di Batch 9B-19.
+- Dermaga Desa (4x2 di tile (31,37)) dihapus agar hanya ada satu dermaga: 8 sel kembali menjadi air di `index.json` dan chunk `c0_1`/`c1_1` (ground, collision, dan tag `fishing_spot` kembali identik dengan data asli), entri `places` dan `tools/world_design.json` dihapus.
+- Tes: `test_map_10a.js` (dermaga 7x7, bekas Dermaga Desa menjadi air padat, BFS dari spawn mencapai tile dermaga) dan `test_npc_new.js` (tile Nelayan, tambatan, rute perahu di air) disesuaikan. Gagal bila Dermaga Desa muncul lagi, tile Nelayan kembali ke dermaga lama, atau rute perahu menembus daratan.
+- Catatan: tampilan dan animasi di dermaga baru belum diuji di perangkat nyata.
+
 ## Batch 9B-19 (NPC desa, Nelayan, layanan desa, Rumah Pemain, Penginapan) — 0.4.8-rc.1 — Pandai Besi, Tabib, Nelayan + perahu, Rumah Pemain, Penginapan (cache v74)
 
 - NPC baru di `npc.js` (data-driven lewat `NPCS`, dua bahasa): Pandai Besi, Tabib, Pemilik Penginapan (berkeliling dekat Toko) dan 8 warga ambient tanpa fungsi yang berjalan pelan dan menyapa satu baris acak. Jadwal harian dari `lifeHour()`: jam 06-20 NPC ada di desa, di luar itu pulang (tidak tampil, tidak menghalangi, tidak bisa diajak bicara).

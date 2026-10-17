@@ -7,7 +7,7 @@ const NPCS=[
 {id:'merchant',h:'cleric',tx:12,ty:9,n:['Pedagang','Merchant']},
 {id:'farmer',h:'clubber',tx:13,ty:22,n:['Petani','Farmer']},
 {id:'elder',h:'oracle',tx:26,ty:12,n:['Tetua Desa','Village Elder']},
-{id:'fisher',h:'axeman',tx:30,ty:37,sched:'fisher',boat:1,n:['Nelayan','Fisherman']},
+{id:'fisher',h:'axeman',tx:56,ty:87,sched:'fisher',boat:1,n:['Nelayan','Fisherman']},
 {id:'smith',roam:1,h:'paladin',tx:23,ty:18,n:['Pandai Besi','Blacksmith']},
 {id:'healer',roam:1,h:'druid',tx:19,ty:17,n:['Tabib','Healer']},
 {id:'innkeeper',roam:1,h:'hunter',tx:21,ty:15,n:['Pemilik Penginapan','Innkeeper']},
@@ -31,7 +31,7 @@ function npcAc(o){if(o.ac===undefined)o.ac=typeof Anim!='undefined'?new Anim.Act
 const npcOk=(x,y)=>!(wSolid(x-WFH,y-WFV)||wSolid(x+WFH,y-WFV)||wSolid(x-WFH,y)||wSolid(x+WFH,y));
 /* Nelayan (sched:'fisher'): jadwal per jam dari lifeHour(). Pagi <NPCFH[0] memancing di ujung dermaga (joran+pelampung), siang <NPCFH[1] menjahit jaring,
    sore naik perahu (boat:1), berlayar lewat waypoint NPCBR (tile air '~'), memancing di titik terakhir, lalu kembali ke tambatan. Perahu = boat.png (tools/build_boat.py), digambar di npcDraw (lapisan dunia, ikut culling/zoom). */
-const NPCFH=[11,16],NPCBSP=46,NPCWSP=34,NPCCAST=13,NPCBR=[[33.5,37.7],[34.5,39.7],[37.5,41.7],[42.5,42.7]];
+const NPCFH=[11,16],NPCBSP=46,NPCWSP=34,NPCCAST=13,NPCBR=[[59.5,87.7],[60.5,89.7],[63.5,91.7],[68.5,92.7]],NPCPF={fish:[56,87],net:[57,86],board:[58,87]}; /* Dermaga tenggara (fishing_pier (55,82), planks x52-58 y81-87): titik pancing, jaring, naik perahu; NPCBR[0] = tambatan di air sebelah timur */
 const NPCBT=typeof Image=='function'?Object.assign(new Image(),{src:'assets/world/boat.png'}):null;
 const npcTP=(tx,ty)=>[tx*WS+WS/2,ty*WS+26],npcBP=i=>[NPCBR[i][0]*WS,NPCBR[i][1]*WS];
 const npcWater=(x,y)=>{const tx=Math.floor(x/WS),ty=Math.floor(y/WS);if(!(tx>=0&&ty>=0&&tx<WW&&ty<WH))return false;const c=WMAP[ty][tx];return c=='~'||c=='+'};
@@ -40,16 +40,16 @@ function npcMove(o,x,y,dt){const sp=NPCWSP,dx=x-o.px,dy=y-o.py,l=Math.hypot(dx,d
 function npcFisher(o,dt,talk){if(o.bx===undefined)npcFisherHome(o);const h=typeof lifeHour=='function'?lifeHour():9,act=h<NPCFH[0]?'fish':h<NPCFH[1]?'net':'boat';
 if(act!=o.act){o.act=act;o.st=act=='boat'?'toboat':act=='net'?'tonet':'tofish';o.ft=0}
 o.walk=0;if(talk||wDlg)return;const s=o.st;
-if(s=='tofish'){const q=npcTP(30,37);if(npcMove(o,q[0],q[1],dt)){o.st='fish';o.ft=0;o.face=1}}
-else if(s=='tonet'){const q=npcTP(31,36);if(npcMove(o,q[0],q[1],dt)){o.st='net';o.ft=0;o.face=-1}}
-else if(s=='toboat'){const q=npcTP(32,37);if(npcMove(o,q[0],q[1],dt))o.st='board'}
+if(s=='tofish'){const q=npcTP(...NPCPF.fish);if(npcMove(o,q[0],q[1],dt)){o.st='fish';o.ft=0;o.face=1}}
+else if(s=='tonet'){const q=npcTP(...NPCPF.net);if(npcMove(o,q[0],q[1],dt)){o.st='net';o.ft=0;o.face=-1}}
+else if(s=='toboat'){const q=npcTP(...NPCPF.board);if(npcMove(o,q[0],q[1],dt))o.st='board'}
 else if(s=='board'){const m=npcBP(0);if(npcMove(o,m[0],m[1]-8,dt)){o.aboard=1;o.st='sail';o.wi=0}}
 else if(s=='sail'||s=='back'){const dir=s=='sail'?1:-1,n=o.wi+dir,p=npcBP(n),dx=p[0]-o.bx,dy=p[1]-o.by,l=Math.hypot(dx,dy),st=NPCBSP*dt;
 if(Math.abs(dx)>1)o.bf=dx>0?1:-1;
 if(l<=st){o.bx=p[0];o.by=p[1];o.wi=n;if(s=='sail'&&n==NPCBR.length-1){o.st='cast';o.ft=0}else if(s=='back'&&n==0)o.st='unboard'}
 else{const nx=o.bx+dx/l*st,ny=o.by+dy/l*st;if(npcWater(nx,ny)&&npcWater(nx-18,ny)&&npcWater(nx+18,ny)){o.bx=nx;o.by=ny}}
 o.px=o.bx;o.py=o.by-8;o.face=o.bf;o.walk=1;o.oar=(o.oar||0)-dt;if(o.oar<=0){o.oar=1.1;const w=S.world;if(S.set&&S.set.fx&&typeof sfx=='function'&&w&&Math.hypot(w.x-o.bx,w.y-o.by)<12*WS)sfx('oar')}}
-else if(s=='unboard'){const q=npcTP(32,37);if(npcMove(o,q[0],q[1],dt)){o.aboard=0;o.st='rest';o.ft=0;if(typeof lifeShopFishAdd=='function')lifeShopFishAdd()}}
+else if(s=='unboard'){const q=npcTP(...NPCPF.board);if(npcMove(o,q[0],q[1],dt)){o.aboard=0;o.st='rest';o.ft=0;if(typeof lifeShopFishAdd=='function')lifeShopFishAdd()}}
 else{o.ft+=dt;if(s=='cast'&&o.ft>=NPCCAST){o.st='back';o.wi=NPCBR.length-1}else if(s=='rest'&&o.ft>=8)o.st='board'}}
 /* joran + pelampung (siklus 7 dtk: ayun, lempar, mengambang+riak, tarik) dan jaring; digambar di atas sprite nelayan */
 function npcFisherFx(o,sx,sy){const s=o.st,f=o.face||1,tt=performance.now()/1000;
