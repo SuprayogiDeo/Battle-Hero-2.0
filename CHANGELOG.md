@@ -1,5 +1,13 @@
 # Changelog
 
+## Batch 9B-23 (atlas Cute Fantasy) — 0.4.8-rc.1 — cache v78
+
+Cache v77 -> v78.
+
+- `tools/build_cf_tiles.py`: membaca `Tiles/*`, `Outdoor decoration/*`, `Animals/*/*` dari Cute Fantasy (Free, Kenmi) menjadi `assets/world/cf_atlas.png` (256 px lebar) + `cf_atlas.json` (19 entri: posisi, ukuran, kategori, sumber, jumlah piksel buram, grid sel). Deterministik. Peta dan tileset desa tidak diubah; atlas belum dirujuk kode runtime dan tidak ditambahkan ke precache.
+- `tools/test_cf_atlas.js` (terdaftar di `npm test`): semua entri json ada di atlas (dalam batas, tidak tumpang tindih, piksel buram sama dengan catatan, tidak ada piksel liar), cakupan tiga folder, CREDITS/LICENSE_AND_ASSETS, paket mentah tidak di repo.
+- CREDITS dan `docs/LICENSE_AND_ASSETS.md`: pack ini NON-KOMERSIAL dan dilarang redistribusi (termasuk hasil modifikasi); repo harus tetap privat.
+
 ## Batch 9B-22 (fishIcon di HUD memancing dan popup tangkapan) — 0.4.8-rc.1 — cache v77
 
 Cache v76 -> v77.

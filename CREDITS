@@ -31,3 +31,7 @@ Tahap 9B-19 (ikon ikan): `assets/world/fish_icons.png` + `fish_icons.json` adala
 oleh `tools/build_fish_icons.py` dari `fishing_icons_sheet_16x16.png` milik paket "Fishing Icon Pack" oleh Hollow Dolphin. Hanya dipotong dan digabung; siluet
 `unknown` adalah turunan bentuk satu ikon yang diberi warna rata. Arsip paket tidak dimasukkan ke repo. Berkas lisensi/ketentuan tidak ada di arsip yang diterima,
 jadi syarat penggunaan dan distribusinya belum terkonfirmasi: tinjau halaman sumber paket sebelum rilis publik (gerbang aset yang sama dengan sumber lain).
+
+Tahap 9B-23 (Cute Fantasy): `assets/world/cf_atlas.png` + `cf_atlas.json` adalah atlas 19 PNG dari paket "Cute Fantasy (Free)" oleh Kenmi (folder Tiles, Outdoor decoration, Animals),
+digabung saja oleh `tools/build_cf_tiles.py`. LISENSI VERSI GRATIS: hanya untuk proyek NON-KOMERSIAL; modifikasi boleh; redistribusi atau penjualan DILARANG, juga untuk hasil modifikasi.
+Karena itu repo ini harus tetap privat dan atlas ini tidak boleh dipublikasikan atau dipakai pada rilis komersial tanpa membeli/menyetujui lisensi penuh. Atlas belum dipakai peta atau tileset desa; paket mentah tidak dimasukkan ke repo.

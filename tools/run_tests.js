@@ -35,6 +35,7 @@ run('HUD regression (landscape): no visual overlaps, tap targets >= 44 px, text 
 run('World zoom (opt-in ?zoom=): camera, culling, restore-on-error, screen<->world conversion', process.execPath, ['tools/test_world_zoom.js']);
 run('NPC baru: posisi tidak solid', process.execPath, ['tools/test_npc_new.js']);
 run('Ikon ikan (atlas Hollow Dolphin, helper fishIcon, fallback teks)', process.execPath, ['tools/test_fish_icons.js']);
+run('Atlas Cute Fantasy (Kenmi, non-komersial): semua entri json ada di atlas', process.execPath, ['tools/test_cf_atlas.js']);
 run('Release integrity checks', process.execPath, ['tools/test_release_integrity.js']);
 const isWin = process.platform === 'win32';
 run('World/data regression tests', isWin ? 'py' : 'python3', isWin ? ['-3', 'tools/test_7defg.py'] : ['tools/test_7defg.py']);

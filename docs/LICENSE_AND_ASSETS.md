@@ -24,6 +24,10 @@ Tahap 9B-19 menambahkan `assets/world/fish_icons.png` dan `assets/world/fish_ico
 
 **Status lisensi: belum terkonfirmasi.** Arsip yang diterima hanya berisi gambar (tanpa berkas lisensi atau README), sehingga syarat penggunaan, atribusi wajib, dan izin distribusi ulang tidak diketahui. Seperti sumber lain di proyek privat ini, ini adalah gerbang pemblokir sebelum rilis publik: periksa halaman resmi paket, simpan salinan syaratnya bersama berkas yang dicakup, dan hapus atau ganti ikon bila syaratnya tidak mengizinkan. Atlas dapat dibuat ulang dengan `python3 tools/build_fish_icons.py --sheet <path>/fishing_icons_sheet_16x16.png`.
 
+## Cute Fantasy (Kenmi)
+
+Batch 9B-23 menambahkan `assets/world/cf_atlas.png` dan `assets/world/cf_atlas.json`: atlas 19 PNG dari paket **Cute Fantasy (Free)** oleh Kenmi (`Tiles/*`, `Outdoor decoration/*`, `Animals/*`), dibuat `tools/build_cf_tiles.py` (hanya digabung). Berkas `read_me.txt` paket menyatakan: boleh dipakai di proyek **non-komersial**, boleh dimodifikasi, **tidak boleh redistribusi atau dijual, meskipun sudah dimodifikasi**. Konsekuensi: repo harus tetap privat dan atlas ini tidak boleh ikut rilis publik atau komersial (gerbang pra-rilis: hapus atlas atau dapatkan lisensi yang sesuai). Atlas belum dirujuk peta/tileset desa; paket mentah tidak ada di repo.
+
 ## Other assets
 
 Review `CREDITS` and the provenance of every image/audio/font added later. Keep license and attribution notices with the files they cover. Do not assume that files found in a previous working directory are cleared for public redistribution.
