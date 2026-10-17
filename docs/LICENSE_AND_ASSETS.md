@@ -36,3 +36,13 @@ Review `CREDITS` and the provenance of every image/audio/font added later. Keep 
 ## Tahap 8F+8G — signage dan lampu
 
 Tahap ini tidak menambahkan arsip aset atau pack baru. Metadata jendela merupakan koordinat turunan pada sprite rumah yang sudah ada; papan nama menggunakan sprite Sunnyside yang ada; gapura dan palung pakan baru digambar secara prosedural dalam kode runtime. Tinjau tetap syarat Sunnyside dan syarat rumah yang bersumber dari unggahan pengguna sebelum distribusi publik. Proyek tetap privat.
+
+
+## Modern City Top-Down Pack — Free Sampler (CC0)
+
+Batch 9B-25 menambahkan `assets/world/city/city_tiles.png` dan `city_tiles.json` (20 entri: 16 tile 16×16, 3 prop jalan, sprite rubah), dibuat `tools/build_city_tiles.py` dari `sampler_tileset_16.png`, `sampler_props_3.png`, dan `fox_commuter_npc.png` pada **Modern City Top-Down Pack — Free Sampler** oleh **The Venice Menace Baking Co.** (<https://venicemenacebakingco.itch.io/modern-city-topdown-pack>). Pratinjau 4× ada di `docs/preview_city_tiles.png`.
+
+- **Lisensi: CC0.** README paket menyatakan penggunaan komersial dan pribadi diizinkan tanpa kewajiban atribusi. Kami tetap mencatat sumbernya di `CREDITS`. Larangan "jangan jual ulang paketnya apa adanya" berlaku untuk paket mentah, yang **tidak** dimasukkan ke repo; hanya potongan 16×16 turunan yang disertakan.
+- **Pengungkapan bantuan AI:** README paket menyatakan seninya dihasilkan dengan bantuan AI dan dikurasi manual (diungkap di halaman itch.io penulis). Karena itu aset ini ditandai sebagai AI-assisted; tinjau kebijakan platform tujuan rilis tentang konten AI sebelum publikasi.
+- Pemrosesan: dipotong, latar dibuang menjadi transparan, diperkecil nearest-neighbour. Tidak ada pewarnaan ulang. Tile asli berukuran besar bergaya 16×16 (bukan autotile 16×16 asli), sehingga detail tipis dapat berubah setelah diperkecil.
+- Atlas belum dirujuk peta/kode runtime dan tidak masuk precache service worker.

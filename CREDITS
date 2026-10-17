@@ -35,3 +35,8 @@ jadi syarat penggunaan dan distribusinya belum terkonfirmasi: tinjau halaman sum
 Tahap 9B-23 (Cute Fantasy): `assets/world/cf_atlas.png` + `cf_atlas.json` adalah atlas 19 PNG dari paket "Cute Fantasy (Free)" oleh Kenmi (folder Tiles, Outdoor decoration, Animals),
 digabung saja oleh `tools/build_cf_tiles.py`. LISENSI VERSI GRATIS: hanya untuk proyek NON-KOMERSIAL; modifikasi boleh; redistribusi atau penjualan DILARANG, juga untuk hasil modifikasi.
 Karena itu repo ini harus tetap privat dan atlas ini tidak boleh dipublikasikan atau dipakai pada rilis komersial tanpa membeli/menyetujui lisensi penuh. Atlas belum dipakai peta atau tileset desa; paket mentah tidak dimasukkan ke repo.
+
+Batch 9B-25 (atlas kota): `assets/world/city/city_tiles.png` + `city_tiles.json` (16 tile 16x16, 3 prop jalan, sprite rubah) dipotong dan diperkecil (nearest-neighbour)
+oleh `tools/build_city_tiles.py` dari "Modern City Top-Down Pack - Free Sampler" oleh The Venice Menace Baking Co. (https://venicemenacebakingco.itch.io/modern-city-topdown-pack).
+Lisensi CC0 (boleh komersial, atribusi tidak wajib; tetap dicatat di sini). PENGUNGKAPAN AI: pengarang menyatakan seni paket ini dihasilkan dengan bantuan AI dan dikurasi manual;
+Hero Battle hanya memotong, memberi latar transparan, dan memperkecilnya. Paket ZIP mentah tidak dimasukkan ke repo. Atlas belum dipakai peta.

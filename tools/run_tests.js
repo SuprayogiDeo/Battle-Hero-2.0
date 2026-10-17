@@ -36,6 +36,7 @@ run('World zoom (opt-in ?zoom=): camera, culling, restore-on-error, screen<->wor
 run('NPC baru: posisi tidak solid', process.execPath, ['tools/test_npc_new.js']);
 run('Ikon ikan (atlas Hollow Dolphin, helper fishIcon, fallback teks)', process.execPath, ['tools/test_fish_icons.js']);
 run('Atlas Cute Fantasy (Kenmi, non-komersial): semua entri json ada di atlas', process.execPath, ['tools/test_cf_atlas.js']);
+run('Atlas kota CC0 (Venice Menace sampler): 16 tile 16x16, 3 prop, rubah, pratinjau 4x, lisensi + bantuan AI', process.execPath, ['tools/test_city_tiles.js']);
 run('Sakelar ?cf=1: tanpa flag tidak berubah; hewan Kandang, jembatan, pagar dari atlas; peta/tabrakan/chunk identik', process.execPath, ['tools/test_cf_flag.js']);
 run('Release integrity checks', process.execPath, ['tools/test_release_integrity.js']);
 const isWin = process.platform === 'win32';

@@ -1,5 +1,15 @@
 # Changelog
 
+## Batch 9B-25 (atlas kota CC0) — 0.4.8-rc.1 — cache v80
+
+Cache v79 -> v80. Hanya aset dan alat build; peta, tileset desa, kode runtime, dan precache tidak diubah (atlas belum dirujuk game).
+
+- `tools/build_city_tiles.py`: memotong `sampler_tileset_16.png` (8x2 tile, 240 px) dan `sampler_props_3.png` serta `fox_commuter_npc.png` dari "Modern City Top-Down Pack - Free Sampler" (CC0) lewat komponen terhubung terhadap warna latar, membuang latar luar jadi transparan, lalu memperkecil dengan nearest-neighbour (fase sampling per kolom/baris dipilih agar garis tipis tidak hilang; tiap piksel tetap satu piksel sumber). Keluaran deterministik: `assets/world/city/city_tiles.png` (128x60) + `city_tiles.json` (20 entri) + `docs/preview_city_tiles.png` (4x).
+- Nama: `grass_a/b`, `sidewalk_a/b/c`, `cross_curb`, `cross_h/v`, `road_h_a/b`, `road_v`, `road_cross`, `road_lanes_h`, `road_corner`, `road_t_a/b`, `prop_traffic_light`, `prop_street_lamp`, `prop_bench`, `npc_fox_commuter` (muat 16x16).
+- `tools/test_city_tiles.js` (terdaftar di `npm test`): entri json = isi atlas (batas, tanpa tumpang tindih, piksel buram, tanpa piksel liar), nama dan ukuran, latar transparan, pratinjau 4x, CC0 + bantuan AI di CREDITS/LICENSE_AND_ASSETS, cache v80, atlas tidak dirujuk runtime, paket mentah tidak di repo.
+- CREDITS dan `docs/LICENSE_AND_ASSETS.md`: sumber CC0 dan pengungkapan bahwa seni sumber dibuat dengan bantuan AI (diungkap pengarangnya).
+- Asersi cache di `tools/test_fish_icons.js` dan `tools/test_7defg.py` disesuaikan ke v80.
+
 ## Batch 9B-24 (sakelar ?cf=1: sprite atlas Cute Fantasy) — 0.4.8-rc.1 — cache v79
 
 Cache v78 -> v79. Opt-in: tanpa `?cf=1` tampilan, peta, tabrakan, dan chunk persis seperti sebelumnya.
