@@ -1,5 +1,32 @@
 # Changelog
 
+## Batch 9B-28 (sprite LimeZu aktif default) — 0.4.8-rc.1 — cache v83
+
+Cache v82 -> v83. Pemilik menyatakan proyek pribadi non-komersial, jadi sprite LimeZu untuk NPC kota tidak lagi opt-in.
+
+- `js/city.js`: `CITY_MI_DEFAULT = true`; `?mi=0` mematikan (sprite hero cadangan, tanpa fetch atlas); `?mi=1` tetap diterima.
+- `sw.js`: `mi_chars.json/png` masuk precache (offline). CREDITS dan `docs/LICENSE_AND_ASSETS.md` memuat pernyataan non-komersial dan langkah wajib bila proyek kelak dipublikasikan/dikomersialkan.
+- `tools/test_city_npcs.js` diperbarui: default aktif, `?mi=0` mati, atlas di-precache.
+
+## Batch 9B-27 (warga Kota, atlas LimeZu) — 0.4.8-rc.1 — cache v82
+
+Cache v81 -> v82. Peta desa dan peta kota tidak berubah.
+
+- `tools/build_mi_chars.py`: memotong Adam, Alex, Amelia, Bob (`idle` 4 frame, `idle_anim` dan `run` 24 frame = 4 arah x 6; urutan kanan, atas, kiri, bawah) dari `Characters_free/` paket "Modern Interiors - Free" (LimeZu) menjadi `assets/world/mi_chars.png` (384x216, frame 16x24; 8 baris atas sumber selalu kosong, dicek lalu dipotong) + `mi_chars.json`. Deterministik.
+- LISENSI: versi gratis = NON-KOMERSIAL (tidak boleh proyek komersial/jual ulang). Pemakaian opt-in `?mi=1` (pola ?cf=1): tanpa flag tidak ada fetch/Image, NPC memakai sprite hero cadangan, atlas tidak di-precache. CREDITS dan `docs/LICENSE_AND_ASSETS.md` diperbarui.
+- NPC kota baru di `NPCS` (`area:'city'`): `adam` (Petugas, zebra cross barat -> timur -> gerbang), `alex` (Pembaca Koran, bangku barat -> timur), `amelia` (Pelari, trotoar utara -> selatan), masing-masing punya `plan` jam-per-blok (`npcPlanBlock`), `say` (pembuka per blok) dan `g` (baris umum). `npcAwake` memakai jadwal itu; `city.js` menjalankan `cityNpcStep` (BFS pada grid tabrakan, anim run, berhenti saat diajak bicara, muncul di blok yang tepat saat masuk kota).
+- `tools/test_city_npcs.js` (terdaftar di `npm test`): atlas (dimensi, frame tak kosong, tanpa tumpang tindih), data NPC (tile bebas/terjangkau, jadwal berurutan, tanpa tabrakan antar NPC), jadwal dan jalan lewat alur nyata, dialog per blok, sakelar ?mi=1, lisensi, cache, tanpa precache atlas. Asersi cache di test lama disesuaikan.
+
+## Batch 9B-26 (Kota Kecil) — 0.4.8-rc.1 — cache v81
+
+Cache v80 -> v81. Peta desa 128x96 (index.json, village.json, chunks/, tiles.png, sprites.png) TIDAK berubah; dijaga hash di `tools/city_village_golden.json`.
+
+- `tools/build_city_map.py`: menghasilkan `assets/world/city/city.json` + 4 chunk sendiri (`chunks/c0_0..c1_1.json`, chunk 20x20) untuk peta 40x30: jalan horizontal, persimpangan, trotoar, rumput, dua zebra cross per jalan, 9 lampu jalan + 6 bangku + 4 lampu lalu lintas berkolisi (tabrakan diturunkan dari daftar objek), serta pratinjau `docs/preview_city_map.png`.
+- `js/city.js` (dimuat sesudah `hud.js`): area kota bergaya interior (keadaan runtime `wC`, tidak disimpan; `S.world` tetap di desa sehingga simpan/muat aman). Gerbang masuk di tepi timur desa (tile 126,23; digambar lewat pengait `wTint`, tombol aksi KOTA), gerbang kembali di ujung barat jalan kota (tombol DESA). Data dimuat malas saat pemain mendekati gerbang; fade memakai `intFade`.
+- NPC `fox` (Rubah Komuter) di `NPCS`: `area:'city'`, `static:1`, tiga baris dialog di `npcLines`; `npcAwake` menyaring NPC menurut area (NPC desa tidak muncul di kota dan sebaliknya). Digambar `city.js` dari atlas `city_tiles`.
+- `farm.js`: ketukan di kota tidak memicu aksi ladang desa. `sw.js`/`index.html`: `city.js`, peta, chunk, dan atlas masuk precache.
+- `tools/test_city.js` (terdaftar di `npm test`): hash dan dimensi desa, data/chunk kota, keterjangkauan, tabrakan prop lewat alur nyata, masuk/keluar gerbang, dialog rubah, WW/WH/WMAP desa tidak berubah. Asersi cache di test lama disesuaikan.
+
 ## Batch 9B-25 (atlas kota CC0) — 0.4.8-rc.1 — cache v80
 
 Cache v79 -> v80. Hanya aset dan alat build; peta, tileset desa, kode runtime, dan precache tidak diubah (atlas belum dirujuk game).

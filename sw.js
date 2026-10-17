@@ -1,5 +1,5 @@
 // Hero Battle service worker. Naikkan VERSION setiap kali Anda mengganti file game.
-const VERSION = 'v80';
+const VERSION = 'v83';
 const CACHE = 'hero-battle-' + VERSION;
 const SHELL = [
   './',
@@ -39,6 +39,7 @@ const SHELL = [
   './js/adventure.js',
   './js/interior.js',
   './js/hud.js',
+  './js/city.js',
   './js/input.js',
   './js/pwa.js',
   './js/boot.js',
@@ -52,7 +53,18 @@ const SHELL = [
   './assets/world/fish_icons.json',
   './assets/world/tiles.png',
   './assets/world/sprites.png',
-  './assets/world/sea.png'
+  './assets/world/sea.png',
+  // Kota Kecil (js/city.js): peta, chunk, dan atlas ubin agar bisa dimasuki saat offline.
+  './assets/world/city/city.json',
+  './assets/world/city/chunks/c0_0.json',
+  './assets/world/city/chunks/c1_0.json',
+  './assets/world/city/chunks/c0_1.json',
+  './assets/world/city/chunks/c1_1.json',
+  './assets/world/city/city_tiles.json',
+  './assets/world/city/city_tiles.png',
+  // Atlas karakter LimeZu (aktif default untuk NPC kota; proyek pribadi non-komersial).
+  './assets/world/mi_chars.json',
+  './assets/world/mi_chars.png'
 ];
 
 // Gambar sprite & tileset: wajib ada supaya game tampil, jadi ikut di-precache.

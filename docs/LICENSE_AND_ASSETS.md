@@ -28,6 +28,15 @@ Tahap 9B-19 menambahkan `assets/world/fish_icons.png` dan `assets/world/fish_ico
 
 Batch 9B-23 menambahkan `assets/world/cf_atlas.png` dan `assets/world/cf_atlas.json`: atlas 19 PNG dari paket **Cute Fantasy (Free)** oleh Kenmi (`Tiles/*`, `Outdoor decoration/*`, `Animals/*`), dibuat `tools/build_cf_tiles.py` (hanya digabung). Berkas `read_me.txt` paket menyatakan: boleh dipakai di proyek **non-komersial**, boleh dimodifikasi, **tidak boleh redistribusi atau dijual, meskipun sudah dimodifikasi**. Konsekuensi: repo harus tetap privat dan atlas ini tidak boleh ikut rilis publik atau komersial (gerbang pra-rilis: hapus atlas atau dapatkan lisensi yang sesuai). Atlas belum dirujuk peta/tileset desa; paket mentah tidak ada di repo.
 
+## Modern Interiors — Free (LimeZu)
+
+Batch 9B-27 menambahkan `assets/world/mi_chars.png` dan `assets/world/mi_chars.json`: atlas 384×216 (frame 16×24) untuk karakter **Adam, Alex, Amelia, Bob** (strip `idle`, `idle_anim`, `run` dari `Characters_free/`) dari paket **Modern Interiors — Free** oleh **LimeZu** (<https://limezu.itch.io/moderninteriors>), dibuat `tools/build_mi_chars.py` (hanya dipotong 8 baris atas yang kosong dan digabung; piksel tidak diubah). `LICENSE.txt` versi gratis paket menyatakan:
+
+- **Boleh:** dipakai di proyek **non-komersial**; sprite boleh disunting untuk proyek non-komersial.
+- **Tidak boleh:** dipakai di proyek **komersial**; menyunting lalu memakainya di proyek komersial; menyunting lalu **menjual ulang** sprite.
+
+**Status:** pemilik proyek menyatakan proyek ini **pribadi dan non-komersial**, sehingga pemakaian versi gratis ini sesuai lisensinya. Karena itu sprite aktif secara default untuk NPC kota (`adam`, `alex`, `amelia`; Bob belum dipakai) dan atlas masuk precache; `?mi=0` mematikannya (sprite hero cadangan, tanpa fetch atlas). Syarat yang tetap berlaku: jangan menjual ulang sprite (juga yang sudah disunting), dan **sebelum proyek dipublikasikan atau dikomersialkan** hapus `mi_chars.*` (atau set `CITY_MI_DEFAULT = false` dan keluarkan dari precache) atau beli lisensi penuh. Arsip paket tidak ada di repo; atlas dapat dibuat ulang dengan `python3 tools/build_mi_chars.py --pack <path>/Characters_free`.
+
 ## Other assets
 
 Review `CREDITS` and the provenance of every image/audio/font added later. Keep license and attribution notices with the files they cover. Do not assume that files found in a previous working directory are cleared for public redistribution.
@@ -45,4 +54,4 @@ Batch 9B-25 menambahkan `assets/world/city/city_tiles.png` dan `city_tiles.json`
 - **Lisensi: CC0.** README paket menyatakan penggunaan komersial dan pribadi diizinkan tanpa kewajiban atribusi. Kami tetap mencatat sumbernya di `CREDITS`. Larangan "jangan jual ulang paketnya apa adanya" berlaku untuk paket mentah, yang **tidak** dimasukkan ke repo; hanya potongan 16×16 turunan yang disertakan.
 - **Pengungkapan bantuan AI:** README paket menyatakan seninya dihasilkan dengan bantuan AI dan dikurasi manual (diungkap di halaman itch.io penulis). Karena itu aset ini ditandai sebagai AI-assisted; tinjau kebijakan platform tujuan rilis tentang konten AI sebelum publikasi.
 - Pemrosesan: dipotong, latar dibuang menjadi transparan, diperkecil nearest-neighbour. Tidak ada pewarnaan ulang. Tile asli berukuran besar bergaya 16×16 (bukan autotile 16×16 asli), sehingga detail tipis dapat berubah setelah diperkecil.
-- Atlas belum dirujuk peta/kode runtime dan tidak masuk precache service worker.
+- Sejak Batch 9B-26 atlas dipakai peta Kota Kecil (`js/city.js`, `assets/world/city/city.json` + chunk) dan masuk precache. Tata letak peta kota buatan proyek ini (`tools/build_city_map.py`); hanya ubin, prop, dan rubah yang berasal dari paket CC0 di atas.

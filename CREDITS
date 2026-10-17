@@ -39,4 +39,10 @@ Karena itu repo ini harus tetap privat dan atlas ini tidak boleh dipublikasikan 
 Batch 9B-25 (atlas kota): `assets/world/city/city_tiles.png` + `city_tiles.json` (16 tile 16x16, 3 prop jalan, sprite rubah) dipotong dan diperkecil (nearest-neighbour)
 oleh `tools/build_city_tiles.py` dari "Modern City Top-Down Pack - Free Sampler" oleh The Venice Menace Baking Co. (https://venicemenacebakingco.itch.io/modern-city-topdown-pack).
 Lisensi CC0 (boleh komersial, atribusi tidak wajib; tetap dicatat di sini). PENGUNGKAPAN AI: pengarang menyatakan seni paket ini dihasilkan dengan bantuan AI dan dikurasi manual;
-Hero Battle hanya memotong, memberi latar transparan, dan memperkecilnya. Paket ZIP mentah tidak dimasukkan ke repo. Atlas belum dipakai peta.
+Hero Battle hanya memotong, memberi latar transparan, dan memperkecilnya. Paket ZIP mentah tidak dimasukkan ke repo. Atlas dipakai peta Kota Kecil (Batch 9B-26, `assets/world/city/city.json`; tata letak peta dibuat sendiri oleh `tools/build_city_map.py`).
+
+Batch 9B-27/9B-28 (warga Kota): `assets/world/mi_chars.png` + `mi_chars.json` (4 karakter x idle, idle_anim, run; frame 16x24) dipotong oleh `tools/build_mi_chars.py` dari folder `Characters_free/`
+paket "Modern Interiors - Free" oleh LimeZu (https://limezu.itch.io/moderninteriors): Adam, Alex, Amelia, Bob. LISENSI VERSI GRATIS (LICENSE.txt paket): hanya untuk proyek NON-KOMERSIAL;
+menyunting boleh hanya untuk proyek non-komersial; DILARANG proyek komersial dan menjual ulang sprite (juga yang sudah disunting). Pemilik menyatakan proyek ini pribadi dan non-komersial,
+jadi sprite aktif secara default untuk NPC kota (adam, alex, amelia); `?mi=0` mematikannya (sprite hero cadangan). Bila proyek kelak dipublikasikan atau dikomersialkan: hapus `mi_chars.*`
+atau beli lisensi penuh. Bob hanya ada di atlas. Paket ZIP mentah tidak dimasukkan ke repo.
