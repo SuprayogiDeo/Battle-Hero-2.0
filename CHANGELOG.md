@@ -1,5 +1,16 @@
 # Changelog
 
+## Batch 9B-24 (sakelar ?cf=1: sprite atlas Cute Fantasy) — 0.4.8-rc.1 — cache v79
+
+Cache v78 -> v79. Opt-in: tanpa `?cf=1` tampilan, peta, tabrakan, dan chunk persis seperti sebelumnya.
+
+- `js/cf.js` (baru, dimuat sesudah `anim.js`, masuk precache): membaca `?cf=1` secara ketat (`cf=0`, `cf=10`, `xcf=1` tetap mati). Hanya bila hidup, memuat `assets/world/cf_atlas.json/png` sekali; atlas belum siap atau gagal -> semua pemanggil jatuh ke sprite lama.
+- `js/ranch.js`: ayam, sapi, babi, domba di padang Kandang dan tombol beli memakai `animals/*` dari atlas (diam/jalan, cermin saat menuju kanan; bayangan sudah ada di sprite). Hewan kandang di dunia (`tilemap.js`, kritter) belum diganti.
+- `js/tilemap.js`: tile jembatan (id 128-140) di-bake dari `decor/Bridge_Wood` (tiang lama 132/141/142 dilewati, ujung digeser rata ke tepi petak); sprite objek `fence_h`/`fence_v` (termasuk dermaga) memakai `decor/Fences`. Chunk menunggu atlas settled supaya tidak ter-bake campuran. Pagar kandang/ladang buatan kode (`drawFence`, `farmFence`) dan efek salju pada pagar atlas belum diganti. Data `index.json`, chunk, dan collision tidak disentuh.
+- `tools/test_cf_flag.js` (terdaftar di `npm test`, 114 pemeriksaan): sidik data dunia (`tools/cf_flag_golden.json`), parser flag, tanpa flag tidak ada fetch/Image dan keluaran gambar hewan identik argumen demi argumen, tabrakan identik petak demi petak (flag mati vs hidup), daftar objek dunia dan urutan-y identik, isi chunk identik kecuali tile jembatan, pagar atlas menggantikan tepat satu sprite lama.
+- `tools/test_fish_icons.js`: asersi cache disesuaikan ke v79.
+- Tuning visual (titik kaki hewan, posisi pagar) masih perlu tinjauan di perangkat; belum diukur di browser nyata.
+
 ## Batch 9B-23 (atlas Cute Fantasy) — 0.4.8-rc.1 — cache v78
 
 Cache v77 -> v78.

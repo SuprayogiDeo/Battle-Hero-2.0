@@ -343,11 +343,11 @@ var Tmap = (function () {
   }
   function requestChunk(cx,cy){
     if(cx<0||cy<0||cx*CHSIZE>=V.w||cy*CHSIZE>=V.h)return;
-    var key=chunkKey(cx,cy); if(CH[key]){CH[key].used=++CHSEQ;return;} if(CHREQ[key])return; if(CHFAIL[key]&&Date.now()<CHFAIL[key])return; CHREQ[key]=1;
+    var key=chunkKey(cx,cy); if(CH[key]){CH[key].used=++CHSEQ;return;} if(!CF.settled())return; /* ?cf=1: tunggu atlas supaya chunk tidak ter-bake campuran; tanpa flag selalu lanjut */ if(CHREQ[key])return; if(CHFAIL[key]&&Date.now()<CHFAIL[key])return; CHREQ[key]=1;
     var meta=(V.chunks||[]).filter(function(c){return c.x==cx&&c.y==cy;})[0]; if(!meta){delete CHREQ[key];return;}
     fetch(BASE+meta.file).then(function(r){if(!r.ok)throw 0;return r.json();}).then(function(d){
       var c=cv(d.w*16,d.h*16),g=c.getContext('2d');g.imageSmoothingEnabled=false;var anim=[];
-      ['ground','shadow','decor','over'].forEach(function(L){var a=d.layers[L]||[];for(var i=0;i<a.length;i++){var n=a[i];if(!n)continue;var x=(i%d.w)*16,y=((i/d.w)|0)*16;if(V.anim&&V.anim[n])anim.push({x:d.x*16+x,y:d.y*16+y,f:V.anim[n]});else g.drawImage(ti,(n%V.tcols)*16,((n/V.tcols)|0)*16,16,16,x,y,16,16);}});
+      ['ground','shadow','decor','over'].forEach(function(L){var a=d.layers[L]||[];for(var i=0;i<a.length;i++){var n=a[i];if(!n)continue;var x=(i%d.w)*16,y=((i/d.w)|0)*16;if(V.anim&&V.anim[n])anim.push({x:d.x*16+x,y:d.y*16+y,f:V.anim[n]});else{var cf=CF.on?CF.tile(n):null;if(!cf)g.drawImage(ti,(n%V.tcols)*16,((n/V.tcols)|0)*16,16,16,x,y,16,16);else if(cf.im){if(cf.ux!=null)g.drawImage(cf.im,cf.ux,cf.uy,16,16,x,y,16,16);g.drawImage(cf.im,cf.sx,cf.sy,16,16,x+(cf.dx||0),y,16,16);}}}});
       var tags = Object.create(null);
       (d.tags || []).forEach(function(t){ if(!tags[t.i]) tags[t.i]=Object.create(null); tags[t.i][t.tag]=1; });
       CH[key]={x:cx*CHSIZE*16,y:cy*CHSIZE*16,w:d.w*16,h:d.h*16,tw:d.w,th:d.h,canvas:c,anim:anim,snow:null,used:++CHSEQ,collision:d.layers.collision||[],tags:tags};
@@ -424,6 +424,7 @@ var Tmap = (function () {
       if (o.k == 'gate_arch') { add(wx, wy, 74, function (sx, sb) { drawGate(g, sx, sb); }); continue; }
       if (o.k == 'feed_trough') { add(wx, wy, 14, function (sx, sb) { drawFeedTrough(g, sx, sb); }); continue; }
       if ((o.k == 'fence_h' || o.k == 'fence_v') && farmRect() && o.x >= farmRect().x * 16 && o.x < (farmRect().x + farmRect().w) * 16 && o.y > farmRect().y * 16 && o.y <= (farmRect().y + farmRect().h) * 16) continue;   /* pagar ladang digambar ulang di farmFence() */
+      if (CF.on && (o.k == 'fence_h' || o.k == 'fence_v') && CF.ready()) { (function (o) { add(wx, wy, 32, function (sx, sb) { CF.drawFence(g, o.k, sx, sb); }); })(o); continue; }   /* ?cf=1: pagar atlas; posisi, urutan-y, dan tabrakan (chunk) tidak berubah */
       var r = V.spr[o.k]; if (!r) continue;
       (function (o, r) { add(wx, wy, r.h * 2, function (sx, sb) {
         var md = (o.c && o.c != 'f' && 'SR'.indexOf(o.c) >= 0 && lockFn(o.c)) ? 'l' : snow ? 's' : '';

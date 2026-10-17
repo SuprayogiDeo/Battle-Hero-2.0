@@ -134,8 +134,11 @@ function ranchUpdate(dt){
  });
  ranchSync(true);
 }
+/* ?cf=1: sprite hewan dari cf_atlas (bayangan sudah ada di sprite). Tanpa flag / atlas belum siap -> false, jalur lama dipakai apa adanya. */
+function ranchAtlasAnimal(type,t,x,y,sc,walk,flip){return typeof CF!=='undefined'&&CF.on&&CF.drawAnimal(g,type,t,x,y,sc,walk,flip);}
 function ranchDrawAnimal(a,px,py){
  const cfg=RANIM[a.type],now=performance.now();
+ if(ranchAtlasAnimal(a.type,now,px,py,1.25,a.tx!==a.x||a.ty!==a.y,a.tx>a.x))return;
  Anim.shadow(g,px,py+2,9,3,.24);
  if(!(Anim.draw(g,'animal_'+a.type,now,px,py,false,1.25))){
   g.fillStyle=cfg.color;g.beginPath();g.ellipse(px,py-5,9,6,0,0,Math.PI*2);g.fill();g.fillStyle='#4a3329';g.fillRect(px+4,py-11,4,4);g.fillRect(px-6,py-1,3,4);g.fillRect(px+4,py-1,3,4);
@@ -152,7 +155,7 @@ function drawRanch(){
  else if(!r.animals.length){T('Belum ada hewan. Beli hewan di bawah.',195,159,'#fff',11,'center')}
  r.animals.forEach((a,i)=>{const px=22+a.x*343,py=59+a.y*183;ranchDrawAnimal(a,px,py);if(ranchNow()<=a.fedUntil){g.fillStyle='rgba(20,40,20,.8)';g.fillRect(px-22,py-31,44,11);T('DIRAWAT',px,py-23,'#aef5a1',7,'center')}if(a.pending>0){g.fillStyle='#fc4';g.beginPath();g.arc(px+11,py-21,5,0,7);g.fill();T(''+a.pending,px+11,py-18,'#201729',7,'center')}});
  T('Hewan: '+r.animals.length+'/'+ranchCapacity(r),25,267,'#cde',10);
- ['chicken','cow','pig','sheep'].forEach((type,i)=>{const cfg=RANIM[type],x=12+i*91;g.fillStyle=r.level&&r.animals.length<ranchCapacity(r)&&S.g>=cfg.price?'#2b6943':'#353140';g.fillRect(x,276,86,40);g.strokeStyle='#080b0a';g.lineWidth=1;g.strokeRect(x,276,86,40);Anim.draw(g,'animal_'+type,performance.now(),x+15,305,false,.7);T((S.set.lang==='en'?cfg.en:cfg.name).toUpperCase(),x+24,290,'#fff',8);T(cfg.price+' G',x+48,308,'#fc4',9,'center')});
+ ['chicken','cow','pig','sheep'].forEach((type,i)=>{const cfg=RANIM[type],x=12+i*91;g.fillStyle=r.level&&r.animals.length<ranchCapacity(r)&&S.g>=cfg.price?'#2b6943':'#353140';g.fillRect(x,276,86,40);g.strokeStyle='#080b0a';g.lineWidth=1;g.strokeRect(x,276,86,40);if(!ranchAtlasAnimal(type,performance.now(),x+15,305,.7,false,false))Anim.draw(g,'animal_'+type,performance.now(),x+15,305,false,.7);T((S.set.lang==='en'?cfg.en:cfg.name).toUpperCase(),x+24,290,'#fff',8);T(cfg.price+' G',x+48,308,'#fc4',9,'center')});
  /* Panel manajemen kanan. */
  card(390,43,238,272,'#b28b59',true);
  if(!r.level){btn(398,67,222,33,'BELI KANDANG - '+RANCH.buy+' G',S.g>=RANCH.buy);T('Kapasitas setelah dibeli: 4 hewan',400,115,'#cde',9)}
