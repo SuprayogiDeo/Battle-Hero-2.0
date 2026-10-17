@@ -1,5 +1,13 @@
 # Changelog
 
+## Batch 9B-22 (fishIcon di HUD memancing dan popup tangkapan) — 0.4.8-rc.1 — cache v77
+
+Cache v76 -> v77.
+
+- `js/life.js` (blok `fishUi`): `lifeFishHud` (pil ikon tanpa teks di atas tengah (siluet `unknown`, tanda `!` saat gigitan; tes 8D–8E melarang teks gigitan di dunia)) dan `lifeFishPopup` (kartu hasil tangkapan: ikon ikan 32 px, nama sesuai bahasa, rarity, harga). Dipanggil dari `lifeDrawWorldOverlay`.
+- Ikon umpan dan pancing tidak dipasang: atlas `fish_icons.png` hanya berisi 10 ikan + siluet, sheet mentah tidak ada di repo, dan belum ada daftar perlengkapan memancing di UI.
+- `tools/test_fish_icons.js`: satu pemeriksaan tambahan, HUD dan popup tidak melempar galat di `id` dan `en` (atlas siap dan fallback).
+
 ## Batch 9B-21 (ikon ikan Hollow Dolphin) — 0.4.8-rc.1 — atlas ikon ikan di Buku Ikan dan tab IKAN Toko (cache v76)
 
 Cache v75 -> v76 (di atas perbaikan dermaga 9B-20).

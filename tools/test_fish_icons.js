@@ -81,6 +81,19 @@ ok(/fishIcon\(id,28,y\+4,24\)/.test(shop), 'tab IKAN Toko memakai fishIcon');
 const sw = rd('sw.js'); ok(/\.\/assets\/world\/fish_icons\.png/.test(sw) && /\.\/assets\/world\/fish_icons\.json/.test(sw), 'sw.js precache atlas dan json');
 ok(/Hollow Dolphin/.test(rd('CREDITS')) && /fish_icons/.test(rd('CREDITS')), 'CREDITS mencatat Hollow Dolphin');
 const lic = rd('docs/LICENSE_AND_ASSETS.md'); ok(/Hollow Dolphin/.test(lic) && /belum terkonfirmasi/i.test(lic) && /build_fish_icons\.py/.test(lic), 'LICENSE_AND_ASSETS mencatat Hollow Dolphin dan status lisensi');
-ok(/const VERSION = 'v76'/.test(sw) && /cache: v76/.test(rd('VERSION')), 'cache v76');
+ok(/const VERSION = 'v77'/.test(sw) && /cache: v77/.test(rd('VERSION')), 'cache v77');
 ok(!fs.existsSync(path.join(root, 'assets/world/fishing_icons_sheet_16x16.png')), 'sheet mentah tidak dimasukkan ke repo');
+
+// --- HUD memancing (ikon tanpa teks) + popup tangkapan: tidak melempar di id dan en, memakai fishIcon (atlas siap maupun fallback)
+{ const mu = life.match(/\/\* fishUi:begin[\s\S]*?\/\* fishUi:end \*\//); ok(!!mu, 'blok fishUi ada di life.js');
+  ok(/lifeFishPopup\(lifeFish\)/.test(life) && /lifeFishHud\(lifeFish\)/.test(life), 'overlay dunia memanggil HUD dan popup');
+  for (const lang of ['id', 'en']) for (const st of [{ complete: true, naturalWidth: 176 }, { complete: false, naturalWidth: 0 }]) {
+    const r = run(st, lang), lifeLang = (a, b) => lang === 'en' ? b : a;
+    const ui = new Function('g', 'T', 'fishIcon', 'lifeLang', mu[0] + '\nreturn {lifeFishHud,lifeFishPopup};');
+    const gg = { fillRect() {}, strokeRect() {}, set fillStyle(v) {}, set strokeStyle(v) {}, set lineWidth(v) {} }, drawn = [];
+    const u = ui(gg, (...a) => drawn.push(a[0]), (id, ...a) => { drawn.push('icon:' + id); return r.fn.fishIcon(id, ...a); }, lifeLang);
+    for (const ph of ['waiting', 'bite', 'miss']) assert.doesNotThrow(() => u.lifeFishHud({ phase: ph }), 'HUD ' + ph + ' ' + lang);
+    for (const fid of fishIds) assert.doesNotThrow(() => u.lifeFishPopup({ phase: 'caught', fish: { id: fid, name: 'Nama', en: 'Name', rarity: 'rare', price: 9 } }), 'popup ' + fid + ' ' + lang);
+    assert.doesNotThrow(() => u.lifeFishPopup({ phase: 'caught', fish: null }), 'popup tanpa ikan'); n += 3;
+    ok(drawn.includes('icon:unknown') && drawn.includes('icon:carp') && drawn.some(x => x === (lang === 'en' ? 'Name' : 'Nama')), 'HUD pakai siluet, popup pakai ikon ikan dan nama sesuai bahasa ' + lang + (st.complete ? '' : ' (fallback)')); } }
 console.log('PASS: ikon ikan (' + n + ' pemeriksaan)');
