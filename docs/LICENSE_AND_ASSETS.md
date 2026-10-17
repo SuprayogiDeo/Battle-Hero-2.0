@@ -18,6 +18,12 @@ The original asset-pack archive itself is not included in this repository. Do no
 
 Tahap 8C uses selected derived 16×16 icons from the **99 Ingredients** pack by Keifoo PX in `assets/world/items.png`. Tahap 8D tidak menambah ikon 99 Ingredients; atlas farming/world memakai tahap crop Sunnyside yang sudah diturunkan ke runtime, dan `assets/world/chars.png` diperbarui untuk strip WATERING. Source page: <https://keifoopx.itch.io/99-various-ingredients>. The project catalog records permitted project use/modification and prohibits reselling/repackaging raw icons; re-read the current creator terms before any public repository or deployment. The original ZIP/PSD files are not bundled here.
 
+## Hollow Dolphin fishing icons
+
+Tahap 9B-19 menambahkan `assets/world/fish_icons.png` dan `assets/world/fish_icons.json`: atlas runtime 11 sel 16×16 (10 ikon untuk ikan `LIFE_FISH` + siluet `unknown` untuk ikan yang belum ditemukan) yang dipotong oleh `tools/build_fish_icons.py` dari `fishing_icons_sheet_16x16.png`, bagian dari **Fishing Icon Pack** oleh **Hollow Dolphin**. Pemetaan ikan → indeks ikon dan alasannya tercatat di `fish_icons.json` (`sheetIndex`, `why`). Ikon hanya dipotong dan digabung; siluet `unknown` diturunkan dari bentuk satu ikon dan diberi warna rata. Arsip paket dan ukuran sprite lain (32/48/64 px, ikon terpisah) **tidak** dimasukkan ke repo.
+
+**Status lisensi: belum terkonfirmasi.** Arsip yang diterima hanya berisi gambar (tanpa berkas lisensi atau README), sehingga syarat penggunaan, atribusi wajib, dan izin distribusi ulang tidak diketahui. Seperti sumber lain di proyek privat ini, ini adalah gerbang pemblokir sebelum rilis publik: periksa halaman resmi paket, simpan salinan syaratnya bersama berkas yang dicakup, dan hapus atau ganti ikon bila syaratnya tidak mengizinkan. Atlas dapat dibuat ulang dengan `python3 tools/build_fish_icons.py --sheet <path>/fishing_icons_sheet_16x16.png`.
+
 ## Other assets
 
 Review `CREDITS` and the provenance of every image/audio/font added later. Keep license and attribution notices with the files they cover. Do not assume that files found in a previous working directory are cleared for public redistribution.

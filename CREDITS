@@ -26,3 +26,8 @@ Tahap 8D+8E: `assets/world/chars.png` dan atlas diperbarui lewat `tools/build_ch
 
 
 Tahap 8F+8G: metadata jendela malam diterapkan ke sprite rumah dari asset sheet rumah yang diunggah pemilik; papan tanda memakai sprite `sign` Sunnyside yang sudah tersedia. Gapura/palung digambar prosedural oleh `js/tilemap.js`. Lima papan biome dan dua gapura ditentukan lewat `tools/world_design.json`; tidak ada aset pack mentah atau aset eksternal baru yang dimasukkan.
+
+Tahap 9B-19 (ikon ikan): `assets/world/fish_icons.png` + `fish_icons.json` adalah atlas runtime 11 sel 16x16 (10 ikan LIFE_FISH + siluet `unknown`) yang dipotong
+oleh `tools/build_fish_icons.py` dari `fishing_icons_sheet_16x16.png` milik paket "Fishing Icon Pack" oleh Hollow Dolphin. Hanya dipotong dan digabung; siluet
+`unknown` adalah turunan bentuk satu ikon yang diberi warna rata. Arsip paket tidak dimasukkan ke repo. Berkas lisensi/ketentuan tidak ada di arsip yang diterima,
+jadi syarat penggunaan dan distribusinya belum terkonfirmasi: tinjau halaman sumber paket sebelum rilis publik (gerbang aset yang sama dengan sumber lain).

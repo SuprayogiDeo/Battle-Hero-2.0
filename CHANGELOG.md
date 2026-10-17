@@ -1,5 +1,15 @@
 # Changelog
 
+## Batch 9B-21 (ikon ikan Hollow Dolphin) — 0.4.8-rc.1 — atlas ikon ikan di Buku Ikan dan tab IKAN Toko (cache v76)
+
+Cache v75 -> v76 (di atas perbaikan dermaga 9B-20).
+
+- `tools/build_fish_icons.py` memotong ikon dari `fishing_icons_sheet_16x16.png` (Hollow Dolphin, 12x9 ikon 16x16) menjadi `assets/world/fish_icons.png` (176x16) + `fish_icons.json`. Sel mengikuti urutan `LIFE_FISH`; sel ke-11 `unknown` = siluet untuk ikan yang belum ditemukan. Skrip menolak bila id `LIFE_FISH` dan `FISH_MAP` tidak cocok, ikon kembar, atau ikon kosong; deterministik.
+- Pemetaan: bluegill=12, carp=3, river_trout=36, gold_koi=2, sardine=24, mackerel=25, moon_eel=58, snow_char=39, moss_fish=27, starlight_fish=14 (alasan per ikan di `fish_icons.json`).
+- Helper `fishIcon(id,x,y,s)` di `js/life.js`: menggambar ikon tanpa smoothing; bila gambar belum siap atau id tak dikenal menggambar badge teks (inisial) dan mengembalikan `false`. Dipakai di `lifeDrawFishBook` (24 px, ikan belum ditemukan = siluet) dan `lifeShopFishDraw` (tab IKAN).
+- `tools/test_fish_icons.js` (terdaftar di `npm test`): atlas/JSON, urutan = LIFE_FISH, ikon unik dan tidak kosong, helper (gambar + fallback), pemasangan di dua layar, precache `sw.js`, CREDITS dan dokumen lisensi.
+- CREDITS dan `docs/LICENSE_AND_ASSETS.md`: Hollow Dolphin dicatat; syarat lisensi paket belum terkonfirmasi (gerbang pra-rilis).
+
 ## Batch 9B-20 (Nelayan pindah ke Dermaga tenggara) — 0.4.8-rc.1 — Dermaga Desa dihapus, Nelayan + perahu di fishing_pier (cache v75)
 
 - `npc.js`: Nelayan dan perahunya pindah dari Dermaga Desa (31,37) ke Dermaga tenggara (`fishing_pier`, platform 7x7 di (55,82), dekat Pondok Nelayan). Rumah NPC (56,87); titik pancing (56,87), jaring (57,86), naik perahu (58,87); tambatan perahu (59.5,87.7) di air sebelah timur ujung dermaga; rute berlayar (60.5,89.7), (63.5,91.7), (68.5,92.7), seluruhnya air. Jadwal 06-11 memancing, 11-16 jaring, 16-20 berlayar tidak berubah. Menggantikan lokasi di Batch 9B-19.

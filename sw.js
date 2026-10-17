@@ -1,5 +1,5 @@
 // Hero Battle service worker. Naikkan VERSION setiap kali Anda mengganti file game.
-const VERSION = 'v75';
+const VERSION = 'v76';
 const CACHE = 'hero-battle-' + VERSION;
 const SHELL = [
   './',
@@ -47,6 +47,8 @@ const SHELL = [
   './assets/world/chars.png',
   './assets/world/ui.png',
   './assets/world/items.png',
+  './assets/world/fish_icons.png',
+  './assets/world/fish_icons.json',
   './assets/world/tiles.png',
   './assets/world/sprites.png',
   './assets/world/sea.png'
