@@ -1,5 +1,14 @@
 # Changelog
 
+## Batch 9B-34 (atlas barang toko + buah) — 0.4.8-rc.1 — cache v89
+
+Cache v88 -> v89. Hanya aset, alat build, dan tes; belum dirujuk kode game (dipakai Step 14).
+
+- `tools/build_mart_icons.py` (baru): memotong 150 ikon 32x32 dari "Pixel Mart" (ghostpixxells, CC0) menjadi `assets/world/mart_icons.png` (480x320, 15x10 sel, abjad) dan menyalin sheet buah "Fruit" (Ninjikin/SciGho, CC BY 4.0, 608x96 = 38x6 sel 16x16, 228 sel berisi) menjadi `fruit_icons.png`; `mart_icons.json` (nama -> s, x, y; sha256) dan pratinjau `docs/preview_mart_icons.png`. Piksel tidak diubah. Nama: `mart_<nama>` (contoh `mart_milk_bottle`, `mart_egg_brown`, `mart_white_cheese`), buah `fruit_r<baris>c<kolom>`. Idempoten.
+- KREDIT WAJIB untuk Fruit (CC BY 4.0): "Fruit by SciGho (Ninjikin)" + tautan lisensi dicatat di `CREDITS` dan `docs/LICENSE_AND_ASSETS.md`, dan dijaga tes.
+- `sw.js`: ketiga berkas masuk precache.
+- `tools/test_mart_icons.js` (baru, 1320 pemeriksaan, terdaftar di `npm test`): dimensi, jumlah (150 + 228), posisi dalam sheet tanpa tumpang tindih, sel berisi dan unik (barang), nama kunci Toko Kota ada, sha256, precache, kredit SciGho. Mutasi (ganti nama kunci, hapus kredit) mematikan tes.
+
 ## Batch 9B-33 (ikon bahan di kartu menu) — 0.4.8-rc.1 — cache v88
 
 Cache v87 -> v88. Logika pembelian tidak berubah; hanya tampilan menu dan sel ikon baru.

@@ -34,6 +34,7 @@ run('Penginapan desa (menu, stok, buff)', process.execPath, ['tools/test_inn.js'
 run('Kafe Kota + Toko Kota (venue kedai, Umpan Langka)', process.execPath, ['tools/test_city_shops.js']);
 run('Ikon masakan + umpan (atlas asli, dishIcon, menu)', process.execPath, ['tools/test_dish_icons.js']);
 run('Atlas ikon makanan (Henry 16px + ghostpixxells 32px, CC0)', process.execPath, ['tools/test_food_icons.js']);
+run('Atlas barang toko + buah (Pixel Mart CC0 + Fruit CC BY 4.0)', process.execPath, ['tools/test_mart_icons.js']);
 run('Map data 10A: Village Hall path, east bridge road, b_res5 bush', process.execPath, ['tools/test_map_10a.js']);
 run('HUD regression (landscape): no visual overlaps, tap targets >= 44 px, text fits', process.execPath, ['tools/test_hud_regression.js']);
 run('World zoom (opt-in ?zoom=): camera, culling, restore-on-error, screen<->world conversion', process.execPath, ['tools/test_world_zoom.js']);

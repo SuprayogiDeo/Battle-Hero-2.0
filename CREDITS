@@ -54,3 +54,7 @@ dikomersialkan: hapus `mi_interior.*` dan tiga templat interior kota, atau beli 
 Step 11: assets/world/food_icons16.png, food_icons32.png dan food_icons.json dibuat tools/build_food_icons.py dari dua paket CC0 (hanya dipotong dan disusun ulang, piksel tidak diubah):
 "Free Pixel Food" oleh Henry Software (art: benmhenry; 64 ikon 16x16) dan "Free Pixel Foods" oleh ghostpixxells (53 dari 102 ikon 32x32; tanpa AI generatif).
 Paket mentah tidak disertakan di repositori.
+
+Step 13: assets/world/mart_icons.png, fruit_icons.png dan mart_icons.json dibuat tools/build_mart_icons.py (hanya dipotong dan disusun ulang, piksel tidak diubah):
+"Pixel Mart" oleh ghostpixxells (CC0; 150 ikon barang toko 32x32) dan "Fruit" oleh Ninjikin / SciGho (CC BY 4.0, WAJIB KREDIT: "Fruit by SciGho (Ninjikin) - https://ninjikin.itch.io/fruit",
+lisensi https://creativecommons.org/licenses/by/4.0/; 228 ikon buah 16x16). Paket mentah tidak disertakan di repositori.

@@ -67,3 +67,11 @@ Step 11 menambahkan `assets/world/food_icons16.png`, `food_icons32.png`, dan `fo
 - **"Free Pixel Food" (Henry Software; art: benmhenry; lisensi CC0):** 64 ikon 16x16. Penulis menyatakan penggunaan bebas, termasuk komersial. Tanpa kewajiban kredit; tetap dicatat di `CREDITS`.
 - **"Free Pixel Foods" (ghostpixxells; lisensi CC0):** dipakai 53 dari 102 ikon 32x32 (varian dasar + wadah `dish` dan `bowl`). Halaman penulis menyatakan tanpa AI generatif, tanpa kewajiban kredit, dan meminta file asli tidak didistribusikan ulang.
 - Pemrosesan: hanya dipotong dan disusun ulang; piksel tidak diubah; ikon 32x32 tidak diperkecil. Paket mentah tidak masuk repositori; integritas atlas dijaga `sha256` di `food_icons.json` dan `tools/test_food_icons.js`.
+
+## Barang toko dan buah (Pixel Mart + Fruit)
+
+Step 13 menambahkan `assets/world/mart_icons.png`, `fruit_icons.png`, dan `mart_icons.json` (dibuat `tools/build_mart_icons.py`; pratinjau `docs/preview_mart_icons.png`).
+
+- **"Pixel Mart" (ghostpixxells; CC0):** 150 ikon 32x32 (akhiran `_p` = versi dikemas). Penulis menyatakan penggunaan komersial dan penyuntingan boleh; tanpa kewajiban kredit (tetap dicatat di `CREDITS`).
+- **"Fruit" (Ninjikin / SciGho; CC BY 4.0):** satu sheet 608x96 (228 sel 16x16). **Kredit wajib** ("Fruit by SciGho (Ninjikin)", tautan lisensi CC BY 4.0) dan sudah dicatat di `CREDITS`. Kredit ini harus tetap ada jika proyek dibagikan.
+- Pemrosesan: hanya dipotong dan disusun ulang; piksel tidak diubah. Paket mentah tidak masuk repositori; integritas atlas dijaga `sha256` di `mart_icons.json` dan `tools/test_mart_icons.js`.
