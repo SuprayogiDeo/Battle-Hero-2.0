@@ -1,0 +1,14 @@
+{
+ "version": 1,
+ "cell": 16,
+ "order": [
+  "fish_soup",
+  "farm_stew",
+  "forest_omelet",
+  "moon_broth",
+  "village_feast",
+  "herbal_broth",
+  "bait"
+ ],
+ "source": "gambar sendiri oleh tools/build_dish_icons.py (seni asli proyek)"
+}
