@@ -124,11 +124,12 @@ function cityDrawB(b,cx,cy){ /* gedung luar sederhana (sementara): bayangan, bad
  const x=b.bx*WS-cx-OX,y=b.by*WS-cy,w=b.bw*WS,h=b.bh*WS,c=b.col,dx=b.dx*WS-cx-OX,roof=Math.round(h*.3);
  if(x>VW+40||x+w<-OX-40)return;
  g.fillStyle='rgba(0,0,0,.28)';g.fillRect(x+4,y+h-2,w+4,8);
- g.fillStyle='#1c1a24';g.fillRect(x-2,y-2,w+4,h+4);g.fillStyle=c[0];g.fillRect(x,y,w,h);g.fillStyle=c[1];g.fillRect(x,y,w,roof);g.fillStyle='rgba(255,255,255,.18)';g.fillRect(x,y,w,3);
+ g.fillStyle='#1c1a24';g.fillRect(x-2,y-2,w+4,h+4);const cf=CF.on&&CF.ready()&&CF.drawCityB(g,x,y,w,h,dx,b.bw,b.bh,c[2]);if(!cf){g.fillStyle=c[0];g.fillRect(x,y,w,h);g.fillStyle=c[1];g.fillRect(x,y,w,roof);g.fillStyle='rgba(255,255,255,.18)';g.fillRect(x,y,w,3);
  g.fillStyle=c[2];g.fillRect(x,y+roof,w,4);
  const win=(wx)=>{g.fillStyle='#1c1a24';g.fillRect(wx-1,y+roof+9,22,18);g.fillStyle='#bfe3f2';g.fillRect(wx,y+roof+10,20,16);g.fillStyle='rgba(255,255,255,.45)';g.fillRect(wx+2,y+roof+12,6,3)};
  for(let k=0;k<b.bw;k++){const wx=x+k*WS+6;if(Math.abs(wx+10-dx-WS/2)>WS*.9)win(wx)}
  g.fillStyle='#1c1a24';g.fillRect(dx+2,y+h-34,WS-4,34);g.fillStyle=c[2];g.fillRect(dx+4,y+h-32,WS-8,32);g.fillStyle='rgba(0,0,0,.25)';g.fillRect(dx+WS/2-1,y+h-32,2,32);g.fillStyle='#fc4';g.fillRect(dx+WS-11,y+h-16,3,3);
+ }
  g.font='bold 9px monospace';const t=wL(b.n[0],b.n[1]),tw=Math.ceil(g.measureText(t).width)+10;g.fillStyle='#1c1a24';g.fillRect(x+w/2-tw/2-1,y+3,tw+2,15);g.fillStyle='#f4ecd0';g.fillRect(x+w/2-tw/2,y+4,tw,13);T(t,x+w/2,y+14,'#2a2018',9,'center');
 }
 function cityDraw(){

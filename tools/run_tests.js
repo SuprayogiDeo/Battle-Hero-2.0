@@ -46,6 +46,7 @@ run('Kota Kecil: data/chunk, tabrakan prop, gerbang masuk/keluar, rubah, peta de
 run('NPC Kota: atlas LimeZu, jadwal, jalan antar blok, dialog, sakelar ?mi=0, lisensi', process.execPath, ['tools/test_city_npcs.js']);
 run('Interior Kota: atlas LimeZu, templat kafe/toko/apartemen, pintu gedung, masuk/keluar, interior desa tidak berubah', process.execPath, ['tools/test_city_interiors.js']);
 run('Sakelar ?cf=1: tanpa flag tidak berubah; hewan Kandang, jembatan, pagar dari atlas; peta/tabrakan/chunk identik', process.execPath, ['tools/test_cf_flag.js']);
+run('Bangunan ?cf=1: Penginapan desa + gedung kota dari atlas Cute Fantasy; pintu, geometri, tabrakan tetap', process.execPath, ['tools/test_cf_buildings.js']);
 run('Release integrity checks', process.execPath, ['tools/test_release_integrity.js']);
 const isWin = process.platform === 'win32';
 run('World/data regression tests', isWin ? 'py' : 'python3', isWin ? ['-3', 'tools/test_7defg.py'] : ['tools/test_7defg.py']);

@@ -110,12 +110,13 @@ const rec = () => { const o = []; return { o, g: { imageSmoothingEnabled: true, 
   ok(OFF.ready === false && ON.ready === true, 'mode hidup memakai atlas, mode mati tidak memuatnya');
   ok(JSON.stringify(OFF.order) === JSON.stringify(ON.order) && OFF.order.length > 100, 'daftar objek dunia (posisi dan urutan-y) identik: ' + OFF.order.length + ' objek');
   const fenceN = OFF.V.objects.filter(o => o.k === 'fence_h' || o.k === 'fence_v').length;
-  const fo = ops => ops.filter(o => o[0] === 'cf_atlas.png'), so = ops => ops.filter(o => o[0] === 'sprites.png');
+  const isInnOp = o => o[0] === 'cf_atlas.png' && o[3] === 96 && o[4] === 128, fo = ops => ops.filter(o => o[0] === 'cf_atlas.png' && !isInnOp(o)), innOps = ops => ops.filter(isInnOp), so = ops => ops.filter(o => o[0] === 'sprites.png');
   ok(fo(OFF.objOps).length === 0 && fo(ON.objOps).length > 0 && fo(ON.objOps).length <= fenceN, 'pagar objek: atlas hanya saat flag hidup (' + fo(ON.objOps).length + ' sprite pagar)');
-  ok(so(OFF.objOps).length - so(ON.objOps).length === fo(ON.objOps).length, 'tiap pagar atlas menggantikan tepat satu sprite pagar lama; sprite objek lain sama jumlahnya');
+  ok(innOps(OFF.objOps).length === 0 && innOps(ON.objOps).length === 1, 'Penginapan: rumah atlas 96x128 hanya saat flag hidup, tepat satu');
+  ok(so(OFF.objOps).length - so(ON.objOps).length === fo(ON.objOps).length + 1, 'tiap pagar atlas dan rumah Penginapan menggantikan tepat satu sprite lama; sprite objek lain sama jumlahnya');
   const strip = ops => ops.filter(o => o[0] !== 'cf_atlas.png').map(o => JSON.stringify(o));
-  const offNoFence = OFF.objOps.filter(o => !(o[0] === 'sprites.png' && (o[3] === 16 && o[4] === 11 || o[3] === 8 && o[4] === 16))).map(o => JSON.stringify(o)), onNoFence = strip(ON.objOps).filter(s => { const o = JSON.parse(s); return !(o[0] === 'sprites.png' && (o[3] === 16 && o[4] === 11 || o[3] === 8 && o[4] === 16)); });
-  ok(JSON.stringify(offNoFence) === JSON.stringify(onNoFence), 'semua gambar objek selain pagar identik byte demi byte');
+  const isOldInn = o => o[0] === 'sprites.png' && o[3] === 86 && o[4] === 73, offNoFence = OFF.objOps.filter(o => !isOldInn(o) && !(o[0] === 'sprites.png' && (o[3] === 16 && o[4] === 11 || o[3] === 8 && o[4] === 16))).map(o => JSON.stringify(o)), onNoFence = strip(ON.objOps).filter(s => { const o = JSON.parse(s); return !(o[0] === 'sprites.png' && (o[3] === 16 && o[4] === 11 || o[3] === 8 && o[4] === 16)); });
+  ok(JSON.stringify(offNoFence) === JSON.stringify(onNoFence.filter(s => !isInnOp(JSON.parse(s)))), 'semua gambar objek selain pagar dan Penginapan identik byte demi byte');
   // isi chunk (kanvas hasil bake): sama persis dengan berkas chunk bila flag mati; bila hidup hanya tile jembatan yang berganti sumber
   const BRI = JSON.parse(rd('assets/world/bridge_tiles.json')).ids, SKIP = new Set([BRI.top_post, BRI.bot_post, BRI.post_cap]), MAP = new Set(Object.values(BRI).filter(i => i !== BRI.water_shadow && !SKIP.has(i)));
   const idOf = o => (o[2] / 16) * 32 + o[1] / 16, flat = [].concat(...OFF.chunkOps);

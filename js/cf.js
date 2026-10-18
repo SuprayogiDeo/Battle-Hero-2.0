@@ -1,7 +1,8 @@
 /* Hero Battle - cf.js
  Skrip klasik. Sakelar opt-in ?cf=1 untuk sprite atlas Cute Fantasy (assets/world/cf_atlas.png/json, Kenmi, non-komersial).
  Tanpa ?cf=1: CF.on === false, tidak ada fetch/Image baru, semua pemanggil memakai jalur lama (tampilan default tidak berubah).
- Dengan ?cf=1: hewan Kandang (ranch.js), tile jembatan dan sprite pagar objek dunia (tilemap.js) diganti dari atlas.
+ Dengan ?cf=1: hewan Kandang (ranch.js), tile jembatan dan sprite pagar objek dunia (tilemap.js) diganti dari atlas; eksterior Penginapan desa (tilemap.js) = rumah atlas;
+ gedung kota (city.js cityDrawB) = kotak lama yang atap, dinding, jendela, dan pintunya disusun dari potongan rumah atlas (ukuran, warna aksen, papan nama, pintu, tabrakan tetap).
  Atlas belum siap / gagal dimuat -> setiap helper mengembalikan false/null dan pemanggil jatuh ke sprite lama. Data peta, tabrakan, chunk tidak disentuh. */
 var CF = (function () {
   var ON = false;
@@ -55,6 +56,38 @@ var CF = (function () {
     g.drawImage(IM, ox, oy, 16, 16, Math.round(sx - 16), Math.round(sb - (h ? 26 : 32)), 32, 32);
     g.imageSmoothingEnabled = old; return true;
   }
+  /* Penginapan desa: objek `b_res1` (index.json, rumah warga lama 86x73) di titik pintu INN_AT (sama dengan INT_B 'penginapan' di interior.js). Hanya gambar yang diganti; peta, tabrakan, pintu, urutan-y tidak berubah. */
+  var INN_AT = { x: 200, y: 320 }, HOUSE = 'decor/House_1_Wood_Base_Blue';
+  function isInn(o) { return !!o && o.k === 'b_res1' && o.x === INN_AT.x && o.y === INN_AT.y; }
+  /* rumah atlas 96x128 skala 2x: tengah pintu (x 40) tepat di atas titik kaki sprite lama (sx,sb) dan dasar pintu 6 px layar di atasnya (seperti pintu lama, y 70 dari 73), jadi pintu tetap di tempat pintu lama.
+     INN_R = meta bergaya sprite (door = kotak pintu dalam px sprite) untuk papan nama dinding; posisi kiri-atas: innXY. */
+  var INN_R = { w: 96, h: 128, door: [33, 86, 14, 26] };
+  function innXY(sx, sb) { return { x: Math.round(sx - 80), y: Math.round(sb - 230) }; }
+  function drawInn(g, sx, sb) {
+    if (!ready()) return false;
+    var e = M[HOUSE]; if (!e) return false;
+    var old = g.imageSmoothingEnabled; g.imageSmoothingEnabled = false;
+    var p = innXY(sx, sb); g.drawImage(IM, e.x, e.y, 96, 128, p.x, p.y, 192, 256);
+    g.imageSmoothingEnabled = old; return true;
+  }
+  /* gedung kota: potongan rumah atlas (px sprite): genting (16,36,16x16), balok (20,80,12x8), dinding (20,92,12x12), dasar (20,104,12x8), pintu (32,86,16x26), jendela (58,90,12x14); skala 2x.
+     Tinggi atap 1 baris petak (bh 3) atau 2 (bh >= 4). (x,y,w,h) = badan di layar, dx = x pintu (kiri petak pintu), bw = lebar petak. Kembalikan false bila atlas belum siap. */
+  function drawCityB(g, x, y, w, h, dx, bw, bh, accent) {
+    if (!ready()) return false;
+    var e = M[HOUSE]; if (!e) return false;
+    var old = g.imageSmoothingEnabled, rh = bh >= 4 ? 64 : 32, by = y + rh, wy0 = by + 16, wh = h - rh - 16, i, j;
+    g.imageSmoothingEnabled = false;
+    function cut(sx, sy, sw, sh, ox, oy, cw, ch) { g.drawImage(IM, e.x + sx, e.y + sy, sw, sh, Math.round(ox), Math.round(oy), cw, ch); }
+    for (j = 0; j < rh; j += 32) for (i = 0; i < w; i += 32) cut(16, 36, 16, 16, x + i, y + j, 32, 32);
+    if (accent) { g.fillStyle = accent; g.fillRect(x, by - 4, w, 4); }
+    for (i = 0; i < w; i += 24) cut(20, 80, Math.min(12, (w - i) / 2), 8, x + i, by, Math.min(24, w - i), 16);
+    for (j = 0; j < wh - 16; j += 24) for (i = 0; i < w; i += 24) { var ch = Math.min(24, wh - 16 - j); cut(20, 92, Math.min(12, (w - i) / 2), ch / 2, x + i, wy0 + j, Math.min(24, w - i), ch); }
+    for (i = 0; i < w; i += 24) cut(20, 104, Math.min(12, (w - i) / 2), 8, x + i, y + h - 16, Math.min(24, w - i), 16);
+    var wyy = wy0 + Math.floor((wh - 16 - 28) / 2);
+    for (i = 0; i < bw; i++) { var wx = x + i * 32 + 4; if (Math.abs(wx + 12 - dx - 16) > 48) cut(58, 90, 12, 14, wx, wyy, 24, 28); }
+    cut(32, 86, 16, 26, dx, y + h - 52, 32, 52);
+    g.imageSmoothingEnabled = old; return true;
+  }
   start();
-  return { on: ON, ready: ready, settled: settled, drawAnimal: drawAnimal, tile: tile, drawFence: drawFence };
+  return { isInn: isInn, drawInn: drawInn, innXY: innXY, INN_R: INN_R, INN_AT: INN_AT, drawCityB: drawCityB, on: ON, ready: ready, settled: settled, drawAnimal: drawAnimal, tile: tile, drawFence: drawFence };
 })();

@@ -1,5 +1,15 @@
 # Changelog
 
+## Batch 9B-37 (Penginapan dan gedung kota dari atlas Cute Fantasy, ?cf=1) — 0.4.8-rc.1 — cache v92
+
+Cache v91 -> v92. Hanya gambar di balik `?cf=1`; tanpa flag tampilan identik. Atlas tidak berubah (rumah `decor/House_1_Wood_Base_Blue` sudah ada di `cf_atlas`), jadi tidak ada aset baru.
+
+- `cf.js`: `isInn`/`drawInn`/`innXY` dan `drawCityB`. Penginapan desa (`b_res1` di index.json, titik pintu 200,320 = `INT_B` 'penginapan') digambar sebagai rumah atlas 96x128 skala 2x; tengah pintu atlas tepat di titik kaki sprite lama dan dasarnya 6 px layar di atasnya, seperti pintu lama. Gedung kota (Kafe, Toko Kota, Apartemen) tetap kotak lama (ukuran, warna aksen, papan nama, pintu), tetapi atap (genting), balok, dinding papan, jendela, dan pintu disusun dari potongan rumah atlas; atap satu baris (tinggi 3 petak) atau dua baris (4 petak). Semua potongan di dalam badan gedung. Atlas belum siap -> jalur lama persis.
+- `tilemap.js`: satu cabang `CF.on && CF.isInn(o) && CF.ready()` (bayangan, rumah atlas, papan nama dinding tetap lewat `wallName`). `city.js`: `cityDrawB` memanggil `CF.drawCityB` dan melewati gambar lama hanya bila berhasil.
+- Tidak berubah: peta, tabrakan (chunk, layer collision, badan SOLID `CITY_B`), `CITY_B` dx/bx/by/bw/bh, pintu interior, urutan-y, `interior.js`, `npc.js`.
+- `tools/test_cf_buildings.js` (baru, 40 pemeriksaan, terdaftar di `npm test`): geometri `CITY_B` dan pintu Penginapan terkunci, gating hanya `b_res1`@(200,320), posisi pintu atlas, potongan di dalam badan, jendela tidak menutup pintu, papan nama tetap, kamera, atlas belum siap = lama persis, flag mati netral. Mutasi (geser pintu, longgarkan gating, geser rumah, atap kelebihan) mematikan tes. `test_cf_flag.js` disesuaikan: rumah Penginapan dihitung sebagai satu pengganti sprite lama.
+- `sw.js`, `VERSION`, `README.md`, `test_fish_icons.js`, `test_city_npcs.js`, `test_7defg.py`: cache v92.
+
 ## Batch 9B-36 (enam ikon masakan digambar ulang) — 0.4.8-rc.1 — cache v91
 
 Cache v90 -> v91. Hanya aset, alat build, dan pratinjau; logika game tidak berubah.

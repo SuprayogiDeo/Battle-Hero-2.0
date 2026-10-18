@@ -425,6 +425,7 @@ var Tmap = (function () {
       if (o.k == 'feed_trough') { add(wx, wy, 14, function (sx, sb) { drawFeedTrough(g, sx, sb); }); continue; }
       if ((o.k == 'fence_h' || o.k == 'fence_v') && farmRect() && o.x >= farmRect().x * 16 && o.x < (farmRect().x + farmRect().w) * 16 && o.y > farmRect().y * 16 && o.y <= (farmRect().y + farmRect().h) * 16) continue;   /* pagar ladang digambar ulang di farmFence() */
       if (CF.on && (o.k == 'fence_h' || o.k == 'fence_v') && CF.ready()) { (function (o) { add(wx, wy, 32, function (sx, sb) { CF.drawFence(g, o.k, sx, sb); }); })(o); continue; }   /* ?cf=1: pagar atlas; posisi, urutan-y, dan tabrakan (chunk) tidak berubah */
+      if (CF.on && CF.isInn(o) && CF.ready()) { (function (o, wx, wy) { add(wx, wy, 256, function (sx, sb) { Anim.shadow(g, sx + 4, sb - 1, 92, 8.6, .24); CF.drawInn(g, sx, sb); var wn = wallName(o.k), p = CF.innXY(sx, sb); if (wn) LBL.push({ k: 'sign', s: 0, r: CF.INN_R, x: p.x, y: p.y, nm: wn }); }); })(o, wx, wy); continue; }   /* ?cf=1: Penginapan = rumah atlas; titik kaki/pintu, urutan-y, tabrakan tidak berubah */
       var r = V.spr[o.k]; if (!r) continue;
       (function (o, r) { add(wx, wy, r.h * 2, function (sx, sb) {
         var md = (o.c && o.c != 'f' && 'SR'.indexOf(o.c) >= 0 && lockFn(o.c)) ? 'l' : snow ? 's' : '';
