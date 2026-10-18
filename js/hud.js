@@ -15,7 +15,7 @@ function hudTouchUnit(){const r=cv&&cv.getBoundingClientRect?cv.getBoundingClien
 /* ukuran font logis >= n; naik (maks cap) agar ~8 px layar bila layar kecil (portrait), lalu mengecil sampai muat maxW. Landscape s=1 tak berubah untuk n>=8. */
 function hudFs(n,cap,maxW,txt){let s=1;try{const r=cv.getBoundingClientRect();if(r&&r.height>0)s=r.height/360}catch(e){}let f=Math.max(n,Math.min(cap||12,Math.round(8/s)));try{if(maxW&&txt!=null){g.font='bold '+f+'px monospace';while(f>n&&g.measureText(txt).width>maxW){f--;g.font='bold '+f+'px monospace'}}}catch(e){}return f}
 /* hotbar dipusatkan; bila tepi kanannya menabrak lingkaran tombol aksi (portrait: langkah 44 px layar = 72 logis), digeser ke kiri */
-function hudLayout(){const z=hudUiScale(),slot=HB_W*z,hit=hudTouchUnit(),step=Math.max((HB_W+HB_G)*z,hit),w=7*step+slot,y=333-slot/2,r=HB_AR*z,dy=y-HB_AY;let left=(640-w)/2;if(dy<r){const lim=HB_AX-Math.sqrt(r*r-dy*dy)-3;if(left+w>lim)left=Math.max(0,lim-w)}return{z,slot,hit,step,left,y,centerY:333}}
+function hudLayout(){const z=hudUiScale(),slot=HB_W*z,hit=hudTouchUnit(),step=Math.max((HB_W+HB_G)*z,hit),w=7*step+slot,cy=Math.min(333,360-hit/2),y=cy-slot/2,r=Math.max(HB_AR*z,hit/2),ay=hit>52?Math.min(HB_AY,cy-hit/2-r-1):HB_AY,dy=y-ay;let left=(640-w)/2;if(dy<r){const lim=HB_AX-Math.sqrt(r*r-dy*dy)-3;if(left+w>lim)left=Math.max(0,lim-w)}return{z,slot,hit,step,left,y,centerY:cy,ay}}
 function hudEnsure(){
  if(!S.hb||typeof S.hb!=='object'||Array.isArray(S.hb))S.hb={sel:0,pg:0,water:0,slots:{}};
  if(!S.hb.slots||typeof S.hb.slots!=='object'||Array.isArray(S.hb.slots))S.hb.slots={};
@@ -90,10 +90,10 @@ function hudBar(){
  if(hudNameT>0){const t=HB_TOOLS[h.sel],m=!t&&SC_MATERIALS.find(q=>q.id===h.slots[h.sel]);if(t||m){g.globalAlpha=Math.min(1,hudNameT);T(t?wL(t.n[0],t.n[1]):(S.set?.lang==='en'?m.en:m.name),cx,L.y-10,'#fe8',10,'center');g.globalAlpha=1}}
 }
 function hudAct(){
- const c=hudCtx(),on=c&&c.on,z=hudUiScale(),r=HB_AR*z;
- g.fillStyle='rgba(30,24,50,.88)';g.beginPath();g.arc(HB_AX,HB_AY,r,0,7);g.fill();g.lineWidth=on?3:2;g.strokeStyle=on?'#fc4':'#777';g.stroke();
- hudIcon(0,HB_AX-16*z,HB_AY-27*z,2*z,on?1:.5);
- {const lb=c?c.l:wL('TANGAN','HAND');T(lb,HB_AX,HB_AY+22*z,on?'#fe8':'#99a',hudFs(9,11,2*r-6,tr(lb)),'center')}
+ const c=hudCtx(),on=c&&c.on,z=hudUiScale(),r=HB_AR*z,ay=hudLayout().ay;
+ g.fillStyle='rgba(30,24,50,.88)';g.beginPath();g.arc(HB_AX,ay,r,0,7);g.fill();g.lineWidth=on?3:2;g.strokeStyle=on?'#fc4':'#777';g.stroke();
+ hudIcon(0,HB_AX-16*z,ay-27*z,2*z,on?1:.5);
+ {const lb=c?c.l:wL('TANGAN','HAND');T(lb,HB_AX,ay+22*z,on?'#fe8':'#99a',hudFs(9,11,2*r-6,tr(lb)),'center')}
 }
 function hudDraw(){
  if(st!=='world')return;
@@ -106,13 +106,13 @@ function hudDown(id,x,y){
  const L=hudLayout(),r=Math.max(HB_AR*L.z,L.hit/2);
  const first=L.left+L.slot/2,last=first+7*L.step,slotAt=x=>Math.max(0,Math.min(7,Math.round((x-first)/L.step)));
  const inBar=y>=L.centerY-L.hit/2&&y<=L.centerY+L.hit/2&&x>=first-L.hit/2&&x<=last+L.hit/2;
- let inBtn=(x-HB_AX)*(x-HB_AX)+(y-HB_AY)*(y-HB_AY)<=r*r;
+ let inBtn=(x-HB_AX)*(x-HB_AX)+(y-L.ay)*(y-L.ay)<=r*r;
  /* area ketuk hotbar & tombol aksi bisa beririsan di portrait: titik di irisan menjadi milik pusat yang lebih dekat */
- if(inBtn&&inBar){const sx=first+slotAt(x)*L.step;if((x-sx)*(x-sx)+(y-L.centerY)*(y-L.centerY)<(x-HB_AX)*(x-HB_AX)+(y-HB_AY)*(y-HB_AY))inBtn=false}
+ if(inBtn&&inBar){const sx=first+slotAt(x)*L.step;if((x-sx)*(x-sx)+(y-L.centerY)*(y-L.centerY)<(x-HB_AX)*(x-HB_AX)+(y-L.ay)*(y-L.ay))inBtn=false}
  if(inBtn){const c=hudCtx();if(c&&c.on)c.f();else if(c)c.f();else sfx('click');return true}
  if(inBar){hudSw={id:id,x0:x,slot:slotAt(x),moved:0};return true}
- const z=hudUiScale();if(!wI&&x>=4&&x<=4+100*z&&y>=4&&y<=4+76*z){if(self.hbOpenWorldMap)hbOpenWorldMap();return true}
- if(!wI&&self.jrFocusRect){const f=jrFocusRect(),ft=f.y-6,fb=ft+Math.max(f.h+8,Math.min(56,L.hit));if(x>=f.x&&x<=f.x+f.w&&y>=ft&&y<=fb){jrToggleFocus();sfx('click');return true}}
+ const z=hudUiScale();if(!wI&&x>=4&&x<=4+100*z&&y>=4&&y<=4+Math.max(76*z,L.hit)){if(self.hbOpenWorldMap)hbOpenWorldMap();return true}
+ if(!wI&&self.jrFocusRect){const f=jrFocusRect(),pt=L.hit>52,ft=pt?Math.max(f.y-6,4+Math.max(76*z,L.hit)):f.y-6,fb=ft+Math.max(f.h+8,pt?L.hit:Math.min(56,L.hit));if(x>=f.x&&x<=f.x+f.w&&y>=ft&&y<=fb){jrToggleFocus();sfx('click');return true}}
  return false;
 }
 const hudPtr=e=>{const r=cv.getBoundingClientRect();return(e.clientX-r.left)*VW/r.width-OX};
@@ -153,9 +153,9 @@ function hbTutTargetRect(topic){
  if(topic.target==='farm_tool'||topic.target==='fishing_tool'){
   const wanted=topic.target==='farm_tool'?'hoe':'rod',idx=HB_TOOLS.findIndex(q=>q.id===wanted),h=hudEnsure(),L=hudLayout();
   if(idx>=0&&Math.floor(idx/8)===(h.pg||0))return[L.left+(idx%8)*L.step,L.y,L.slot,L.slot];
-  return[HB_AX-31,HB_AY-31,62,62];
+  return[HB_AX-31,hudLayout().ay-31,62,62];
  }
- return[HB_AX-31,HB_AY-31,62,62];
+ return[HB_AX-31,hudLayout().ay-31,62,62];
 }
 function hbTutDraw(){
  if(typeof hbTutorialObserve!=='function'||typeof g==='undefined'||typeof T!=='function')return;

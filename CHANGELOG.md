@@ -1,5 +1,13 @@
 # Changelog
 
+## Batch 9B-38 (quest Kafe Kota, audit HUD portrait/landscape, cache latar) — 0.4.8-rc.1 — cache v93
+
+Cache v92 -> v93.
+
+- Quest Kafe Kota: Bob (barista, objek `mi_bob`, aksi `cafeq`/BARISTA) meminta 1 Ikan Mas, imbalan 3 Umpan Langka, sekali saja. `npc.js`: `cqEnsure/cqLines/cqTalk`, progres `S.cq.s` (0/1/2, data rusak dipulihkan); dialog ID/EN. Menu Kafe tetap lewat konter. `tools/test_city_quest.js` (28 pemeriksaan, di `npm test`); mutasi (lewati potong ikan, imbalan, syarat ikan) mematikan tes.
+- Audit HUD (`tools/test_hud_city_shop.js`, 535 pemeriksaan; portrait s=.60/.64/.67, landscape s=.85/1/1.2; area ketuk diukur dengan menyentuh). Temuan dan perbaikan: menu toko/kedai (KEMBALI, BELI, ▲▼) < 44 px -> `shopLay/shopHit` di `npc.js` (selang baris >= 44 px layar, baris menyusut + gulir; landscape s>=1 tidak berubah); `hud.js`: strip hotbar tidak keluar kanvas, tombol aksi dipisah vertikal dari hotbar saat s<.85 (`L.ay`), area minimap dan FOKUS >= 44 px di portrait. Portrait < 384 px lebar tetap ditutup `#rotateNotice`. Empat mutasi mematikan tes.
+- Performa (`?perf=1`, Chromium headless, CPU 4x lebih lambat; anggapan target rata-rata >= 45 FPS): `render.js` `bg()` menyimpan lapisan tile saat latar diam (identik piksel, jalur gulir tidak berubah). Menu 31 -> 45,6 FPS, pertarungan 42 -> 53; dunia/kota/interior/menu toko 56-60. Tanpa throttle semua 60. Heap ~9,5 MB. Bukan pengukuran HP nyata.
+
 ## Batch 9B-37 (Penginapan dan gedung kota dari atlas Cute Fantasy, ?cf=1) — 0.4.8-rc.1 — cache v92
 
 Cache v91 -> v92. Hanya gambar di balik `?cf=1`; tanpa flag tampilan identik. Atlas tidak berubah (rumah `decor/House_1_Wood_Base_Blue` sudah ada di `cf_atlas`), jadi tidak ada aset baru.

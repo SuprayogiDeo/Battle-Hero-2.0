@@ -85,7 +85,7 @@ inn:{w:13,h:9,fl:['floor_wood_a','floor_wood_b'],wl:'wall_wood',dx:6,win:[3,9],
  d:[['rug_red',6.5,6]],hg:[['tw_picture',8.2,1]],gl:[[10,3,70]]},
 /* Interior Kota (Step 8; sprite Modern Interiors Free via mi_interior.png, dimuat city.js). sd/bt/dg = dinding samping/bawah/celah pintu bertema; tiap objek aksi punya sel kosong di depannya. */
 ccafe:{w:13,h:9,fl:['mi_floor_mint_a','mi_floor_mint_b'],wl:'mi_wall_mint',sd:'mi_side_mint',bt:'mi_bot_mint',dg:'mi_door_gap',dx:6,win:[],
- o:[['mi_fridges',1,2,4,1,'msg','KULKAS','cafe_fridge'],['mi_plant_tree',11,2,1,1],['mi_bench',7,3,2,1,'cafe','MENU'],['mi_bob',9,3,1,1,'cafe','MENU'],
+ o:[['mi_fridges',1,2,4,1,'msg','KULKAS','cafe_fridge'],['mi_plant_tree',11,2,1,1],['mi_bench',7,3,2,1,'cafe','MENU'],['mi_bob',9,3,1,1,'cafeq','BARISTA'],
  ['mi_table_wood',1,4,2,2,'msg','MEJA','cafe_table'],['mi_stool',3,5,1,1],['mi_table_light',9,5,2,2,'msg','MEJA','cafe_table'],['mi_stool',8,6,1,1],['mi_stool',11,6,1,1],['mi_palm',1,7,1,1]],
  d:[['mi_rug_red',6.5,5.5]],hg:[['mi_window',6.5,.4],['mi_window',11,.4],['mi_picture_a',8,.3]],gl:[[8,3,70]]},
 cshop:{w:13,h:9,fl:['mi_floor_cream_a','mi_floor_cream_b'],wl:'mi_wall_cream',sd:'mi_side_cream',bt:'mi_bot_cream',dg:'mi_door_gap',dx:6,win:[],
@@ -174,6 +174,7 @@ function intAct(o){
   case'workshop':lifeOpenWorkshop();break;
   case'inn':innOpen();break;
   case'cafe':innOpen('cafe');break;
+  case'cafeq':if(typeof cqTalk==='function')cqTalk();else wSay(wL(INT_MSG.cafe_bob[0],INT_MSG.cafe_bob[1]),4);break;
   case'cshop':cshopOpen();break;
   case'bed':if(typeof houseSleep==='function')houseSleep();else{sv();wSay(wL(INT_MSG.bed[0],INT_MSG.bed[1]),3)}break;
   case'msg':{if(o.msg==='harga'){wSay(intPriceMsg(),5);break}if(o.msg==='vendor'){wSay(intVendorMsg(),5);break}const m=INT_MSG[o.msg]||INT_MSG.books;wSay(wL(m[0],m[1]),4);break}
@@ -184,7 +185,7 @@ const intLabel=l=>{const q=INT_LAB[l];return q?wL(q[0],q[1]):l};
 const INT_NAME={KASIR:'CASHIER',PEDAGANG:'VENDOR',HARGA:'PRICE BOARD',BERITA:'NEWS BOARD','MEJA DAGANG':'MARKET STALL',TIMBANGAN:'SCALE',DAPUR:'KITCHEN COUNTER',BELI:'SHOP COUNTER',GACHA:'GACHA',PERSIAPAN:'HERO PREP',PETI:'CHEST',PETA:'MAP',DESA:'VILLAGE TABLE',PESANAN:'ORDERS BOARD',BUKU:'BOOKS',TUNGKU:'FORGE',LANDASAN:'ANVIL','MEJA KERJA':'WORKBENCH',MASAK:'STOVE',BAHAN:'PANTRY',ISTIRAHAT:'BED',API:'FIREPLACE',KAYU:'LOGS',JERAMI:'HAY',PANCING:'FISHING RODS','TEMPAT TIDUR':'BED',RAK:'SHELF',MENU:'MENU',PEMILIK:'INNKEEPER',KULKAS:'FRIDGE',KONTER:'COUNTER',BARISTA:'BARISTA',MEJA:'TABLE',PENJAGA:'SHOP CLERK',SOFA:'SOFA'};
 const INT_NAME_ID={BAHAN:'LEMARI BAHAN',DAPUR:'LOKET DAPUR',BELI:'KASIR TOKO',PERSIAPAN:'PERSIAPAN HERO',DESA:'MEJA DESA',PESANAN:'PAPAN PESANAN',HARGA:'PAPAN HARGA',BERITA:'PAPAN BERITA',MASAK:'KOMPOR',MENU:'MENU MAKANAN'};
 const intObjName=l=>wL(INT_NAME_ID[l]||l,INT_NAME[l]||l);
-const INT_FUN={cashier:1,market:1,gacha:1,heroes:1,village:1,orders:1,cook:1,storage:1,workshop:1,bed:1,news:1,inn:1,cafe:1,cshop:1};
+const INT_FUN={cashier:1,market:1,gacha:1,heroes:1,village:1,orders:1,cook:1,storage:1,workshop:1,bed:1,news:1,inn:1,cafe:1,cafeq:1,cshop:1};
 function intSpark(x,y,a){g.save();g.globalAlpha=a;g.fillStyle='#ffe88a';g.fillRect(x-1,y-4,2,8);g.fillRect(x-4,y-1,8,2);g.fillStyle='#fff';g.fillRect(x-1,y-1,2,2);g.restore()}
 function intCtx(){const n=wI&&intNear();wI&&(wI.near=n);return n?{l:intLabel(n.lab),on:1,f:()=>intAct(n)}:null}
 function intUpdate(dt){

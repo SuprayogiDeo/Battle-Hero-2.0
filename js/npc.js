@@ -195,12 +195,18 @@ if(S.buff&&S.buff.id===id&&S.buff.stages>0){say(smithL('Masakan itu masih aktif.
 const g=innPrice(r,v);if(S.g<g){say(smithL('Emas tidak cukup','Not enough gold'));return'gold'}
 S.g-=g;S.inn.sold[V.k+id]=(S.inn.sold[V.k+id]|0)+1;S.buff={id:r.id,name:r.name,en:r.en,atk:Math.min(.10,r.atk),hp:Math.min(.10,r.hp),stages:r.stages,lastStage:null};sv();sfx('heal');
 say(smithL('Masakan aktif: '+r.name+' ('+r.stages+' stage)','Dish active: '+r.en+' ('+r.stages+' stages)'));return'ok'}
-function innOpen(v){innEnsure();innV=INNV[v]?v:'inn';if(st==='world')wFrom=1;if(typeof lifeWorldQuick!='undefined')lifeWorldQuick=false;st='inn';sv()}
+/* Menu toko/kedai: area ketuk >= 44 px layar. t = 44/s logis (s = skala kanvas); baris selang p = max(48,t); bila baris tak muat, kontrol gulir ▲▼ ada di y=ctl (tinggi >= max(52,t)) dan jumlah baris n menyusut. Landscape s>=1 identik dengan tata letak lama. */
+function shopTap(){let s=1;try{const r=cv.getBoundingClientRect();if(r&&r.height>0)s=r.height/360}catch(e){}return Math.ceil(44/Math.max(.1,s))}
+function shopLay(total){const t=shopTap(),p=Math.max(48,t);if(62+(total-1)*p+42<=358)return{p,n:total,ctl:0,t};const cy=360-Math.max(52,t);return{p,n:Math.max(1,Math.min(5,Math.floor((cy-62)/p))),ctl:cy,t}}
+function shopHit(x,y,LY){if(x<85&&y<Math.max(34,LY.t))return'back';if(LY.ctl&&y>=LY.ctl)return x<89?'up':x<178?'down':null;if(x>=488&&x<=626){const i=Math.floor((y-(62+21-LY.p/2))/LY.p);if(i>=0&&i<LY.n)return i}return null}
+function shopCtlDraw(LY,total,sc){if(!LY.ctl)return;btn(20,LY.ctl,60,28,'▲',sc>0);btn(90,LY.ctl,60,28,'▼',sc<total-LY.n);T((sc+1)+'-'+Math.min(total,sc+LY.n)+' / '+total,320,LY.ctl+19,'#9ab',9,'center')}
+let innScroll=0;
+function innOpen(v){innScroll=0;innEnsure();innV=INNV[v]?v:'inn';if(st==='world')wFrom=1;if(typeof lifeWorldQuick!='undefined')lifeWorldQuick=false;st='inn';sv()}
 function innRows(v){innEnsure();const V=innVen(v);return LIFE_RECIPES.map(r=>{const left=innLeft(r.id,v),g=innPrice(r,v),act=!!(S.buff&&S.buff.id===r.id&&S.buff.stages>0);return{k:r.id,t:smithL(r.name,r.en),d:r.desc+' · '+r.stages+smithL(' stage',' stages')+' · '+smithL('Sisa ','Left ')+left+'/'+V.stock,s:r.desc.replace(' / ',' · ')+' · '+r.stages+smithL(' stage',' stages'),ing:Object.keys(r.needs||{}).map(k=>[k,r.needs[k]|0]),max:V.stock,g,act,left,ok:left>0&&!act&&S.g>=g}})}
 function innDraw(){const R=innRows(innV),b=S.buff&&S.buff.stages>0?S.buff:null;ov(.94);btn(6,5,76,28,'KEMBALI');T(smithL(innVen(innV).t[0],innVen(innV).t[1]),95,25,'#fc4',17);
 T(smithL('Emas ','Gold ')+S.g+(b?'  ·  '+smithL('Aktif: ','Active: ')+smithL(b.name,b.en||b.name)+' '+b.stages:''),320,50,'#cde',10,'center');
-R.forEach((r,i)=>{const y=62+i*48;card(20,y,600,42,'#f7c45c',r.ok);dishIcon(r.k,28,y+5,32);T(r.t,70,y+17,'#fff',11);T(r.s,70,y+33,'#9cf',9);T(smithL('Bahan','Items'),318,y+10,'#789',8);r.ing.forEach((q,j)=>{const ix=318+j*40;ingIcon(q[0],ix,y+14,16);if(q[1]>1)T('x'+q[1],ix+18,y+27,'#fff',8)});T(r.g+smithL(' emas',' gold'),490,y+17,'#fc4',11,'right');T(smithL('Sisa ','Left ')+r.left+'/'+r.max,490,y+33,'#9ab',9,'right');btn(500,y+8,112,26,r.act?smithL('AKTIF','ACTIVE'):r.left<=0?smithL('HABIS','SOLD OUT'):smithL('BELI','BUY'),r.ok)})}
-function innClick(x,y){if(y<34&&x<85){goBack();return}innRows(innV).forEach((r,i)=>{const y0=62+i*48;if(x>=500&&x<=612&&y>=y0+8&&y<=y0+34)innBuy(r.k,innV)})}
+const LY=shopLay(R.length);innScroll=Math.max(0,Math.min(R.length-LY.n,innScroll));R.slice(innScroll,innScroll+LY.n).forEach((r,i)=>{const y=62+i*LY.p;card(20,y,600,42,'#f7c45c',r.ok);dishIcon(r.k,28,y+5,32);T(r.t,70,y+17,'#fff',11);T(r.s,70,y+33,'#9cf',9);T(smithL('Bahan','Items'),318,y+10,'#789',8);r.ing.forEach((q,j)=>{const ix=318+j*40;ingIcon(q[0],ix,y+14,16);if(q[1]>1)T('x'+q[1],ix+18,y+27,'#fff',8)});T(r.g+smithL(' emas',' gold'),490,y+17,'#fc4',11,'right');T(smithL('Sisa ','Left ')+r.left+'/'+r.max,490,y+33,'#9ab',9,'right');btn(500,y+8,112,26,r.act?smithL('AKTIF','ACTIVE'):r.left<=0?smithL('HABIS','SOLD OUT'):smithL('BELI','BUY'),r.ok)});shopCtlDraw(LY,R.length,innScroll)}
+function innClick(x,y){const R=innRows(innV),LY=shopLay(R.length),h=shopHit(x,y,LY);if(h==='back'){goBack();return}if(h==='up'||h==='down'){innScroll=Math.max(0,Math.min(R.length-LY.n,innScroll+(h==='up'?-1:1)));return}if(typeof h==='number'&&R[innScroll+h])innBuy(R[innScroll+h].k,innV)}
 /* Toko Kota (Step 10, daftar Step 14): daftar barang yang bisa digulir. Umpan Langka -> S.fish.bait; bahan masakan masuk stok yang dipakai dapur
    (egg/milk -> S.ranch.stock, herb/mushroom/fruit -> S.gather.items, lainnya -> S.kitchen.food; lihat lifeFoodCount). Batas harian per barang di S.cshop.sold[id].
    Harga/batas = PLACEHOLDER keseimbangan sampai diuji bermain. ic = [lembar,x,y] di mart_icons.png (32px) / fruit_icons.png (16px); 'dish' = dishIcon. */
@@ -227,18 +233,29 @@ if(S.g<it.g){say(smithL('Emas tidak cukup','Not enough gold'));return'gold'}
 lifeEnsure();S.g-=it.g;S.cshop.sold[id]++;cshopGive(id,1);sv();sfx('coin');
 say(smithL(it.n[0]+' +1',it.n[1]+' +1')+(id==='bait'?smithL(' (punya ',' (you have ')+S.fish.bait+')':''));return'ok'}
 function cshopOpen(){cshopEnsure();lifeEnsure();cshopScroll=0;if(st==='world')wFrom=1;if(typeof lifeWorldQuick!='undefined')lifeWorldQuick=false;st='cshop';sv()}
-const cshopMaxScroll=()=>Math.max(0,CSHOP_ITEMS.length-CSHOP_ROWS);
+const cshopN=()=>shopLay(CSHOP_ITEMS.length).n,cshopMaxScroll=()=>Math.max(0,CSHOP_ITEMS.length-cshopN());
 function cshopScrollBy(d){cshopScroll=Math.max(0,Math.min(cshopMaxScroll(),cshopScroll+d))}
-function cshopRows(){return CSHOP_ITEMS.slice(cshopScroll,cshopScroll+CSHOP_ROWS).map(it=>{const left=cshopLeft(it.id);return{it,left,g:it.g,ok:left>0&&S.g>=it.g}})}
+function cshopRows(){cshopScroll=Math.min(cshopScroll,cshopMaxScroll());return CSHOP_ITEMS.slice(cshopScroll,cshopScroll+cshopN()).map(it=>{const left=cshopLeft(it.id);return{it,left,g:it.g,ok:left>0&&S.g>=it.g}})}
 function cshopRow(){const it=CSHOP_BAIT,left=cshopLeft(it.id);return{left,g:it.g,ok:left>0&&S.g>=it.g}}
 function cshopDraw(){ov(.94);btn(6,5,76,28,'KEMBALI');T(smithL('TOKO KOTA','CITY SHOP'),95,25,'#fc4',17);
 T(smithL('Emas ','Gold ')+S.g+'  ·  '+smithL('Umpan Langka: ','Rare Bait: ')+((S.fish&&S.fish.bait)|0),320,50,'#cde',10,'center');
-cshopRows().forEach((r,i)=>{const y=62+i*48,it=r.it;card(20,y,600,42,'#f7c45c',r.ok);cshopIcon(it,28,y+5,32);T(smithL(it.n[0],it.n[1]),70,y+17,'#fff',11);T(smithL(it.d[0],it.d[1]),70,y+33,'#9cf',9);T(r.g+smithL(' emas',' gold'),490,y+17,'#fc4',11,'right');T(smithL('Sisa ','Left ')+r.left+'/'+it.cap,490,y+33,'#9ab',9,'right');btn(500,y+8,112,26,r.left<=0?smithL('HABIS','SOLD OUT'):smithL('BELI','BUY'),r.ok)});
-if(cshopMaxScroll()>0){btn(20,308,60,28,'▲',cshopScroll>0);btn(90,308,60,28,'▼',cshopScroll<cshopMaxScroll());T((cshopScroll+1)+'-'+Math.min(CSHOP_ITEMS.length,cshopScroll+CSHOP_ROWS)+' / '+CSHOP_ITEMS.length,320,327,'#9ab',9,'center')}}
-function cshopClick(x,y){if(y<34&&x<85){goBack();return}
-if(y>=308&&y<=336&&x>=20&&x<=80){cshopScrollBy(-1);return}if(y>=308&&y<=336&&x>=90&&x<=150){cshopScrollBy(1);return}
-cshopRows().forEach((r,i)=>{const y0=62+i*48;if(x>=500&&x<=612&&y>=y0+8&&y<=y0+34)cshopBuy(r.it.id)})}
+const LY=shopLay(CSHOP_ITEMS.length);cshopRows().forEach((r,i)=>{const y=62+i*LY.p,it=r.it;card(20,y,600,42,'#f7c45c',r.ok);cshopIcon(it,28,y+5,32);T(smithL(it.n[0],it.n[1]),70,y+17,'#fff',11);T(smithL(it.d[0],it.d[1]),70,y+33,'#9cf',9);T(r.g+smithL(' emas',' gold'),490,y+17,'#fc4',11,'right');T(smithL('Sisa ','Left ')+r.left+'/'+it.cap,490,y+33,'#9ab',9,'right');btn(500,y+8,112,26,r.left<=0?smithL('HABIS','SOLD OUT'):smithL('BELI','BUY'),r.ok)});
+shopCtlDraw(LY,CSHOP_ITEMS.length,cshopScroll)}
+function cshopClick(x,y){const LY=shopLay(CSHOP_ITEMS.length),h=shopHit(x,y,LY);if(h==='back'){goBack();return}if(h==='up'){cshopScrollBy(-1);return}if(h==='down'){cshopScrollBy(1);return}if(typeof h==='number'){const r=cshopRows()[h];if(r)cshopBuy(r.it.id)}}
 if(typeof cv!=='undefined')cv.addEventListener('wheel',function(ev){if(st!=='cshop')return;ev.preventDefault();cshopScrollBy(ev.deltaY>0?1:-1)},{passive:false});
+/* Quest Kafe Kota (Bob, barista): antar 1 Ikan Mas (carp) -> 3 Umpan Langka, sekali saja. Progres di S.cq = {s:0 belum|1 diterima|2 selesai}; dipulihkan bila data rusak. */
+const CQ_FISH='carp',CQ_REWARD=3;
+function cqEnsure(){const q=S.cq;if(!q||typeof q!=='object'||Array.isArray(q))S.cq={s:0};else q.s=Math.max(0,Math.min(2,q.s|0));return S.cq}
+function cqLines(){const q=cqEnsure(),fi=typeof lifeFishById=='function'?lifeFishById(CQ_FISH):null,nm=fi?wL(fi.name,fi.en):'Carp';
+if(q.s===0)return wL('Halo! Pelangganku minta sup ikan, tapi aku kehabisan '+nm+'. Bawakan 1 '+nm+', kuberi '+CQ_REWARD+' Umpan Langka.','Hi! A customer wants fish soup, but I am out of '+nm+'. Bring me 1 '+nm+' and I will give you '+CQ_REWARD+' Rare Bait.');
+if(q.s===1)return wL('Sudah dapat '+nm+'? Tangkap di danau atau padang, lalu bawa ke sini.','Got the '+nm+' yet? Catch one at the lake or meadow and bring it here.');
+return wL('Sup ikannya laris! Terima kasih, hero.','The fish soup is selling out! Thanks, hero.')}
+function cqTalk(){const q=cqEnsure();lifeEnsure();let r='info';
+if(q.s===0){const t=cqLines();q.s=1;sv();wSay(t,5);return r}
+else if(q.s===1&&(S.fish.stock[CQ_FISH]|0)>0){S.fish.stock[CQ_FISH]--;S.fish.bait=(S.fish.bait|0)+CQ_REWARD;q.s=2;sv();sfx('coin');r='ok';
+wSay(wL('Terima kasih! +'+CQ_REWARD+' Umpan Langka untukmu.','Thank you! +'+CQ_REWARD+' Rare Bait for you.'),4);return r}
+else if(q.s===1)r='need';
+wSay(cqLines(),5);return r}
 function healerOpen(){healerEnsure();if(st==='world')wFrom=1;if(typeof lifeWorldQuick!='undefined')lifeWorldQuick=false;st='healer';sv()}
 function healerRows(){healerEnsure();const A=S.ail,c=[['poison',smithL('Sembuhkan Racun','Cure Poison'),A.poison>0],['burn',smithL('Sembuhkan Luka Bakar','Cure Burn'),A.burn>0]].map(r=>({k:r[0],t:r[1],d:r[2]?smithL('Sakit: ','Afflicted: ')+A[r[0]]+smithL(' stage',' stages'):smithL('Sehat','Healthy'),g:HEALER_CURE,ok:r[2]&&S.g>=HEALER_CURE}));return c.concat(HEALER_BUFFS.map(b=>({k:b.id,buff:1,t:smithL(b.n[0],b.n[1]),d:(b.atk?'ATK +'+Math.round(b.atk*100)+'% ':'')+(b.hp?'HP +'+Math.round(b.hp*100)+'% ':'')+'· '+b.stages+smithL(' stage',' stages'),g:b.g,ok:S.g>=b.g})))}
 function healerDraw(){const R=healerRows(),t=S.tonic;ov(.94);btn(6,5,76,28,'KEMBALI');T(smithL('TABIB DESA','VILLAGE HEALER'),95,25,'#fc4',17);
