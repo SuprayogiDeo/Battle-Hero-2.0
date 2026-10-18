@@ -94,6 +94,14 @@ function fishIcon(id,x,y,s){s=s||16;const i=fishIconCell(id);
  if(i>=0&&FISH_ICON_IM.complete&&FISH_ICON_IM.naturalWidth>=(LIFE_FISH.length+1)*16){g.save();g.imageSmoothingEnabled=false;g.drawImage(FISH_ICON_IM,i*16,0,16,16,Math.round(x),Math.round(y),s,s);g.restore();return true}
  const f=id==='unknown'?null:lifeFishById(id),nm=f?(S.set.lang==='en'?f.en:f.name):'?';g.fillStyle=f?'#5b8fa8':'#6b6b78';g.fillRect(x,y,s,s);g.strokeStyle='#1a1220';g.strokeRect(x+.5,y+.5,s-1,s-1);T(nm.slice(0,f?2:1).toUpperCase(),x+s/2,y+s*.68,'#fff',Math.max(7,Math.round(s*.42)),'center');return false}
 /* fishIcon:end */
+/* dishIcon:begin - ikon masakan + umpan 16x16 (seni asli, dibuat tools/build_dish_icons.py) di assets/world/dish_icons.png; urutan sel = DISH_ICON_ORDER.
+   Gambar belum siap / id tak dikenal -> badge teks (inisial) dan return false. Dipakai menu Penginapan, Kafe Kota, dan Toko Kota. */
+const DISH_ICON_ORDER=['fish_soup','farm_stew','forest_omelet','moon_broth','village_feast','herbal_broth','bait'];
+const DISH_ICON_IM=typeof Image==='function'?new Image():{complete:false,naturalWidth:0};if(typeof Image==='function')DISH_ICON_IM.src='assets/world/dish_icons.png';
+function dishIcon(id,x,y,s){s=s||16;const i=DISH_ICON_ORDER.indexOf(id);
+ if(i>=0&&DISH_ICON_IM.complete&&DISH_ICON_IM.naturalWidth>=DISH_ICON_ORDER.length*16){g.save();g.imageSmoothingEnabled=false;g.drawImage(DISH_ICON_IM,i*16,0,16,16,Math.round(x),Math.round(y),s,s);g.restore();return true}
+ g.fillStyle=i>=0?'#8a6a3a':'#6b6b78';g.fillRect(x,y,s,s);g.strokeStyle='#1a1220';g.strokeRect(x+.5,y+.5,s-1,s-1);T((id||'?').slice(0,1).toUpperCase(),x+s/2,y+s*.68,'#fff',Math.max(7,Math.round(s*.42)),'center');return false}
+/* dishIcon:end */
 /* fishUi:begin - HUD memancing (pil ikon tanpa teks di atas tengah) dan popup hasil tangkapan; keduanya memakai fishIcon. */
 function lifeFishHud(f){const ph=f&&f.phase,bite=ph==='bite';
  g.fillStyle='rgba(8,18,22,.76)';g.fillRect(296,8,48,28);g.strokeStyle=bite?'#ffe36d':'#8db9c0';g.strokeRect(296.5,8.5,47,27);fishIcon('unknown',302,12,20);if(bite)T('!',332,29,'#ffe36d',14,'center')}
@@ -329,7 +337,7 @@ function lifeDrawOrders(){lifeEnsure();ov(.94);btn(6,5,76,28,'KEMBALI');btn(96,8
  lifeOrderList().forEach((o,i)=>{const y=80+i*55,done=S.orders.done.includes(o.id),has=lifeOrderCount(o.item)>=o.n;card(20,y,600,48,done?'#45484b':has?'#75b97a':'#57718a',1);T((S.set.lang==='en'?o.en:o.name)+' · '+(S.set.lang==='en'?(o.npcEn||'Villager'):(o.npc||'Warga')),32,y+18,done?'#888':'#fff',10);itemIcon(o.item,32,y+24,14);T(lifeLang('Serahkan '+o.n+' '+lifeItemName(o.item)+' · Hadiah '+o.gold+' emas','Deliver '+o.n+' '+lifeItemName(o.item)+' · Reward '+o.gold+' gold'),50,y+36,'#fc4',10);btn(500,y+8,100,31,done?'SELESAI':has?'SERAHKAN':'KURANG',has&&!done)});
  const q=LIFE_STORY[S.village.story];card(20,250,600,87,'#9d7b50',1);T('MISI CERITA: MEMBANGUN DESA DARI BATU PERTAMA',32,269,'#fc4',11);T(q?(S.set.lang==='en'?q.en:q.title):'Cerita selesai',32,287,'#fff',11);T(q?(S.set.lang==='en'?q.enDesc:q.desc):'Semua tahap sudah diselesaikan.',32,303,'#cde',9);T(lifeLang('Bahan: ','Materials: ')+(q?Object.keys(q.need).map(k=>lifeItemName(k)+' ×'+q.need[k]).join(', '):'—'),32,319,'#9cf',9);btn(476,282,124,38,'SERAHKAN',!!q);}
 function lifeOrderClick(x,y){if(y<34&&x<85){goBack();return}if(y<34&&x>=96&&x<206){qTab=0;return}if(y<34&&x>=212&&x<334){qTab=1;return}if(y>=80&&y<245){const i=Math.floor((y-80)/55);if(i>=0&&i<3&&x>490)lifeOrderDeliver(i);return}if(y>=278&&y<=326&&x>=470)lifeStoryDeliver();}
-function lifeInputState(x,y){if(st==='healer'){healerClick(x,y);return true}if(st==='smith'){smithClick(x,y);return true}if(st==='fishbook'){lifeFishBookClick(x,y);return true}if(st==='kitchen'){lifeKitchenClick(x,y);return true}if(st==='village'){lifeVillageClick(x,y);return true}return false}
+function lifeInputState(x,y){if(st==='cshop'){cshopClick(x,y);return true}if(st==='inn'){innClick(x,y);return true}if(st==='healer'){healerClick(x,y);return true}if(st==='smith'){smithClick(x,y);return true}if(st==='fishbook'){lifeFishBookClick(x,y);return true}if(st==='kitchen'){lifeKitchenClick(x,y);return true}if(st==='village'){lifeVillageClick(x,y);return true}return false}
 function lifeQuickClick(x,y){if(y<70||y>310){lifeWorldQuick=false;return}if(y>=72&&y<=99)lifeOpenFishBook();else if(y>=105&&y<=132)lifeOpenKitchen();else if(y>=138&&y<=165)lifeOpenVillage();else if(y>=171&&y<=198)lifeOpenOrders();else if(y>=204&&y<=231&&typeof lifeOpenStorage==='function')lifeOpenStorage();else if(y>=237&&y<=264&&typeof lifeOpenWorkshop==='function')lifeOpenWorkshop();else if(y>=270&&y<=297){lifeWorldQuick=false;worldLeave();}}
 function lifeInit(){lifeEnsure();lifeVillageSyncNPCs();}
 
@@ -347,7 +355,7 @@ updWorld=function(dt){if(lifeWorldQuick){lifeWorldUpdate(dt);return}_lifeUpdWorl
 const _lifeSnow=wSnow;
 wSnow=function(){return _lifeSnow()||lifeWeather()==='snow'};
 const _lifeDrawScreen=draw;
-draw=function(){_lifeDrawScreen();if(!['fishbook','kitchen','village','smith','healer'].includes(st))return;g.save();g.translate(OX,0);if(st==='healer')healerDraw();else if(st==='smith')smithDraw();else if(st==='fishbook')lifeDrawFishBook();else if(st==='kitchen')lifeDrawKitchen();else lifeDrawVillage();g.restore()};
+draw=function(){_lifeDrawScreen();if(!['fishbook','kitchen','village','smith','healer','inn','cshop'].includes(st))return;g.save();g.translate(OX,0);if(st==='cshop')cshopDraw();else if(st==='inn')innDraw();else if(st==='healer')healerDraw();else if(st==='smith')smithDraw();else if(st==='fishbook')lifeDrawFishBook();else if(st==='kitchen')lifeDrawKitchen();else lifeDrawVillage();g.restore()};
 const _lifeDrawQuests=drawQuests;
 drawQuests=function(){if(qTab===2){lifeDrawOrders();return}_lifeDrawQuests();btn(340,8,138,24,'PESANAN DESA',0)};
 const _lifeQuestClick=questClick;
@@ -357,7 +365,7 @@ drawMarket=function(){_lifeMarketDraw();btn(458,299,164,36,'DAPUR DESA',1);btn(4
 const _lifeMarketClick=marketClick;
 marketClick=function(x,y){if(x>=458&&x<=625&&y>=299&&y<=339){lifeOpenKitchen();return}if(x>=458&&x<=625&&y>=258&&y<=291){lifeOpenVillage();return}_lifeMarketClick(x,y)};
 // A capturing listener handles the additional screens before the legacy input handler.
-cv.addEventListener('pointerdown',function(ev){if(!['fishbook','kitchen','village','smith','healer'].includes(st))return;ev.stopImmediatePropagation();const r=cv.getBoundingClientRect(),x=(ev.clientX-r.left)*VW/r.width-OX,y=(ev.clientY-r.top)*360/r.height;lifeInputState(x,y);},{capture:true});
+cv.addEventListener('pointerdown',function(ev){if(!['fishbook','kitchen','village','smith','healer','inn','cshop'].includes(st))return;ev.stopImmediatePropagation();const r=cv.getBoundingClientRect(),x=(ev.clientX-r.left)*VW/r.width-OX,y=(ev.clientY-r.top)*360/r.height;lifeInputState(x,y);},{capture:true});
 const _lifeMkH=mkH;
 mkH=function(id){const h=_lifeMkH(id);const bs=healerBuffSum();if(bs.on){h._lifeBase={mh:h.mh,lm:h.lm};h.mh*=1+bs.hp;h.hp=h.mh;h.lm*=1+bs.atk;}else h._lifeBase={mh:h.mh,lm:h.lm};return h};
 const _lifeStartStage=startStage;

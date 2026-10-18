@@ -6,6 +6,10 @@
 const INT_IM=new Image();INT_IM.src='assets/world/interior.png';let INT_SPR=null;
 try{fetch('assets/world/interior.json').then(r=>r.ok?r.json():null).then(j=>{if(j&&j.spr)INT_SPR=j.spr}).catch(()=>{})}catch(e){}
 let wI=null,wFade=null,intT=0;
+/* Atlas interior kota (Modern Interiors Free, LimeZu; tools/build_mi_interiors.py): dimuat malas oleh city.js (miIntStart). intRect(n) -> [rect,gambar] dari interior.png dulu, lalu mi_interior.png. */
+const MI_IM=typeof Image==='function'?new Image():null;let MI_SPR=null,MI_ST=0;
+function miIntStart(){if(MI_ST||typeof fetch!=='function')return;MI_ST=1;try{fetch('assets/world/mi_interior.json').then(r=>r.ok?r.json():null).then(j=>{if(j&&j.spr){MI_SPR=j.spr;if(MI_IM)MI_IM.src='assets/world/mi_interior.png'}}).catch(()=>{})}catch(e){}}
+function intRect(n){const r=INT_SPR&&INT_SPR[n];if(r)return[r,INT_IM];const m=MI_SPR&&MI_SPR[n];return m&&MI_IM?[m,MI_IM]:null}
 /* kaki bangunan (px 1x) = objek 'b_*' di index.json; pintu = titik tengah kaki. lv = level desa minimum (place.unlockLevel), stg = stage minimum (WUN) */
 const INT_B=[
 {id:'toko',tpl:'shop',x:320,y:320,n:['TOKO','SHOP']},
@@ -33,7 +37,19 @@ const INT_MSG={
  rods:['Pancing dipilih dari hotbar (terbuka di stage 6), lalu dekati titik air.','Pick the Rod from the hotbar (stage 6), then stand near a fishing spot.'],
  logs:['Tumpukan kayu. Tebang pohon di tepi hutan dengan Kapak.','A log pile. Chop trees at the forest edge with the Axe.'],
  hay:['Jerami kering untuk hewan ternak.','Dry hay for the livestock.'],
- pot:['Rak bahan dapur penduduk.','The resident\'s pantry shelf.']};
+ pot:['Rak bahan dapur penduduk.','The resident\'s pantry shelf.'],
+ /* interior Kota (Step 8; teks sementara, tanpa fungsi permainan) */
+ cafe_counter:['Menu hari ini: kopi, roti, dan kue. Belum dijual, tapi aromanya enak.','Today\'s menu: coffee, bread and cake. Not for sale yet, but it smells great.'],
+ cafe_bob:['Selamat datang di Kafe Kota! Duduk saja, santai.','Welcome to the City Cafe! Take a seat and relax.'],
+ cafe_fridge:['Kulkas minuman dingin. Isinya penuh.','A cold drinks fridge. Fully stocked.'],
+ cafe_table:['Meja kayu yang hangat. Bekas cangkir kopi masih ada.','A warm wooden table. A coffee-cup ring is still on it.'],
+ shop_counter:['Kasir toko kota. Belum ada yang dijual, ini baru etalase.','The city shop counter. Nothing for sale yet, this is just the display.'],
+ shop_clerk:['Halo! Toko ini baru buka. Barangnya menyusul, ya.','Hi! This shop just opened. The goods are coming soon.'],
+ shop_fridge:['Lemari pendingin penuh minuman dan makanan kemasan.','A fridge full of drinks and packaged food.'],
+ shop_rack:['Rak barang sehari-hari: sabun, gula, dan alat tulis.','A rack of everyday goods: soap, sugar and stationery.'],
+ apt_sofa:['Sofa merah yang empuk. Cocok untuk melepas lelah.','A soft red sofa. Perfect for unwinding.'],
+ apt_books:['Rak buku penghuni apartemen. Isinya novel dan buku masak.','The tenant\'s bookshelf, full of novels and cookbooks.'],
+ apt_table:['Meja makan kecil. Satu cangkir teh masih hangat.','A small dining table. One cup of tea is still warm.']};
 /* Templat ruangan. w,h tile (32 px); y 0-1 = dinding atas; pintu = kolom dx di baris bawah.
  o: [sprite,x,y,fw,fh,aksi,label,pesan] (jejak tabrakan fw x fh tile; kaki sprite = bawah jejak); d: dekor lantai [sprite,cx,cy];
  hg: tempelan dinding [sprite,cx,barisAtas]; win: kolom jendela; gl: cahaya [cx,cy,r] */
@@ -67,6 +83,19 @@ home:{w:11,h:8,fl:['floor_wood_a','floor_wood_b'],wl:'wall_wood',dx:5,win:[5],
 inn:{w:13,h:9,fl:['floor_wood_a','floor_wood_b'],wl:'wall_wood',dx:6,win:[3,9],
  o:[['shelf_goods',1,2,2,1,'msg','RAK','pot'],['counter',5,3,3,1,'inn','MENU'],['vendor',8,3,1,1,'inn','PEMILIK'],['fireplace',10,2,2,1,'msg','API','fire'],['tw_stool',2,5,1,1],['tw_stool',10,5,1,1],['w_crates',1,7,1,1],['w_barrel',11,7,1,1]],
  d:[['rug_red',6.5,6]],hg:[['tw_picture',8.2,1]],gl:[[10,3,70]]},
+/* Interior Kota (Step 8; sprite Modern Interiors Free via mi_interior.png, dimuat city.js). sd/bt/dg = dinding samping/bawah/celah pintu bertema; tiap objek aksi punya sel kosong di depannya. */
+ccafe:{w:13,h:9,fl:['mi_floor_mint_a','mi_floor_mint_b'],wl:'mi_wall_mint',sd:'mi_side_mint',bt:'mi_bot_mint',dg:'mi_door_gap',dx:6,win:[],
+ o:[['mi_fridges',1,2,4,1,'msg','KULKAS','cafe_fridge'],['mi_plant_tree',11,2,1,1],['mi_bench',7,3,2,1,'cafe','MENU'],['mi_bob',9,3,1,1,'cafe','MENU'],
+ ['mi_table_wood',1,4,2,2,'msg','MEJA','cafe_table'],['mi_stool',3,5,1,1],['mi_table_light',9,5,2,2,'msg','MEJA','cafe_table'],['mi_stool',8,6,1,1],['mi_stool',11,6,1,1],['mi_palm',1,7,1,1]],
+ d:[['mi_rug_red',6.5,5.5]],hg:[['mi_window',6.5,.4],['mi_window',11,.4],['mi_picture_a',8,.3]],gl:[[8,3,70]]},
+cshop:{w:13,h:9,fl:['mi_floor_cream_a','mi_floor_cream_b'],wl:'mi_wall_cream',sd:'mi_side_cream',bt:'mi_bot_cream',dg:'mi_door_gap',dx:6,win:[],
+ o:[['mi_fridges',1,2,4,1,'msg','KULKAS','shop_fridge'],['mi_rack',6,2,1,1,'msg','RAK','shop_rack'],['mi_rack',7,2,1,1,'msg','RAK','shop_rack'],['mi_bookcase_b',9,2,2,1,'msg','RAK','shop_rack'],
+ ['mi_rack',2,5,1,1,'msg','RAK','shop_rack'],['mi_rack',3,5,1,1],['mi_bench',8,5,2,1,'cshop','BELI'],['mi_amelia',10,5,1,1,'cshop','BELI'],['mi_plant_small',11,7,1,1]],
+ d:[['mi_rug_blue',6.5,6.5]],hg:[['mi_window',5.5,.4],['mi_window',12,.4]],gl:[]},
+capt:{w:11,h:8,fl:['mi_floor_wood_a','mi_floor_wood_b'],wl:'mi_wall_wood',sd:'mi_side_wood',bt:'mi_bot_wood',dg:'mi_door_gap',dx:5,win:[],
+ o:[['mi_bed_cyan',1,2,2,2,'msg','TEMPAT TIDUR','bed'],['mi_sofa',5,2,3,1,'msg','SOFA','apt_sofa'],['mi_bookcase_a',8,2,2,1,'msg','BUKU','apt_books'],
+ ['mi_table_light',7,4,2,2,'msg','MEJA','apt_table'],['mi_stool',6,5,1,1],['mi_plant_tree',9,5,1,1],['mi_palm',1,5,1,1]],
+ d:[['mi_rug_blue',4.5,4.5]],hg:[['mi_window',4,.4]],gl:[]},
 woodcutter:{w:9,h:7,fl:['floor_dark','floor_wood_b'],wl:'wall_wood',dx:4,win:[4],
  o:[['logs',1,2,2,1,'msg','KAYU','logs'],['hay',4,2,2,1,'msg','JERAMI','hay'],['chest',7,2,1,1,'storage','PETI'],['w_bench',6,4,1,1]],d:[['rug_green',4.5,4.9]],hg:[],gl:[]},
 fisher:{w:9,h:7,fl:['floor_wood_a','floor_wood_b'],wl:'wall_wood',dx:4,win:[3],
@@ -144,16 +173,18 @@ function intAct(o){
   case'storage':lifeOpenStorage();break;
   case'workshop':lifeOpenWorkshop();break;
   case'inn':innOpen();break;
+  case'cafe':innOpen('cafe');break;
+  case'cshop':cshopOpen();break;
   case'bed':if(typeof houseSleep==='function')houseSleep();else{sv();wSay(wL(INT_MSG.bed[0],INT_MSG.bed[1]),3)}break;
   case'msg':{if(o.msg==='harga'){wSay(intPriceMsg(),5);break}if(o.msg==='vendor'){wSay(intVendorMsg(),5);break}const m=INT_MSG[o.msg]||INT_MSG.books;wSay(wL(m[0],m[1]),4);break}
  }
 }
-const INT_LAB={KASIR:['KASIR','CASHIER'],PEDAGANG:['BICARA','TALK'],HARGA:['LIHAT','LOOK'],BERITA:['BACA','READ'],'MEJA DAGANG':['LIHAT','LOOK'],TIMBANGAN:['LIHAT','LOOK'],DAPUR:['DAPUR','KITCHEN'],BELI:['BELI','BUY'],GACHA:['GACHA','GACHA'],PERSIAPAN:['HERO','HEROES'],PETI:['PETI','CHEST'],PETA:['LIHAT','LOOK'],DESA:['DESA','VILLAGE'],PESANAN:['PESANAN','ORDERS'],BUKU:['BACA','READ'],TUNGKU:['LIHAT','LOOK'],LANDASAN:['LIHAT','LOOK'],'MEJA KERJA':['MEJA','BENCH'],MASAK:['MASAK','COOK'],BAHAN:['BAHAN','PANTRY'],ISTIRAHAT:['ISTIRAHAT','REST'],API:['LIHAT','LOOK'],KAYU:['LIHAT','LOOK'],JERAMI:['LIHAT','LOOK'],PANCING:['LIHAT','LOOK'],'TEMPAT TIDUR':['TIDUR','REST'],RAK:['LIHAT','LOOK'],MENU:['MENU','MENU'],PEMILIK:['MENU','MENU'],KELUAR:['KELUAR','EXIT']};
+const INT_LAB={KASIR:['KASIR','CASHIER'],PEDAGANG:['BICARA','TALK'],HARGA:['LIHAT','LOOK'],BERITA:['BACA','READ'],'MEJA DAGANG':['LIHAT','LOOK'],TIMBANGAN:['LIHAT','LOOK'],DAPUR:['DAPUR','KITCHEN'],BELI:['BELI','BUY'],GACHA:['GACHA','GACHA'],PERSIAPAN:['HERO','HEROES'],PETI:['PETI','CHEST'],PETA:['LIHAT','LOOK'],DESA:['DESA','VILLAGE'],PESANAN:['PESANAN','ORDERS'],BUKU:['BACA','READ'],TUNGKU:['LIHAT','LOOK'],LANDASAN:['LIHAT','LOOK'],'MEJA KERJA':['MEJA','BENCH'],MASAK:['MASAK','COOK'],BAHAN:['BAHAN','PANTRY'],ISTIRAHAT:['ISTIRAHAT','REST'],API:['LIHAT','LOOK'],KAYU:['LIHAT','LOOK'],JERAMI:['LIHAT','LOOK'],PANCING:['LIHAT','LOOK'],'TEMPAT TIDUR':['TIDUR','REST'],RAK:['LIHAT','LOOK'],MENU:['MENU','MENU'],PEMILIK:['MENU','MENU'],KULKAS:['LIHAT','LOOK'],KONTER:['LIHAT','LOOK'],BARISTA:['BICARA','TALK'],MEJA:['LIHAT','LOOK'],PENJAGA:['BICARA','TALK'],SOFA:['LIHAT','LOOK'],KELUAR:['KELUAR','EXIT']};
 const intLabel=l=>{const q=INT_LAB[l];return q?wL(q[0],q[1]):l};
-const INT_NAME={KASIR:'CASHIER',PEDAGANG:'VENDOR',HARGA:'PRICE BOARD',BERITA:'NEWS BOARD','MEJA DAGANG':'MARKET STALL',TIMBANGAN:'SCALE',DAPUR:'KITCHEN COUNTER',BELI:'SHOP COUNTER',GACHA:'GACHA',PERSIAPAN:'HERO PREP',PETI:'CHEST',PETA:'MAP',DESA:'VILLAGE TABLE',PESANAN:'ORDERS BOARD',BUKU:'BOOKS',TUNGKU:'FORGE',LANDASAN:'ANVIL','MEJA KERJA':'WORKBENCH',MASAK:'STOVE',BAHAN:'PANTRY',ISTIRAHAT:'BED',API:'FIREPLACE',KAYU:'LOGS',JERAMI:'HAY',PANCING:'FISHING RODS','TEMPAT TIDUR':'BED',RAK:'SHELF',MENU:'MENU',PEMILIK:'INNKEEPER'};
+const INT_NAME={KASIR:'CASHIER',PEDAGANG:'VENDOR',HARGA:'PRICE BOARD',BERITA:'NEWS BOARD','MEJA DAGANG':'MARKET STALL',TIMBANGAN:'SCALE',DAPUR:'KITCHEN COUNTER',BELI:'SHOP COUNTER',GACHA:'GACHA',PERSIAPAN:'HERO PREP',PETI:'CHEST',PETA:'MAP',DESA:'VILLAGE TABLE',PESANAN:'ORDERS BOARD',BUKU:'BOOKS',TUNGKU:'FORGE',LANDASAN:'ANVIL','MEJA KERJA':'WORKBENCH',MASAK:'STOVE',BAHAN:'PANTRY',ISTIRAHAT:'BED',API:'FIREPLACE',KAYU:'LOGS',JERAMI:'HAY',PANCING:'FISHING RODS','TEMPAT TIDUR':'BED',RAK:'SHELF',MENU:'MENU',PEMILIK:'INNKEEPER',KULKAS:'FRIDGE',KONTER:'COUNTER',BARISTA:'BARISTA',MEJA:'TABLE',PENJAGA:'SHOP CLERK',SOFA:'SOFA'};
 const INT_NAME_ID={BAHAN:'LEMARI BAHAN',DAPUR:'LOKET DAPUR',BELI:'KASIR TOKO',PERSIAPAN:'PERSIAPAN HERO',DESA:'MEJA DESA',PESANAN:'PAPAN PESANAN',HARGA:'PAPAN HARGA',BERITA:'PAPAN BERITA',MASAK:'KOMPOR',MENU:'MENU MAKANAN'};
 const intObjName=l=>wL(INT_NAME_ID[l]||l,INT_NAME[l]||l);
-const INT_FUN={cashier:1,market:1,gacha:1,heroes:1,village:1,orders:1,cook:1,storage:1,workshop:1,bed:1,news:1,inn:1};
+const INT_FUN={cashier:1,market:1,gacha:1,heroes:1,village:1,orders:1,cook:1,storage:1,workshop:1,bed:1,news:1,inn:1,cafe:1,cshop:1};
 function intSpark(x,y,a){g.save();g.globalAlpha=a;g.fillStyle='#ffe88a';g.fillRect(x-1,y-4,2,8);g.fillRect(x-4,y-1,8,2);g.fillStyle='#fff';g.fillRect(x-1,y-1,2,2);g.restore()}
 function intCtx(){const n=wI&&intNear();wI&&(wI.near=n);return n?{l:intLabel(n.lab),on:1,f:()=>intAct(n)}:null}
 function intUpdate(dt){
@@ -173,13 +204,13 @@ function intCam(){
  return[Math.round(w.cx),Math.round(w.cy)];
 }
 function intSp(n,cx,by,z,col){
- const r=INT_SPR&&INT_SPR[n];
- if(r&&INT_IM.complete&&INT_IM.naturalWidth>0){g.drawImage(INT_IM,r.x,r.y,r.w,r.h,Math.round(cx-r.w*z/2),Math.round(by-r.h*z),r.w*z,r.h*z);return}
+ const q=intRect(n),r=q&&q[0],im=q&&q[1];
+ if(r&&im.complete&&im.naturalWidth>0){g.drawImage(im,r.x,r.y,r.w,r.h,Math.round(cx-r.w*z/2),Math.round(by-r.h*z),r.w*z,r.h*z);return}
  g.fillStyle=col||'#8c5330';g.fillRect(Math.round(cx-16),Math.round(by-28),32,28);
 }
 function intTile(n,tx,ty,ox,oy,dw,dh){
- const r=INT_SPR&&INT_SPR[n];
- if(r&&INT_IM.complete&&INT_IM.naturalWidth>0){g.drawImage(INT_IM,r.x,r.y,r.w,r.h,ox+tx*WS,oy+ty*WS,dw||WS,dh||WS);return}
+ const q=intRect(n),r=q&&q[0],im=q&&q[1];
+ if(r&&im.complete&&im.naturalWidth>0){g.drawImage(im,r.x,r.y,r.w,r.h,ox+tx*WS,oy+ty*WS,dw||WS,dh||WS);return}
  g.fillStyle=(tx+ty)%2?'#a8693a':'#b87340';g.fillRect(ox+tx*WS,oy+ty*WS,dw||WS,dh||WS);
 }
 function intDraw(){
@@ -188,10 +219,11 @@ function intDraw(){
  for(let y=2;y<r.h-1;y++)for(let x=1;x<r.w-1;x++)intTile(T0.fl[(x*7+y*13)%2],x,y,ox,oy);
  for(let x=1;x<r.w-1;x++)intTile(T0.wl,x,0,ox,oy,WS,WS*2);
  T0.win.forEach(c=>intTile('window',c,0,ox,oy,WS,WS*2));
- for(let y=0;y<r.h;y++){intTile('wall_side',0,y,ox,oy);intTile('wall_side',r.w-1,y,ox,oy)}
- for(let x=1;x<r.w-1;x++)intTile(x==r.dx?'door_gap':'wall_bot',x,r.h-1,ox,oy);
- T0.d.forEach(a=>{const q=INT_SPR&&INT_SPR[a[0]];intSp(a[0],ox+a[1]*WS,oy+a[2]*WS+(q?q.h:16),2)});
- T0.hg.forEach(a=>{const q=INT_SPR&&INT_SPR[a[0]];intSp(a[0],ox+a[1]*WS,oy+a[2]*WS+(q?q.h*2:60)+2,2)});
+ const SD=T0.sd||'wall_side',BT=T0.bt||'wall_bot',DG=T0.dg||'door_gap';
+ for(let y=0;y<r.h;y++){intTile(SD,0,y,ox,oy);intTile(SD,r.w-1,y,ox,oy)}
+ for(let x=1;x<r.w-1;x++)intTile(x==r.dx?DG:BT,x,r.h-1,ox,oy);
+ T0.d.forEach(a=>{const q=(intRect(a[0])||[])[0];intSp(a[0],ox+a[1]*WS,oy+a[2]*WS+(q?q.h:16),2)});
+ T0.hg.forEach(a=>{const q=(intRect(a[0])||[])[0];intSp(a[0],ox+a[1]*WS,oy+a[2]*WS+(q?q.h*2:60)+2,2)});
  const items=[];
  r.objs.forEach(o=>items.push({y:(o.y+o.fh)*WS,f:()=>intSp(o.s,ox+(o.x+o.fw/2)*WS,oy+(o.y+o.fh)*WS,2)}));
  items.push({y:w.y,f:()=>{const px=ox+w.x,py=oy+w.y;
@@ -202,7 +234,7 @@ function intDraw(){
  if(T0.gl.length){const old=g.globalCompositeOperation;g.globalCompositeOperation='lighter';T0.gl.forEach(a=>{const cx=ox+a[0]*WS,cy=oy+a[1]*WS,q=g.createRadialGradient(cx,cy,2,cx,cy,a[2]*fl);q.addColorStop(0,'rgba(255,170,80,.34)');q.addColorStop(1,'rgba(255,120,40,0)');g.fillStyle=q;g.fillRect(cx-a[2],cy-a[2],a[2]*2,a[2]*2)});g.globalCompositeOperation=old}
  const vg=g.createRadialGradient(320,160,120,320,160,420);vg.addColorStop(0,'rgba(0,0,0,0)');vg.addColorStop(1,'rgba(0,0,0,.38)');g.fillStyle=vg;g.fillRect(-OX,0,VW,312);
  r.objs.forEach((o,k)=>{if(!o.act||!INT_FUN[o.act]||o===w.near)return;intSpark(ox+(o.x+o.fw)*WS-4,oy+o.y*WS+2,.3+.5*Math.max(0,Math.sin(intT*3+k*1.7)))});
- const n=w.near;if(n&&!n.exit){const q=n,sp=INT_SPR&&INT_SPR[q.s],sw=(sp?sp.w:q.fw*16)*2,sh=(sp?sp.h:28)*2,cx=ox+(q.x+q.fw/2)*WS,bot=oy+(q.y+q.fh)*WS,x0=Math.round(cx-sw/2)-3,y0=Math.round(bot-sh)-3,x1=x0+sw+6,y1=Math.round(bot)+3,pa=.6+.35*Math.sin(intT*8);
+ const n=w.near;if(n&&!n.exit){const q=n,sp=(intRect(q.s)||[])[0],sw=(sp?sp.w:q.fw*16)*2,sh=(sp?sp.h:28)*2,cx=ox+(q.x+q.fw/2)*WS,bot=oy+(q.y+q.fh)*WS,x0=Math.round(cx-sw/2)-3,y0=Math.round(bot-sh)-3,x1=x0+sw+6,y1=Math.round(bot)+3,pa=.6+.35*Math.sin(intT*8);
   g.strokeStyle='rgba(255,226,120,'+pa.toFixed(2)+')';g.lineWidth=2;[[x0,y0,1,1],[x1,y0,-1,1],[x0,y1,-1*-1,-1],[x1,y1,-1,-1]].forEach(c=>{g.beginPath();g.moveTo(c[0],c[1]+c[3]*8);g.lineTo(c[0],c[1]);g.lineTo(c[0]+c[2]*8,c[1]);g.stroke()});
   const nm=intObjName(q.lab);g.font='bold 10px monospace';const tw=Math.ceil(g.measureText(nm).width)+14,ty=Math.max(40,y0-16+Math.sin(intT*5)),tx=Math.max(4,Math.min(636-tw,Math.round(cx-tw/2)));
   g.fillStyle='rgba(10,8,18,.9)';g.fillRect(tx,ty,tw,15);g.strokeStyle='#e6c45a';g.lineWidth=1;g.strokeRect(tx+.5,ty+.5,tw-1,14);T(nm,tx+tw/2,ty+11,'#fe8',10,'center');

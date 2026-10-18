@@ -19,13 +19,26 @@ const NPCS=[
 {id:'youth',h:'squire',tx:28,ty:24,roam:1,ambient:1,sp:15,n:['Pemuda Desa','Village Youth'],g:[['Aku mau latihan pedang, tapi kayuku patah.','I want to practice swordplay, but my stick broke.'],['Suatu hari aku juga mau jadi hero!','One day I want to be a hero too!'],['Katanya Menara Harian berubah tiap hari. Seru!','They say the Daily Tower changes every day. Cool!']]},
 {id:'aunt',h:'ranger',tx:40,ty:23,roam:1,ambient:1,sp:15,n:['Bibi','Auntie'],g:[['Aduh, belanjaanku banyak sekali hari ini.','Oh my, I have so much shopping today.'],['Sayurnya segar-segar dari ladang desa.','The vegetables are fresh from the village field.'],['Mampir ke rumah kalau lewat, ya.','Drop by my house if you pass.']]},
 {id:'uncle',h:'spearman',tx:22,ty:32,roam:1,ambient:1,sp:15,n:['Paman','Uncle'],g:[['Jalan sore itu menyehatkan. Kamu juga coba.','An evening walk is healthy. You should try it.'],['Aku lagi mikir mau mancing atau tidur siang.','I am deciding between fishing and a nap.'],['Desa ini aman selama ada kamu.','The village is safe as long as you are here.']]},
-{id:'toddler',h:'hunter',tx:52,ty:14,roam:1,ambient:1,sp:15,n:['Anak Kecil','Little Kid'],g:[['Lihat, ada kupu-kupu!','Look, a butterfly!'],['Aku bisa lari cepat. Mau lomba?','I can run fast. Race me?'],['Ibu bilang jangan jauh-jauh dari rumah.','Mom said not to go far from home.']]}];
+{id:'toddler',h:'hunter',tx:52,ty:14,roam:1,ambient:1,sp:15,n:['Anak Kecil','Little Kid'],g:[['Lihat, ada kupu-kupu!','Look, a butterfly!'],['Aku bisa lari cepat. Mau lomba?','I can run fast. Race me?'],['Ibu bilang jangan jauh-jauh dari rumah.','Mom said not to go far from home.']]},
+/* Kota Kecil (js/city.js): area:'city' = hanya ada di kota (tx,ty = tile PETA KOTA, bukan desa); static:1 = berdiri diam sepanjang hari. Digambar city.js dari atlas city_tiles. */
+{id:'fox',h:'ranger',area:'city',static:1,tx:25,ty:13,n:['Rubah Komuter','Commuter Fox']},
+/* Warga kota berjadwal (Batch 9B-27): plan = [jamMulai,jamSelesai,tileX,tileY] per blok (tile PETA KOTA); mi = karakter atlas mi_chars (LimeZu), h = hero cadangan saat ?mi=0.
+   say[i] = baris pembuka blok i, g = dialog umum. Berjalan antar blok lewat BFS (city.js cityNpcStep); di luar jam blok pertama..terakhir NPC pulang. */
+{id:'adam',h:'squire',mi:'adam',area:'city',tx:11,ty:13,sp:40,n:['Petugas Kota','City Officer'],plan:[[6,12,11,13],[12,20,27,15]],
+say:[['Pagi. Aku berjaga di zebra cross barat supaya warga menyeberang dengan aman.','Morning. I watch the west crosswalk so people cross safely.'],['Siang begini aku pindah ke timur, dekat persimpangan yang ramai.','At this hour I move east, near the busy junction.']],
+g:[['Lampu lalu lintas itu baru dipasang. Tunggu hijau, ya.','Those traffic lights are brand new. Wait for green.'],['Kota ini kecil, tapi aturannya tetap sama dengan kota besar.','This city is small, but the rules are the same as in a big one.']]},
+{id:'alex',h:'monk',mi:'alex',area:'city',tx:9,ty:15,sp:40,n:['Pembaca Koran','Newspaper Reader'],plan:[[6,13,9,15],[13,20,27,13]],
+say:[['Bangku barat ini paling enak buat baca koran pagi.','This west bench is the best for the morning paper.'],['Sore aku pindah ke bangku timur. Anginnya lebih sejuk di sini.','In the afternoon I move to the east bench. The breeze is cooler here.']],
+g:[['Berita hari ini: desa sebelah punya dermaga baru untuk para nelayan.','Today\'s news: the village next door has a new dock for its fishermen.'],['Koran ini terbit tiap hari, tapi beritanya jarang berubah.','This paper comes out daily, but the news rarely changes.']]},
+{id:'amelia',h:'apprentice',mi:'amelia',area:'city',tx:19,ty:3,sp:40,n:['Pelari Pagi','Morning Jogger'],plan:[[6,13,19,3],[13,20,19,25]],
+say:[['Aku sedang pemanasan di trotoar utara sebelum lari.','I am warming up on the north sidewalk before my run.'],['Sore aku berlari di trotoar selatan. Jalurnya lurus dan sepi.','In the afternoon I run on the south sidewalk. The path is straight and quiet.']],
+g:[['Lari itu murah dan menyehatkan. Kamu juga coba.','Running is cheap and healthy. You should try it.'],['Dari gerbang desa sampai sini kira-kira lima menit lari.','From the village gate to here is about five minutes at a run.']]}];
 const NB={R:['Barak','the Barracks'],F:['Ladang','the Field'],Q:['Papan Misi','the Quest Board']};
 /* posisi runtime (px,py) = rumah (tx,ty) + berkeliling pendek. wUseV() menimpa tx,ty -> npcSync mereset posisi. */
 function npcSync(o){const k=o.tx+','+o.ty;if(o._k!==k){o._k=k;o.px=o.tx*WS+WS/2;o.py=o.ty*WS+26;o.mode='wait';o.wt=1+Math.random()*3;o.vx=o.vy=0;o.gx=o.gy=0}}
 const npcX=o=>(npcSync(o),o.px),npcY=o=>(npcSync(o),o.py);
 /* Jadwal harian dari lifeHour() (life.js): jam NPCDAY[0]..NPCDAY[1]-1 NPC ada di desa; di luar itu pulang (tak tampil, tak menghalangi, tak bisa diajak bicara) dan paginya muncul lagi di rumah. */
-const NPCDAY=[6,20],npcAwake=o=>{const h=typeof lifeHour=='function'?lifeHour():9;return h>=NPCDAY[0]&&h<NPCDAY[1]};
+const NPCDAY=[6,20],npcHour=()=>typeof lifeHour=='function'?lifeHour():9,npcPlanBlock=(o,h)=>{let b=0;o.plan.forEach((p,i)=>{if(h>=p[0])b=i});return b},npcAwake=o=>{if((o.area||'')!==(typeof cityNpcArea=='function'?cityNpcArea():''))return false;if(o.plan){const h=npcHour();return h>=o.plan[0][0]&&h<o.plan[o.plan.length-1][1]}if(o.area)return true;const h=typeof lifeHour=='function'?lifeHour():9;return h>=NPCDAY[0]&&h<NPCDAY[1]};
 const NPCR=WS*2,NPCSP=28,NPCV=[3,5,60,42]; /* NPCV = batas desa (tile x0,y0,x1,y1) untuk NPC roam:1 */
 function npcAc(o){if(o.ac===undefined)o.ac=typeof Anim!='undefined'?new Anim.Actor('npc_'+o.id):null;return o.ac}
 const npcOk=(x,y)=>!(wSolid(x-WFH,y-WFV)||wSolid(x+WFH,y-WFV)||wSolid(x-WFH,y)||wSolid(x+WFH,y));
@@ -71,7 +84,7 @@ const nd=Math.sin(tt*7)*5;g.strokeStyle='#fff';g.lineWidth=2;g.beginPath();g.mov
 function npcBoatDraw(o,cx,cy,py,pass){if(o.bx===undefined)npcFisherHome(o);const rid=o.aboard&&npcAwake(o),ay=rid?o.py:o.by;if((pass==0)!=(ay<=py))return;
 const sx=o.bx-cx-OX,sy=o.by-cy;if(sx<-70-OX||sx>VW+70||sy<-40||sy>400||!NPCBT||!NPCBT.complete||!NPCBT.naturalWidth)return;
 const fr=Math.floor(performance.now()/450)%2,old=g.imageSmoothingEnabled;g.imageSmoothingEnabled=false;g.save();g.translate(sx,sy);if(o.bf<0)g.scale(-1,1);g.drawImage(NPCBT,fr*24,0,24,13,-24,-20,48,26);g.restore();g.imageSmoothingEnabled=old}
-function npcUpdate(dt){const w=S.world;if(!w)return;NPCS.forEach(o=>{if(!npcAwake(o)){o.gone=1;if(o.sched=='fisher')npcFisherHome(o);return}if(o.gone){o.gone=0;o._k=null}npcSync(o);if(o.sched=='fisher'){npcFisher(o,dt,wTalk&&wTalk.o===o);return}const ac=npcAc(o),hx=o.tx*WS+WS/2,hy=o.ty*WS+26;let vx=0,vy=0;
+function npcUpdate(dt){const w=S.world;if(!w)return;NPCS.forEach(o=>{if(!npcAwake(o)){o.gone=1;if(o.sched=='fisher')npcFisherHome(o);return}if(o.gone){o.gone=0;o._k=null}npcSync(o);if(o.static)return;if(o.sched=='fisher'){npcFisher(o,dt,wTalk&&wTalk.o===o);return}const ac=npcAc(o),hx=o.tx*WS+WS/2,hy=o.ty*WS+26;let vx=0,vy=0;
 const talk=wTalk&&wTalk.o===o,near=Math.abs(w.x-o.px)<44&&Math.abs(w.y-o.py)<34;
 if(talk||wDlg){o.mode='wait';o.wt=Math.max(o.wt,1.5)}
 else if(o.mode=='wait'){o.wt-=dt;if(o.wt<=0){if(near){o.wt=1}else{const a=Math.random()*7,rm=!!o.roam,r=rm?(3+Math.random()*7)*WS:(.4+Math.random()*.6)*NPCR,bx=rm?o.px:hx,by=rm?o.py:hy,gx=bx+Math.cos(a)*r,gy=by+Math.sin(a)*r*(rm?1:.7);let ok=npcOk(gx,gy)&&Math.hypot(gx-w.x,gy-w.y)>40&&(!rm||gx>=NPCV[0]*WS&&gx<=NPCV[2]*WS&&gy>=NPCV[1]*WS&&gy<=NPCV[3]*WS);
@@ -83,6 +96,7 @@ if(ac){ac.update(vx,vy);if(talk)ac.face(w.x-o.px,w.y-o.py)}})}
 function npcHit(x,y){for(const o of NPCS)if(npcAwake(o)&&Math.abs(x-npcX(o))<15&&Math.abs(y-npcY(o))<10)return true;return false}
 function npcNear(px,py){let b=null,bd=34;for(const o of NPCS){if(!npcAwake(o))continue;const d=Math.hypot(px-npcX(o),py-npcY(o));if(d<bd){bd=d;b=o}}return b}
 function npcLines(o){const b=best,r=[];
+if(o.plan){const bi=npcPlanBlock(o,npcHour());return[wL(o.say[bi][0],o.say[bi][1])].concat(o.g.map(l=>wL(l[0],l[1])))}
 if(o.ambient){const l=o.g[Math.floor(Math.random()*o.g.length)];return[wL(l[0],l[1])]}
 if(o.id=='guard'){r.push(wL('Halo, selamat datang. Gerbang ini menuju medan pertempuran.','Hi, welcome. This gate leads to the battlefield.'));
 r.push(b>0?wL('Rekormu stage '+b+'. Teruslah maju!','Your record is stage '+b+'. Keep going!'):wL('Belum pernah bertarung? Mulai dari Stage 1.','Not fought yet? Start from Stage 1.'));
@@ -106,6 +120,9 @@ r.push(b>0?wL('Rekor stage '+b+'? Lumayan. Besi di medan perang tidak pernah hab
 else if(o.id=='healer'){r.push(wL('Selamat datang. Aku meracik ramuan dari tanaman desa ini.','Welcome. I brew potions from the plants of this village.'));
 r.push(wL('Istirahat yang cukup lebih manjur daripada ramuan apa pun.','A good rest works better than any potion.'));
 r.push(wSn?wL('Dingin begini mudah sakit. Pakai baju hangat, ya.','This cold makes people sick easily. Dress warmly.'):wL('Cuaca cerah, waktu yang baik untuk mencari tanaman obat.','Fine weather, a good time to look for medicinal herbs.'))}
+else if(o.id=='fox'){r.push(wL('Halo! Aku rubah komuter. Tiap pagi aku berangkat ke kota lewat gerbang desa.','Hi! I am the commuter fox. Every morning I head into the city through the village gate.'));
+r.push(wL('Lampu lalu lintas itu lucu: merah, kuning, hijau. Aku selalu menunggu hijau sebelum menyeberang di zebra cross.','Traffic lights are funny: red, yellow, green. I always wait for green before using the zebra crossing.'));
+r.push(wL('Bangku ini tempat istirahat favoritku. Hati-hati di jalan, ya!','This bench is my favorite resting spot. Safe travels!'))}
 else if(o.id=='innkeeper'){r.push(wL('Selamat datang di penginapan. Kamar hangat selalu siap untuk petualang.','Welcome to the inn. A warm room is always ready for adventurers.'));
 r.push(wL('Banyak pelancong lewat sini. Kabar dari gerbang selalu sampai duluan di mejaku.','Many travelers pass through. News from the gate always reaches my table first.'));
 r.push(wL('Lelah bertarung? Duduk sebentar, nikmati desanya.','Tired from fighting? Sit a while and enjoy the village.'));
@@ -164,21 +181,41 @@ function healerBuffSum(){let a=0,h=0;const m=S.buff;if(m&&m.stages>0){a+=Math.mi
 /* PENGINAPAN (Step 12): menjual masakan buff dari LIFE_RECIPES tanpa bahan. Stok harian per hidangan (reset saat today() berganti, tersimpan di S.inn).
    Efeknya sama persis dengan lifeCook (S.buff, bonus tiap stat maks 10%, ikut batas gabungan 15% di healerBuffSum). Harga PLACEHOLDER = 60 + (atk+hp)*500 + stage*15. */
 const INN_STOCK=3;
-const innPrice=r=>Math.round(60+(r.atk+r.hp)*500+r.stages*15);
+/* Kedai bervenue: 'inn' = Penginapan desa (harga dasar, stok 3/hari); 'cafe' = Kafe Kota (harga +25%, stok 2/hari, stok terpisah 'cafe:<id>').
+   Stok harian dua-duanya di S.inn.sold (satu objek, reset tiap hari). Default semua fungsi = 'inn' agar perilaku lama tidak berubah. */
+const INNV={inn:{k:'',mult:1,stock:3,t:['PENGINAPAN DESA','VILLAGE INN']},cafe:{k:'cafe:',mult:1.25,stock:2,t:['KAFE KOTA','CITY CAFE']}};
+let innV='inn';
+const innVen=v=>INNV[v]||INNV.inn;
+const innPrice=(r,v)=>Math.round((60+(r.atk+r.hp)*500+r.stages*15)*innVen(v).mult);
 function innEnsure(){const d=today();if(!S.inn||typeof S.inn!=='object'||S.inn.d!==d)S.inn={d,sold:{}};if(!S.inn.sold||typeof S.inn.sold!=='object')S.inn.sold={}}
-function innLeft(id){innEnsure();return Math.max(0,INN_STOCK-(S.inn.sold[id]|0))}
-function innBuy(id){innEnsure();const r=LIFE_RECIPES.find(q=>q.id===id);if(!r)return'none';
-if(innLeft(id)<=0){say(smithL('Hidangan ini habis hari ini.','Sold out for today.'));return'stock'}
+function innLeft(id,v){innEnsure();const V=innVen(v);return Math.max(0,V.stock-(S.inn.sold[V.k+id]|0))}
+function innBuy(id,v){innEnsure();const V=innVen(v),r=LIFE_RECIPES.find(q=>q.id===id);if(!r)return'none';
+if(innLeft(id,v)<=0){say(smithL('Hidangan ini habis hari ini.','Sold out for today.'));return'stock'}
 if(S.buff&&S.buff.id===id&&S.buff.stages>0){say(smithL('Masakan itu masih aktif.','That dish is still active.'));return'active'}
-const g=innPrice(r);if(S.g<g){say(smithL('Emas tidak cukup','Not enough gold'));return'gold'}
-S.g-=g;S.inn.sold[id]=(S.inn.sold[id]|0)+1;S.buff={id:r.id,name:r.name,en:r.en,atk:Math.min(.10,r.atk),hp:Math.min(.10,r.hp),stages:r.stages,lastStage:null};sv();sfx('heal');
+const g=innPrice(r,v);if(S.g<g){say(smithL('Emas tidak cukup','Not enough gold'));return'gold'}
+S.g-=g;S.inn.sold[V.k+id]=(S.inn.sold[V.k+id]|0)+1;S.buff={id:r.id,name:r.name,en:r.en,atk:Math.min(.10,r.atk),hp:Math.min(.10,r.hp),stages:r.stages,lastStage:null};sv();sfx('heal');
 say(smithL('Masakan aktif: '+r.name+' ('+r.stages+' stage)','Dish active: '+r.en+' ('+r.stages+' stages)'));return'ok'}
-function innOpen(){innEnsure();if(st==='world')wFrom=1;if(typeof lifeWorldQuick!='undefined')lifeWorldQuick=false;st='inn';sv()}
-function innRows(){innEnsure();return LIFE_RECIPES.map(r=>{const left=innLeft(r.id),g=innPrice(r),act=!!(S.buff&&S.buff.id===r.id&&S.buff.stages>0);return{k:r.id,t:smithL(r.name,r.en),d:r.desc+' · '+r.stages+smithL(' stage',' stages')+' · '+smithL('Sisa ','Left ')+left+'/'+INN_STOCK,g,act,left,ok:left>0&&!act&&S.g>=g}})}
-function innDraw(){const R=innRows(),b=S.buff&&S.buff.stages>0?S.buff:null;ov(.94);btn(6,5,76,28,'KEMBALI');T(smithL('PENGINAPAN DESA','VILLAGE INN'),95,25,'#fc4',17);
+function innOpen(v){innEnsure();innV=INNV[v]?v:'inn';if(st==='world')wFrom=1;if(typeof lifeWorldQuick!='undefined')lifeWorldQuick=false;st='inn';sv()}
+function innRows(v){innEnsure();const V=innVen(v);return LIFE_RECIPES.map(r=>{const left=innLeft(r.id,v),g=innPrice(r,v),act=!!(S.buff&&S.buff.id===r.id&&S.buff.stages>0);return{k:r.id,t:smithL(r.name,r.en),d:r.desc+' · '+r.stages+smithL(' stage',' stages')+' · '+smithL('Sisa ','Left ')+left+'/'+V.stock,s:r.desc.replace(' / ',' · ')+' · '+r.stages+smithL(' stage',' stages'),max:V.stock,g,act,left,ok:left>0&&!act&&S.g>=g}})}
+function innDraw(){const R=innRows(innV),b=S.buff&&S.buff.stages>0?S.buff:null;ov(.94);btn(6,5,76,28,'KEMBALI');T(smithL(innVen(innV).t[0],innVen(innV).t[1]),95,25,'#fc4',17);
 T(smithL('Emas ','Gold ')+S.g+(b?'  ·  '+smithL('Aktif: ','Active: ')+smithL(b.name,b.en||b.name)+' '+b.stages:''),320,50,'#cde',10,'center');
-R.forEach((r,i)=>{const y=62+i*48;card(20,y,600,42,'#f7c45c',r.ok);T(r.t,32,y+17,'#fff',11);T(r.d+' · '+r.g+smithL(' emas',' gold'),32,y+33,'#9cf',9);btn(500,y+8,112,26,r.act?smithL('AKTIF','ACTIVE'):r.left<=0?smithL('HABIS','SOLD OUT'):smithL('BELI','BUY'),r.ok)})}
-function innClick(x,y){if(y<34&&x<85){goBack();return}innRows().forEach((r,i)=>{const y0=62+i*48;if(x>=500&&x<=612&&y>=y0+8&&y<=y0+34)innBuy(r.k)})}
+R.forEach((r,i)=>{const y=62+i*48;card(20,y,600,42,'#f7c45c',r.ok);dishIcon(r.k,28,y+5,32);T(r.t,70,y+17,'#fff',11);T(r.s,70,y+33,'#9cf',9);T(r.g+smithL(' emas',' gold'),490,y+17,'#fc4',11,'right');T(smithL('Sisa ','Left ')+r.left+'/'+r.max,490,y+33,'#9ab',9,'right');btn(500,y+8,112,26,r.act?smithL('AKTIF','ACTIVE'):r.left<=0?smithL('HABIS','SOLD OUT'):smithL('BELI','BUY'),r.ok)})}
+function innClick(x,y){if(y<34&&x<85){goBack();return}innRows(innV).forEach((r,i)=>{const y0=62+i*48;if(x>=500&&x<=612&&y>=y0+8&&y<=y0+34)innBuy(r.k,innV)})}
+/* Toko Kota (Step 10): menjual Umpan Langka (S.fish.bait, dipakai saat memancing) - barang yang tidak ada di toko desa. Batas harian CSHOP_CAP, stok di S.cshop.
+   Harga/jumlah = PLACEHOLDER keseimbangan sampai diuji bermain. */
+const CSHOP_BAIT={g:90,cap:5};
+function cshopEnsure(){const d=today();if(!S.cshop||typeof S.cshop!=='object'||S.cshop.d!==d)S.cshop={d,bait:0};S.cshop.bait=Math.max(0,S.cshop.bait|0)}
+const cshopLeft=()=>{cshopEnsure();return Math.max(0,CSHOP_BAIT.cap-S.cshop.bait)};
+function cshopBuy(){cshopEnsure();if(cshopLeft()<=0){say(smithL('Umpan habis hari ini.','Bait sold out for today.'));return'stock'}
+if(S.g<CSHOP_BAIT.g){say(smithL('Emas tidak cukup','Not enough gold'));return'gold'}
+if(!S.fish||typeof S.fish!=='object')lifeEnsure();S.g-=CSHOP_BAIT.g;S.cshop.bait++;S.fish.bait=(S.fish.bait|0)+1;sv();sfx('coin');
+say(smithL('Umpan Langka +1 (punya '+S.fish.bait+')','Rare Bait +1 (you have '+S.fish.bait+')'));return'ok'}
+function cshopOpen(){cshopEnsure();lifeEnsure();if(st==='world')wFrom=1;if(typeof lifeWorldQuick!='undefined')lifeWorldQuick=false;st='cshop';sv()}
+function cshopRow(){const left=cshopLeft();return{left,g:CSHOP_BAIT.g,ok:left>0&&S.g>=CSHOP_BAIT.g}}
+function cshopDraw(){const r=cshopRow();ov(.94);btn(6,5,76,28,'KEMBALI');T(smithL('TOKO KOTA','CITY SHOP'),95,25,'#fc4',17);
+T(smithL('Emas ','Gold ')+S.g+'  ·  '+smithL('Umpan Langka: ','Rare Bait: ')+((S.fish&&S.fish.bait)|0),320,50,'#cde',10,'center');
+const y=62;card(20,y,600,42,'#f7c45c',r.ok);dishIcon('bait',28,y+5,32);T(smithL('Umpan Langka','Rare Bait'),70,y+17,'#fff',11);T(smithL('Peluang ikan langka naik saat memancing','Better rare-fish odds when fishing'),70,y+33,'#9cf',9);T(r.g+smithL(' emas',' gold'),490,y+17,'#fc4',11,'right');T(smithL('Sisa ','Left ')+r.left+'/'+CSHOP_BAIT.cap,490,y+33,'#9ab',9,'right');btn(500,y+8,112,26,r.left<=0?smithL('HABIS','SOLD OUT'):smithL('BELI','BUY'),r.ok)}
+function cshopClick(x,y){if(y<34&&x<85){goBack();return}if(x>=500&&x<=612&&y>=70&&y<=96)cshopBuy()}
 function healerOpen(){healerEnsure();if(st==='world')wFrom=1;if(typeof lifeWorldQuick!='undefined')lifeWorldQuick=false;st='healer';sv()}
 function healerRows(){healerEnsure();const A=S.ail,c=[['poison',smithL('Sembuhkan Racun','Cure Poison'),A.poison>0],['burn',smithL('Sembuhkan Luka Bakar','Cure Burn'),A.burn>0]].map(r=>({k:r[0],t:r[1],d:r[2]?smithL('Sakit: ','Afflicted: ')+A[r[0]]+smithL(' stage',' stages'):smithL('Sehat','Healthy'),g:HEALER_CURE,ok:r[2]&&S.g>=HEALER_CURE}));return c.concat(HEALER_BUFFS.map(b=>({k:b.id,buff:1,t:smithL(b.n[0],b.n[1]),d:(b.atk?'ATK +'+Math.round(b.atk*100)+'% ':'')+(b.hp?'HP +'+Math.round(b.hp*100)+'% ':'')+'· '+b.stages+smithL(' stage',' stages'),g:b.g,ok:S.g>=b.g})))}
 function healerDraw(){const R=healerRows(),t=S.tonic;ov(.94);btn(6,5,76,28,'KEMBALI');T(smithL('TABIB DESA','VILLAGE HEALER'),95,25,'#fc4',17);

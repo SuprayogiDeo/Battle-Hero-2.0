@@ -10,6 +10,12 @@ const CITY_IM=typeof Image==='function'?Object.assign(new Image(),{src:CITY_DIR+
 /* Sprite warga kota dari atlas Modern Interiors (LimeZu, versi GRATIS = NON-KOMERSIAL). Pemilik memastikan proyek ini pribadi dan non-komersial, jadi aktif secara default;
  ?mi=0 mematikannya (NPC memakai sprite hero cadangan o.h, tanpa fetch/Image atlas). Bila proyek kelak dipublikasikan/dikomersialkan: set CITY_MI_DEFAULT=false dan hapus mi_chars.* */
 const CITY_MI_DEFAULT=true;
+/* Bangunan kota (Step 8): bx,by,bw,bh = badan gedung (tile peta kota, SOLID); pintu = tile di bawah tengah-bawah gedung (dx, by+bh); tpl = templat interior (interior.js INT_T).
+ Gedung luar digambar kode (kotak sederhana, sementara) karena paket sampler tidak punya gedung; interior memakai sprite Modern Interiors (atlas mi_interior). */
+const CITY_B=[
+{id:'kafe',tpl:'ccafe',bx:3,by:2,bw:6,bh:3,dx:5,col:['#c9d6df','#8fa3b3','#3fa7a0'],n:['KAFE KOTA','CITY CAFE']},
+{id:'toko_kota',tpl:'cshop',bx:26,by:2,bw:6,bh:3,dx:28,col:['#e8d9a8','#b79d55','#c2563b'],n:['TOKO KOTA','CITY SHOP']},
+{id:'apartemen',tpl:'capt',bx:24,by:18,bw:7,bh:4,dx:27,col:['#d7b9a6','#9c7560','#5879b8'],n:['APARTEMEN','APARTMENT']}];
 let wC=null,cityD=null,cityLoading=0,cityFailAt=0,cityMiS=null;
 function cityMiOn(){try{const q=(typeof location!=='undefined'&&location.search)||'';if(/[?&]mi=0(?:[&#]|$)/.test(q))return false;return CITY_MI_DEFAULT||/[?&]mi=1(?:[&#]|$)/.test(q)}catch(e){return false}}
 function cityMiStart(){
@@ -23,6 +29,7 @@ function cityInstall(idx,chunks,atlas){
  try{
   const W=idx.w,H=idx.h,ground=new Uint8Array(W*H),col=new Uint8Array(W*H).fill(1),props=[];
   chunks.forEach(c=>{for(let y=0;y<c.h;y++)for(let x=0;x<c.w;x++){const i=(c.y+y)*W+c.x+x;ground[i]=c.layers.ground[y*c.w+x];col[i]=c.layers.collision[y*c.w+x]}c.objects.forEach(o=>props.push(o))});
+  CITY_B.forEach(b=>{for(let y=b.by;y<b.by+b.bh;y++)for(let x=b.bx;x<b.bx+b.bw;x++)if(x>=0&&y>=0&&x<W&&y<H)col[y*W+x]=1});
   props.sort((a,b)=>(a.y+a.fh)-(b.y+b.fh)||a.x-b.x);
   cityD={idx:idx,W:W,H:H,ground:ground,col:col,props:props,chunks:chunks,rects:atlas.entries,cv:{}};return true;
  }catch(e){cityD=null;return false}
@@ -62,17 +69,29 @@ const cityGateXY=()=>[CITY_GATE.x*WS+WS/2,CITY_GATE.y*WS+WS/2+8];
 function cityGateNear(){if(wC||wI||!S.world)return false;const p=cityGateXY();return Math.abs(S.world.x-p[0])<=48&&Math.abs(S.world.y-p[1])<=60}
 const cityRetY=()=>cityD?cityD.idx.gates.return.tile[1]*WS+26:0;
 function cityExitNear(){if(!wC||!cityD)return false;const g=cityD.idx.gates.return;return wC.x<=(g.tile[0]+1+g.zone)*WS&&Math.abs(wC.y-cityRetY())<=48}
-function cityNear(){if(!wC)return null;if(cityExitNear())return{exit:1,l:wL('DESA','VILLAGE')};const o=self.npcNear?npcNear(wC.x,wC.y):null;return o?{npc:o,l:wL('BICARA','TALK')}:null}
+const cityDoorXY=b=>[b.dx*WS+WS/2,(b.by+b.bh)*WS+26];
+function cityDoorNear(){if(!wC)return null;for(const b of CITY_B){const p=cityDoorXY(b);if(Math.abs(wC.x-p[0])<=30&&Math.abs(wC.y-p[1])<=34)return b}return null}
+function cityNear(){if(!wC)return null;if(cityExitNear())return{exit:1,l:wL('DESA','VILLAGE')};const bd=cityDoorNear();if(bd)return{door:bd,l:wL('MASUK','ENTER')};const o=self.npcNear?npcNear(wC.x,wC.y):null;return o?{npc:o,l:wL('BICARA','TALK')}:null}
 function cityEnter(){
  if(wC||wFade)return;if(!cityD){cityLoad();wSay(wL('Kota sedang dimuat. Coba lagi sebentar.','Loading the city. Try again in a moment.'),2.5);sfx('click');return}
- cityMiStart();const back={x:S.world.x,y:S.world.y,tool:S.hb&&Number.isFinite(S.hb.sel)?S.hb.sel:0};
+ cityMiStart();miIntStart();const back={x:S.world.x,y:S.world.y,tool:S.hb&&Number.isFinite(S.hb.sel)?S.hb.sel:0};
  intFade(()=>{const sp=cityD.idx.spawn;wC={x:sp[0]*WS+WS/2,y:sp[1]*WS+26,cx:null,cy:null,near:null,t:0,returnPos:back};wjid=null;wjx=wjy=0;NPCS.forEach(o=>{if(o.plan){o._blk=undefined;o.path=null}});wNear=null;wNpc=null;wPlace=null;wTalk=null;sv();sfx('click');wSay(wL('Selamat datang di Kota Kecil','Welcome to Little City'),3)});
 }
 function cityExit(){
  if(!wC||wFade)return;const back=wC.returnPos;
  intFade(()=>{wC=null;if(S.world){S.world.x=CITY_LAND.x*WS+WS/2;S.world.y=CITY_LAND.y*WS+WS/2+8;if(back&&S.hb)S.hb.sel=back.tool}wcx=null;wjid=null;wjx=wjy=0;wHint=0;wTalk=null;wNpc=null;sv();sfx('click')});
 }
-function cityAct(n){if(n.exit){cityExit();return}if(n.npc){sfx('click');npcStart(n.npc)}}
+/* masuk gedung kota: wC dilepas (interior memakai wI), posisi kota disimpan di returnPos.city; intExit (dibungkus di bawah) memulihkan wC. S.world tetap titik desa => simpan/muat di dalam aman. */
+function cityEnterB(b){
+ if(!wC||wFade||wI)return;const back={x:S.world.x,y:S.world.y,tool:S.hb&&Number.isFinite(S.hb.sel)?S.hb.sel:0,city:{x:cityDoorXY(b)[0],y:cityDoorXY(b)[1]}},room=intCompile(b);miIntStart();
+ intFade(()=>{wC=null;wI={b:b,room:room,x:room.sx,y:room.sy,near:null,cx:null,cy:null,returnPos:back};wjid=null;wjx=wjy=0;wNear=null;wNpc=null;wPlace=null;wTalk=null;sv();sfx('click')});
+}
+const _cityIntExit=intExit;
+intExit=function(){
+ const back=wI&&wI.returnPos;if(!(back&&back.city))return _cityIntExit();
+ intFade(()=>{wI=null;wC={x:back.city.x,y:back.city.y,cx:null,cy:null,near:null,t:0,returnPos:{x:back.x,y:back.y,tool:back.tool}};if(S.hb)S.hb.sel=back.tool;wjid=null;wjx=wjy=0;wHint=0;wNear=null;wNpc=null;wPlace=null;wTalk=null;sv();sfx('click')});
+};
+function cityAct(n){if(n.exit){cityExit();return}if(n.door){cityEnterB(n.door);return}if(n.npc){sfx('click');npcStart(n.npc)}}
 /* ---------- gambar ---------- */
 const CITY_FB={grass:'#4ec41a',sidewalk:'#c8c8c8',cross:'#e6e6f0',road:'#343a4c'};
 function cityChunkCanvas(c){
@@ -101,6 +120,17 @@ function cityNpcDraw(o,k,sx,sy){
  else{const d=HEROES[HID[o.h]],im=d&&IM[d.s],ok=im&&im.complete&&im.naturalWidth;g.save();g.translate(sx,sy);if(w.x<npcX(o))g.scale(-1,1);if(ok)spr(d.s,0,0,2,-bob);else{g.fillStyle=d?RC[d.rar]:'#e8731a';g.fillRect(-8,-30-bob,16,28)}g.restore()}
  if(nr)T(o.n[S.set.lang=='en'?1:0],sx,sy-top-4,'#fc4',10,'center');else T('...',sx,sy-top-2-bob,'#fff',10,'center');
 }
+function cityDrawB(b,cx,cy){ /* gedung luar sederhana (sementara): bayangan, badan, atap, jendela, pintu, papan nama */
+ const x=b.bx*WS-cx-OX,y=b.by*WS-cy,w=b.bw*WS,h=b.bh*WS,c=b.col,dx=b.dx*WS-cx-OX,roof=Math.round(h*.3);
+ if(x>VW+40||x+w<-OX-40)return;
+ g.fillStyle='rgba(0,0,0,.28)';g.fillRect(x+4,y+h-2,w+4,8);
+ g.fillStyle='#1c1a24';g.fillRect(x-2,y-2,w+4,h+4);g.fillStyle=c[0];g.fillRect(x,y,w,h);g.fillStyle=c[1];g.fillRect(x,y,w,roof);g.fillStyle='rgba(255,255,255,.18)';g.fillRect(x,y,w,3);
+ g.fillStyle=c[2];g.fillRect(x,y+roof,w,4);
+ const win=(wx)=>{g.fillStyle='#1c1a24';g.fillRect(wx-1,y+roof+9,22,18);g.fillStyle='#bfe3f2';g.fillRect(wx,y+roof+10,20,16);g.fillStyle='rgba(255,255,255,.45)';g.fillRect(wx+2,y+roof+12,6,3)};
+ for(let k=0;k<b.bw;k++){const wx=x+k*WS+6;if(Math.abs(wx+10-dx-WS/2)>WS*.9)win(wx)}
+ g.fillStyle='#1c1a24';g.fillRect(dx+2,y+h-34,WS-4,34);g.fillStyle=c[2];g.fillRect(dx+4,y+h-32,WS-8,32);g.fillStyle='rgba(0,0,0,.25)';g.fillRect(dx+WS/2-1,y+h-32,2,32);g.fillStyle='#fc4';g.fillRect(dx+WS-11,y+h-16,3,3);
+ g.font='bold 9px monospace';const t=wL(b.n[0],b.n[1]),tw=Math.ceil(g.measureText(t).width)+10;g.fillStyle='#1c1a24';g.fillRect(x+w/2-tw/2-1,y+3,tw+2,15);g.fillStyle='#f4ecd0';g.fillRect(x+w/2-tw/2,y+4,tw,13);T(t,x+w/2,y+14,'#2a2018',9,'center');
+}
 function cityDraw(){
  const w=wC,D=cityD;g.imageSmoothingEnabled=false;g.fillStyle='#0d1411';g.fillRect(-OX,0,VW,360);if(!D)return;
  const cam=cityCam(),cx=cam[0],cy=cam[1];
@@ -110,6 +140,7 @@ function cityDraw(){
  const items=[],spr=(o,anchor)=>{const r=D.rects[o.k];if(!r||!CITY_IM||!CITY_IM.complete||!CITY_IM.naturalWidth)return false;const bx=(o.x+o.fw/2)*WS-cx-OX,by=anchor==='bottom'?(o.y+o.fh)*WS-cy-2:(o.y+o.fh/2)*WS-cy+r.h*WZ/2;
   if(bx<-60-OX||bx>VW+60)return true;g.drawImage(CITY_IM,r.x,r.y,r.w,r.h,Math.round(bx-r.w*WZ/2),Math.round(by-r.h*WZ),r.w*WZ,r.h*WZ);return true};
  D.props.forEach(o=>{const a=D.idx.props[o.k].anchor;if(a==='center')spr(o,a);else items.push({y:(o.y+o.fh)*WS,f:()=>{spr(o,a)}})});
+ CITY_B.forEach(b=>items.push({y:(b.by+b.bh)*WS-1,f:()=>cityDrawB(b,cx,cy)}));
  const gt=D.idx.gates.return.tile;items.push({y:(gt[1]+1)*WS,f:()=>cityDrawGate(gt[0]*WS+WS/2-cx-OX,gt[1]*WS+WS/2-cy,'DESA','VILLAGE')});
  NPCS.forEach((o,k)=>{if(typeof npcAwake!=='function'||!npcAwake(o))return;items.push({y:npcY(o),f:()=>cityNpcDraw(o,k,npcX(o)-cx-OX,npcY(o)-cy)})});
  items.push({y:w.y,f:()=>{const px=w.x-cx-OX,py=w.y-cy;if(wAct&&self.Anim&&Anim.has('avatar_'+wAct.state)){Anim.shadow(g,px,py-1,9,3,.3);wAct.draw(g,px,py,performance.now(),WZ)}else{g.fillStyle='rgba(0,0,0,.35)';g.beginPath();g.ellipse(px,py-1,10,4,0,0,7);g.fill();g.fillStyle='#fc4';g.fillRect(px-7,py-26,14,24)}}});

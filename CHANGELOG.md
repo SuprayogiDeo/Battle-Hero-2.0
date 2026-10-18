@@ -1,5 +1,35 @@
 # Changelog
 
+## Batch 9B-31 (ikon masakan dan umpan di menu) — 0.4.8-rc.1 — cache v86
+
+Cache v85 -> v86. Peta, interior, dan logika pembelian tidak berubah; hanya tampilan menu dan aset baru.
+
+- `tools/build_dish_icons.py` (baru): menggambar sendiri 7 ikon 16x16 (Sup Ikan Segar, Semur Ladang, Telur Dadar Hutan, Kaldu Bunga Bulan, Pesta Warga, Kaldu Herba Sahabat, Umpan Langka) menjadi `assets/world/dish_icons.png` (112x16) + `dish_icons.json`. Seni ASLI proyek (tanpa paket pihak ketiga, tanpa batasan lisensi tambahan). Deterministik; kontur otomatis. `sw.js` memasukkan keduanya ke precache.
+- `life.js`: `dishIcon(id,x,y,s)` (pola `fishIcon`: potong sel, `imageSmoothingEnabled=false`, badge teks bila atlas belum siap atau id tak dikenal).
+- `npc.js`: kartu menu Penginapan/Kafe/Toko Kota ditata ulang: ikon 32x32 di kiri; nama; satu baris statistik ringkas (`ATK +8% · HP +5% · 3 stage`); harga (emas) dan sisa stok di kanan, tidak lagi di satu baris deskripsi panjang. `innRows` mendapat bidang `s` (statistik ringkas) dan `max` (stok harian); bidang lama `d` dipertahankan.
+- `tools/test_dish_icons.js` (baru, 59 pemeriksaan, terdaftar di `npm test`): dimensi atlas, semua resep + bait punya sel, tanpa sel kosong/kembar/piksel setengah transparan, rebuild identik, `dishIcon` memotong sel yang benar dan fallback, menu memakai ikon yang tepat, precache. Mutasi urutan sel mematikan tes.
+
+## Batch 9B-30 (Kafe Kota + Toko Kota berfungsi) — 0.4.8-rc.1 — cache v85
+
+Cache v84 -> v85. Peta desa, peta kota, atlas, dan data interior tidak berubah.
+
+- BUG LAMA DIPERBAIKI: layar menu Penginapan (`st==='inn'`) belum terpasang di `life.js` repo ini (dispatcher `lifeInputState`, daftar state, `draw`), jadi meja Penginapan membuka layar yang tidak tergambar dan tidak bisa diklik. Kini terpasang; `tools/test_inn.js` (44 pemeriksaan, sebelumnya tidak terdaftar dan gagal) didaftarkan di `run_tests.js`.
+- `npc.js`: kedai bervenue (`INNV`): `inn` = Penginapan desa (harga dasar, stok 3/hari), `cafe` = Kafe Kota (harga x1,25, stok 2/hari, stok terpisah `cafe:<id>` di `S.inn.sold`). Semua fungsi `innPrice/innLeft/innBuy/innRows/innOpen` menerima venue opsional; tanpa argumen = perilaku lama. `innDraw/innClick` memakai `innV`.
+- Toko Kota: `CSHOP_BAIT={g:90,cap:5}` menjual Umpan Langka (`S.fish.bait`, dipakai `lifeChooseFish`) maksimal 5/hari (`S.cshop`, reset harian, aman bila save lama/rusak). Layar `cshop` (`cshopOpen/Draw/Click`). Harga dan batas = PLACEHOLDER keseimbangan.
+- `interior.js`: konter dan Bob (kafe) beraksi `cafe` (label MENU); konter dan Amelia (toko) beraksi `cshop` (label BELI); `INT_FUN` ditambah. `life.js`: dispatcher `cshop`.
+- `tools/test_city_shops.js` (baru, 39 pemeriksaan, terdaftar di `npm test`): harga kafe = x1,25, stok terpisah, penolakan (emas kurang / habis / aktif), reset harian, save+load, klik UI dua bahasa. Mutasi (kali harga, batas toko) mematikan tes. `test_city_interiors.js` menyesuaikan aksi menu.
+
+## Batch 9B-29 (interior Kota: kafe, toko, apartemen) — 0.4.8-rc.1 — cache v84
+
+Cache v83 -> v84. Peta desa 128x96, chunk kota, dan interior desa (`INT_B`, 14 bangunan) tidak berubah.
+
+- `tools/build_mi_interiors.py` (baru): memotong 24 perabot (`Interiors_free_16x16.png`), dinding/lantai tiga tema (mint, krem, kayu; `Room_Builder_free_16x16.png`), celah pintu, dan 4 karakter statis (`Characters_free/`) jadi `assets/world/mi_interior.png` + `mi_interior.json` (44 sprite, 256x168). Hanya crop + susun ulang, deterministik. Lisensi versi gratis = non-komersial (CREDITS dan `docs/LICENSE_AND_ASSETS.md` diperbarui).
+- `js/interior.js`: `miIntStart()` memuat atlas kedua secara malas; `intRect(n)` mencari sprite di `interior.png` lebih dulu lalu `mi_interior.png` (`intSp`, `intTile`, dekor, tempelan dinding, sorotan aksi); templat boleh menimpa dinding samping/bawah/celah pintu (`sd`, `bt`, `dg`). Tiga templat baru `ccafe`, `cshop`, `capt` dan pesan/label dua bahasa (tanpa fungsi permainan, teks sementara).
+- `js/city.js`: `CITY_B` (kafe, toko kota, apartemen) = gedung luar sederhana digambar kode (sampler tidak punya gedung), badan gedung solid di grid tabrakan kota, tombol MASUK/ENTER di pintu, `cityEnterB` melepas `wC` dan memakai `wI`; `intExit` dibungkus agar keluar dari interior kota memulihkan posisi di pintu kota. `S.world` tetap titik desa, jadi simpan/muat di dalam interior aman.
+- `tools/test_city_interiors.js` (terdaftar di `npm test`): atlas, templat (objek aksi punya sel kosong terjangkau, tanpa tumpang tindih), bangunan (solid, pintu terjangkau, tidak menimpa prop atau tile NPC), alur masuk/keluar tiap bangunan lewat `hudCtx`, aksi tiap objek, simpan di dalam interior, interior desa tidak berubah, lisensi dan precache.
+- Perbaikan tes: `test_city.js` dan `test_city_tiles.js` tidak lagi menyematkan versi cache lama; `test_city_tiles.js` memperbolehkan atlas kota dirujuk runtime; `test_city.js` dan `test_city_npcs.js` didaftarkan di `run_tests.js`.
+- Rekonstruksi Batch 9B-26/27 yang tidak ikut terkirim: NPC `adam`, `alex`, `amelia` (jadwal, dialog), `npcHour`/`npcPlanBlock`/`npcAwake` berjadwal di `npc.js`.
+
 ## Batch 9B-28 (sprite LimeZu aktif default) — 0.4.8-rc.1 — cache v83
 
 Cache v82 -> v83. Pemilik menyatakan proyek pribadi non-komersial, jadi sprite LimeZu untuk NPC kota tidak lagi opt-in.

@@ -82,7 +82,7 @@ function farmWorldAction(i,tool){
  return false;
 }
 function farmWorldPointerDown(ev){
- if(st!=='world'||wI||wDlg||wTalk||wFade||lifeWorldQuick)return;
+ if(st!=='world'||wI||(typeof wC!=='undefined'&&wC)||wDlg||wTalk||wFade||lifeWorldQuick)return;
  const rect=cv.getBoundingClientRect(),x=(ev.clientX-rect.left)*VW/rect.width-OX,y=(ev.clientY-rect.top)*360/rect.height;
  const tool=farmWorldTool();if(tool!=='hoe'&&tool!=='can'&&farmSeedCrop(tool)<0)return;
  const i=farmWorldIndexAt(x,y);if(i<0)return;

@@ -46,3 +46,7 @@ paket "Modern Interiors - Free" oleh LimeZu (https://limezu.itch.io/moderninteri
 menyunting boleh hanya untuk proyek non-komersial; DILARANG proyek komersial dan menjual ulang sprite (juga yang sudah disunting). Pemilik menyatakan proyek ini pribadi dan non-komersial,
 jadi sprite aktif secara default untuk NPC kota (adam, alex, amelia); `?mi=0` mematikannya (sprite hero cadangan). Bila proyek kelak dipublikasikan atau dikomersialkan: hapus `mi_chars.*`
 atau beli lisensi penuh. Bob hanya ada di atlas. Paket ZIP mentah tidak dimasukkan ke repo.
+Batch 9B-29 (interior Kota): `assets/world/mi_interior.png` + `mi_interior.json` (44 sprite: perabot, dinding/lantai tiga tema, 4 karakter statis) dipotong oleh `tools/build_mi_interiors.py` dari
+`Interiors_free/16x16/Interiors_free_16x16.png`, `Room_Builder_free_16x16.png` dan `Characters_free/` paket "Modern Interiors - Free" oleh LimeZu (https://limezu.itch.io/moderninteriors). Dipakai tiga interior
+kota (kafe, toko, apartemen). LISENSI VERSI GRATIS: hanya proyek NON-KOMERSIAL; DILARANG menjual ulang/mendistribusikan ulang (juga yang disunting). Proyek ini pribadi dan non-komersial. Bila kelak dipublikasikan atau
+dikomersialkan: hapus `mi_interior.*` dan tiga templat interior kota, atau beli lisensi penuh. Paket ZIP mentah tidak dimasukkan ke repo.

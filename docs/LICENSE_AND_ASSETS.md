@@ -37,6 +37,10 @@ Batch 9B-27 menambahkan `assets/world/mi_chars.png` dan `assets/world/mi_chars.j
 
 **Status:** pemilik proyek menyatakan proyek ini **pribadi dan non-komersial**, sehingga pemakaian versi gratis ini sesuai lisensinya. Karena itu sprite aktif secara default untuk NPC kota (`adam`, `alex`, `amelia`; Bob belum dipakai) dan atlas masuk precache; `?mi=0` mematikannya (sprite hero cadangan, tanpa fetch atlas). Syarat yang tetap berlaku: jangan menjual ulang sprite (juga yang sudah disunting), dan **sebelum proyek dipublikasikan atau dikomersialkan** hapus `mi_chars.*` (atau set `CITY_MI_DEFAULT = false` dan keluarkan dari precache) atau beli lisensi penuh. Arsip paket tidak ada di repo; atlas dapat dibuat ulang dengan `python3 tools/build_mi_chars.py --pack <path>/Characters_free`.
 
+Batch 9B-29 menambahkan `assets/world/mi_interior.png` dan `assets/world/mi_interior.json`: atlas 256×168 berisi 44 sprite (perabot dari `Interiors_free_16x16.png`, dinding dan lantai tiga tema dari `Room_Builder_free_16x16.png`, empat karakter statis dari `Characters_free/`) dari paket **Modern Interiors — Free v2.2** oleh **LimeZu** (<https://limezu.itch.io/moderninteriors>), dibuat `tools/build_mi_interiors.py` (hanya dipotong dan disusun ulang, piksel tidak diubah). Dipakai tiga interior kota (kafe, toko, apartemen).
+
+**Status:** lisensi versi gratis sama dengan di atas (hanya proyek non-komersial; jangan menjual ulang atau mendistribusikan ulang sprite, juga yang disunting). Proyek ini pribadi dan non-komersial. **Sebelum proyek dipublikasikan atau dikomersialkan** hapus `mi_interior.*` beserta templat `ccafe`, `cshop`, `capt` (dan `CITY_B` di `js/city.js`), atau beli lisensi penuh. Arsip paket tidak ada di repo; atlas dapat dibuat ulang dengan `python3 tools/build_mi_interiors.py --pack "<path>/Modern tiles_Free"`.
+
 ## Other assets
 
 Review `CREDITS` and the provenance of every image/audio/font added later. Keep license and attribution notices with the files they cover. Do not assume that files found in a previous working directory are cleared for public redistribution.

@@ -1,5 +1,5 @@
 // Hero Battle service worker. Naikkan VERSION setiap kali Anda mengganti file game.
-const VERSION = 'v83';
+const VERSION = 'v86';
 const CACHE = 'hero-battle-' + VERSION;
 const SHELL = [
   './',
@@ -51,6 +51,8 @@ const SHELL = [
   './assets/world/items.png',
   './assets/world/fish_icons.png',
   './assets/world/fish_icons.json',
+  './assets/world/dish_icons.png',
+  './assets/world/dish_icons.json',
   './assets/world/tiles.png',
   './assets/world/sprites.png',
   './assets/world/sea.png',
@@ -64,7 +66,10 @@ const SHELL = [
   './assets/world/city/city_tiles.png',
   // Atlas karakter LimeZu (aktif default untuk NPC kota; proyek pribadi non-komersial).
   './assets/world/mi_chars.json',
-  './assets/world/mi_chars.png'
+  './assets/world/mi_chars.png',
+  // Atlas interior kota (Modern Interiors Free; Step 8).
+  './assets/world/mi_interior.json',
+  './assets/world/mi_interior.png'
 ];
 
 // Gambar sprite & tileset: wajib ada supaya game tampil, jadi ikut di-precache.
