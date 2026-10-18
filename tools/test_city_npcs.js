@@ -80,6 +80,6 @@ const { context, vm } = mod.exports, ev = c => vm.runInContext(c, context, { tim
   const cr = rd('CREDITS'), lic = rd('docs/LICENSE_AND_ASSETS.md'), sw = rd('sw.js');
   ok(/LimeZu/.test(cr) && /mi_chars/.test(cr) && /NON-KOMERSIAL/i.test(cr) && /\?mi=0/.test(cr) && /pribadi/i.test(cr), 'CREDITS: LimeZu, mi_chars, non-komersial, pernyataan pemilik, ?mi=0');
   ok(/LimeZu/.test(lic) && /mi_chars/.test(lic) && /non-komersial/i.test(lic) && /jangan menjual/i.test(lic) && /\?mi=0/.test(lic) && /sebelum proyek dipublikasikan/i.test(lic), 'LICENSE_AND_ASSETS: LimeZu, non-komersial, larangan jual, langkah sebelum publikasi, ?mi=0');
-  ok(/const VERSION = 'v83'/.test(sw) && /cache: v83/.test(rd('VERSION')), 'cache v83'); ok(sw.includes("'./assets/world/mi_chars.json'") && sw.includes("'./assets/world/mi_chars.png'"), 'atlas LimeZu di-precache (aktif default)');
+  ok(/const VERSION = 'v86'/.test(sw) && /cache: v86/.test(rd('VERSION')), 'cache v86'); ok(sw.includes("'./assets/world/mi_chars.json'") && sw.includes("'./assets/world/mi_chars.png'"), 'atlas LimeZu di-precache (aktif default)');
   console.log('PASS: NPC Kota — ' + n + ' pemeriksaan');
 })().catch(e => { console.error(e); process.exit(1); });

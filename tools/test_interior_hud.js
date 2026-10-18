@@ -18,7 +18,8 @@ ok(objs.length === bl.length, 'jumlah bangunan ' + objs.length + ' vs ' + bl.len
 bl.forEach(b => { ok(objs.some(o => o.x === b.x && o.y === b.y), 'bangunan ' + b.id + ' tidak cocok dengan objek di index.json');
   const gx = (b.x >> 4), gy = (b.y >> 4), ch = I.grid[gy][gx]; ok(ch !== '~' && ch !== 'T' && ch !== 'X', 'sel pintu ' + b.id + ' tidak bisa dilalui: ' + ch); });
 // 2) semua sprite yang dipakai ruangan ada di interior.json
-ev('Object.values(INT_T)').forEach(t => { [...t.o, ...t.d, ...t.hg].forEach(a => ok(IJ.spr[a[0]], 'sprite hilang: ' + a[0])); t.fl.concat([t.wl, 'window', 'wall_side', 'wall_bot', 'door_gap']).forEach(k => ok(IJ.spr[k], 'ubin hilang: ' + k)); });
+const MJ = JSON.parse(fs.readFileSync(path.join(root, 'assets/world/mi_interior.json'), 'utf8')), hasSp = k => IJ.spr[k] || MJ.spr[k]; // templat kota (Step 8) memakai atlas kedua mi_interior
+ev('Object.values(INT_T)').forEach(t => { [...t.o, ...t.d, ...t.hg].forEach(a => ok(hasSp(a[0]), 'sprite hilang: ' + a[0])); t.fl.concat([t.wl, t.win.length ? 'window' : t.wl, t.sd || 'wall_side', t.bt || 'wall_bot', t.dg || 'door_gap']).forEach(k => ok(hasSp(k), 'ubin hilang: ' + k)); });
 // 3) keterjangkauan: dari titik masuk, tiap objek interaktif punya sel depan bebas dan pintu keluar terjangkau
 ev('INT_B').forEach(b => {
   const r = ev('intCompile(' + JSON.stringify(b) + ')'), sol = r.sol, w = r.w, h = r.h;

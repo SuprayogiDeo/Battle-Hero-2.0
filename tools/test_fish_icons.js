@@ -81,7 +81,7 @@ ok(/fishIcon\(id,28,y\+4,24\)/.test(shop), 'tab IKAN Toko memakai fishIcon');
 const sw = rd('sw.js'); ok(/\.\/assets\/world\/fish_icons\.png/.test(sw) && /\.\/assets\/world\/fish_icons\.json/.test(sw), 'sw.js precache atlas dan json');
 ok(/Hollow Dolphin/.test(rd('CREDITS')) && /fish_icons/.test(rd('CREDITS')), 'CREDITS mencatat Hollow Dolphin');
 const lic = rd('docs/LICENSE_AND_ASSETS.md'); ok(/Hollow Dolphin/.test(lic) && /belum terkonfirmasi/i.test(lic) && /build_fish_icons\.py/.test(lic), 'LICENSE_AND_ASSETS mencatat Hollow Dolphin dan status lisensi');
-ok(/const VERSION = 'v83'/.test(sw) && /cache: v83/.test(rd('VERSION')), 'cache v83');
+ok(/const VERSION = 'v86'/.test(sw) && /cache: v86/.test(rd('VERSION')), 'cache v86');
 ok(!fs.existsSync(path.join(root, 'assets/world/fishing_icons_sheet_16x16.png')), 'sheet mentah tidak dimasukkan ke repo');
 
 // --- HUD memancing (ikon tanpa teks) + popup tangkapan: tidak melempar di id dan en, memakai fishIcon (atlas siap maupun fallback)

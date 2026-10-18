@@ -30,6 +30,9 @@ run('Fixes 9A-9D: park, farm gate, symmetric gate, door paths, bridge deck, mush
 run('Smith gear upgrade', process.execPath, ['tools/test_smith_upgrade.js']);
 run('Healer services', process.execPath, ['tools/test_healer_services.js']);
 run('Player house', process.execPath, ['tools/test_player_house.js']);
+run('Penginapan desa (menu, stok, buff)', process.execPath, ['tools/test_inn.js']);
+run('Kafe Kota + Toko Kota (venue kedai, Umpan Langka)', process.execPath, ['tools/test_city_shops.js']);
+run('Ikon masakan + umpan (atlas asli, dishIcon, menu)', process.execPath, ['tools/test_dish_icons.js']);
 run('Map data 10A: Village Hall path, east bridge road, b_res5 bush', process.execPath, ['tools/test_map_10a.js']);
 run('HUD regression (landscape): no visual overlaps, tap targets >= 44 px, text fits', process.execPath, ['tools/test_hud_regression.js']);
 run('World zoom (opt-in ?zoom=): camera, culling, restore-on-error, screen<->world conversion', process.execPath, ['tools/test_world_zoom.js']);
@@ -37,6 +40,9 @@ run('NPC baru: posisi tidak solid', process.execPath, ['tools/test_npc_new.js'])
 run('Ikon ikan (atlas Hollow Dolphin, helper fishIcon, fallback teks)', process.execPath, ['tools/test_fish_icons.js']);
 run('Atlas Cute Fantasy (Kenmi, non-komersial): semua entri json ada di atlas', process.execPath, ['tools/test_cf_atlas.js']);
 run('Atlas kota CC0 (Venice Menace sampler): 16 tile 16x16, 3 prop, rubah, pratinjau 4x, lisensi + bantuan AI', process.execPath, ['tools/test_city_tiles.js']);
+run('Kota Kecil: data/chunk, tabrakan prop, gerbang masuk/keluar, rubah, peta desa tidak berubah', process.execPath, ['tools/test_city.js']);
+run('NPC Kota: atlas LimeZu, jadwal, jalan antar blok, dialog, sakelar ?mi=0, lisensi', process.execPath, ['tools/test_city_npcs.js']);
+run('Interior Kota: atlas LimeZu, templat kafe/toko/apartemen, pintu gedung, masuk/keluar, interior desa tidak berubah', process.execPath, ['tools/test_city_interiors.js']);
 run('Sakelar ?cf=1: tanpa flag tidak berubah; hewan Kandang, jembatan, pagar dari atlas; peta/tabrakan/chunk identik', process.execPath, ['tools/test_cf_flag.js']);
 run('Release integrity checks', process.execPath, ['tools/test_release_integrity.js']);
 const isWin = process.platform === 'win32';

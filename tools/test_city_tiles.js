@@ -54,9 +54,9 @@ ok(pv.w === png.w * 4 && pv.h === png.h * 4, 'docs/preview_city_tiles.png = atla
 const credits = rd('CREDITS'), lic = rd('docs/LICENSE_AND_ASSETS.md');
 ok(/city_tiles/.test(credits) && /CC0/.test(credits) && /AI/.test(credits) && /Venice Menace/.test(credits), 'CREDITS mencatat CC0, pengarang, dan bantuan AI');
 ok(/city_tiles/.test(lic) && /CC0/.test(lic) && /AI/.test(lic) && /Venice Menace/.test(lic), 'LICENSE_AND_ASSETS mencatat CC0, pengarang, dan bantuan AI');
-ok(/const VERSION = 'v80'/.test(rd('sw.js')) && /cache: v80/.test(rd('VERSION')), 'cache v80');
+{ const sv = /const VERSION = '(v\d+)'/.exec(rd('sw.js')), vf = /cache: (v\d+)/.exec(rd('VERSION')); ok(sv && vf && sv[1] === vf[1], 'versi cache sw.js = VERSION'); }
 const runtime = ['index.html', 'sw.js'].map(rd).concat(fs.readdirSync(path.join(root, 'js')).map(f => rd('js/' + f))).join('\n');
-ok(!/city_tiles/.test(runtime), 'atlas kota belum dirujuk kode runtime/precache');
+ok(/city_tiles/.test(runtime), 'atlas kota dirujuk kode runtime (js/city.js) dan precache (sejak Batch 9B-26)');
 const tracked = []; (function walk(d) { for (const f of fs.readdirSync(d)) { if (f === 'node_modules' || f === '.git') continue; const p = path.join(d, f); fs.statSync(p).isDirectory() ? walk(p) : tracked.push(f); } })(root);
 ok(!tracked.some(f => /^(sampler_tileset_16|sampler_props_3|fox_commuter_npc|modern-city-topdown-pack.*)\.(png|zip)$/.test(f)), 'paket mentah tidak ada di repo');
 console.log('PASS: atlas kota CC0 — ' + n + ' pemeriksaan');
