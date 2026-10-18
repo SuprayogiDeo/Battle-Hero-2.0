@@ -20,6 +20,21 @@ P = dict(k=(43, 29, 46), g=(214, 221, 228), G=(164, 175, 187), D=(112, 124, 139)
          p=(240, 154, 160), l=(123, 201, 111), L=(78, 154, 74), b=(169, 183, 240), B=(127, 143, 224), m=(232, 224, 255),
          c=(248, 232, 200), t=(190, 112, 60), u=(150, 80, 44), h=(150, 150, 160), z=(222, 120, 150), Z=(176, 84, 118))
 
+BASE = dict(P)
+# Enam masakan (sel 0-5) memakai palet yang diambil dari ikon pack Pixel Mart (mart_icons.png): kontur gelap biru-hitam (mart_fish),
+# keramik krem hangat (mart_milk_bottle / mart_mushroom_white), oranye ikan/roti, merah apel, hijau apel, kuning keju, biru susu. Selain itu tidak berubah.
+DISH_PAL = dict(k=(23, 25, 39), g=(234, 232, 222), G=(228, 211, 178), D=(129, 119, 103), W=(255, 245, 235), w=(255, 255, 255),
+                o=(240, 136, 80), O=(210, 120, 64), r=(225, 84, 76), n=(163, 120, 67), N=(114, 78, 28), y=(255, 204, 122), Y=(255, 173, 74),
+                p=(255, 173, 157), l=(152, 208, 93), L=(100, 148, 99), b=(133, 140, 222), B=(92, 100, 190), m=(214, 218, 250),
+                c=(243, 232, 199), t=(189, 102, 48), u=(162, 79, 27))
+DISH_COUNT = 6
+
+
+def use_palette(i):
+    P.clear(); P.update(BASE)
+    if i < DISH_COUNT:
+        P.update(DISH_PAL)
+
 
 def canvas():
     return [[None] * CELL for _ in range(CELL)]
@@ -75,6 +90,8 @@ def draw_fish_soup():
     # ikan: badan merah muda + ekor yang menyembul di tepi mangkuk
     rows(cv, {2: (4, 6), 3: (3, 8), 4: (4, 9)}, 'p'); put(cv, 2, 3, 'p'); put(cv, 10, 3, 'p'); put(cv, 10, 4, 'p'); put(cv, 11, 2, 'p'); put(cv, 11, 5, 'p')
     put(cv, 5, 3, 'k'); put(cv, 7, 4, 'r')
+    for x, y in ((13, 4), (14, 3), (13, 2), (14, 1)): put(cv, x, y, 'w' if y % 2 else 'm')                  # uap
+    for x, y in ((6, 7), (10, 8)): put(cv, x, y, 'l')                                                         # taburan daun bawang
     return cv
 
 
@@ -86,6 +103,9 @@ def draw_farm_stew():
     for x, y in ((11, 6), (6, 8)): put(cv, x, y, 'l')
     for x, y in ((6, 3), (9, 2), (7, 1)): put(cv, x, y, 'w')                                              # uap
     for x, y in ((6, 4), (9, 3), (7, 2)): put(cv, x, y, 'm')
+    for x, y in ((12, 3), (11, 2), (12, 1)): put(cv, x, y, 'w')                                              # uap kedua
+    for x, y in ((7, 8), (12, 7)): put(cv, x, y, 'r')                                                         # dadu wortel
+    put(cv, 6, 6, 'N'); put(cv, 10, 6, 'N')                                                                   # lada
     return cv
 
 
@@ -98,6 +118,9 @@ def draw_forest_omelet():
     rows(cv, {7: (7, 8)}, 'w')
     for x, y in ((12, 5), (13, 4)): put(cv, x, y, 'L')                                                    # tangkai herba
     put(cv, 12, 4, 'l'); put(cv, 14, 4, 'l')
+    for x, y in ((5, 8), (6, 8)): put(cv, x, y, 'c')                                                          # irisan jamur
+    put(cv, 5, 9, 'u'); put(cv, 10, 6, 'r'); put(cv, 11, 7, 'r')                                              # insang + tomat
+    for x, y in ((6, 3), (7, 2), (6, 1)): put(cv, x, y, 'w' if y % 2 else 'm')                              # uap
     return cv
 
 
@@ -108,6 +131,8 @@ def draw_moon_broth():
     put(cv, 7, 6, 'y'); put(cv, 8, 6, 'y'); put(cv, 7, 5, 'm'); put(cv, 8, 5, 'm'); put(cv, 5, 6, 'm'); put(cv, 10, 6, 'm')
     for x, y in ((4, 8), (11, 5)): put(cv, x, y, 'm')
     for x, y in ((12, 2), (3, 3)): put(cv, x, y, 'y'); put(cv, x + 1, y, 'y'); put(cv, x, y + 1, 'y')       # kilau
+    for x, y in ((9, 4), (10, 3), (9, 2)): put(cv, x, y, 'm')                                                 # uap
+    put(cv, 11, 8, 'w'); put(cv, 5, 8, 'w')                                                                   # kelopak mengapung
     return cv
 
 
@@ -119,6 +144,9 @@ def draw_village_feast():
     rows(cv, {4: (3, 4), 5: (2, 5)}, 'r'); put(cv, 3, 3, 'l')                                               # apel
     rows(cv, {8: (11, 13), 9: (11, 13)}, 'y'); put(cv, 12, 8, 'Y')                                          # roti/keju
     for x, y in ((4, 9), (5, 9), (7, 10)): put(cv, x, y, 'l')
+    for x, y in ((8, 3), (9, 2), (8, 1)): put(cv, x, y, 'w' if y % 2 else 'm')                              # uap panggang
+    put(cv, 7, 4, 'l'); put(cv, 8, 4, 'L')                                                                    # daun herba
+    put(cv, 10, 10, 'Y'); put(cv, 9, 10, 'y')                                                                 # keju
     return cv
 
 
@@ -130,6 +158,8 @@ def draw_herbal_broth():
     rows(cv, {8: (6, 7)}, 'c')                                                                                # jamur
     for x, y in ((12, 2), (13, 1), (11, 3)): put(cv, x, y, 'l')                                              # daun
     put(cv, 12, 3, 'L'); put(cv, 3, 3, 'l'); put(cv, 2, 2, 'l'); put(cv, 3, 2, 'L')
+    for x, y in ((7, 4), (8, 3), (7, 2)): put(cv, x, y, 'w' if y % 2 else 'm')                              # uap
+    put(cv, 8, 6, 'y'); put(cv, 9, 8, 'o')                                                                    # kuncup + irisan jahe
     return cv
 
 
@@ -243,6 +273,7 @@ DRAW = dict(fish_soup=draw_fish_soup, farm_stew=draw_farm_stew, forest_omelet=dr
 def build():
     im = Image.new('RGBA', (CELL * len(DISH_ORDER), CELL), (0, 0, 0, 0))
     for i, name in enumerate(DISH_ORDER):
+        use_palette(i)
         cv = outline(DRAW[name]())
         for y in range(CELL):
             for x in range(CELL):

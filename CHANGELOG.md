@@ -1,5 +1,13 @@
 # Changelog
 
+## Batch 9B-36 (enam ikon masakan digambar ulang) — 0.4.8-rc.1 — cache v91
+
+Cache v90 -> v91. Hanya aset, alat build, dan pratinjau; logika game tidak berubah.
+
+- `tools/build_dish_icons.py`: enam masakan (sel 0-5: fish_soup, farm_stew, forest_omelet, moon_broth, village_feast, herbal_broth) memakai palet `DISH_PAL` yang diambil dari ikon pack Pixel Mart (kontur biru-hitam `mart_fish`, keramik krem hangat, oranye ikan/roti, merah apel, hijau apel, kuning keju, biru susu). Variasi: uap pada semua masakan (dua kolom di Semur Ladang) dan hiasan bahan (daun bawang, dadu wortel + lada, irisan jamur + tomat, kelopak mengapung, daun herba + keju, kuncup + jahe). Urutan sel `DISH_ORDER` tidak berubah; sel 6-15 (umpan + sembilan bahan) identik piksel demi piksel dengan sebelumnya.
+- `docs/preview_dish_icons_before_after.png` (baru): atlas sebelum (atas) dan sesudah (bawah), 4x.
+- `sw.js`, `VERSION`, `README.md`, `test_fish_icons.js`, `test_city_npcs.js`, `test_7defg.py`: cache v91.
+
 ## Batch 9B-35 (Toko Kota jadi daftar barang) — 0.4.8-rc.1 — cache v90
 
 Cache v89 -> v90. Toko Kota tidak lagi satu barang: daftar 8 barang yang bisa digulir (panah ▲▼ dan roda mouse, 5 baris terlihat).
