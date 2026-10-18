@@ -50,3 +50,7 @@ Batch 9B-29 (interior Kota): `assets/world/mi_interior.png` + `mi_interior.json`
 `Interiors_free/16x16/Interiors_free_16x16.png`, `Room_Builder_free_16x16.png` dan `Characters_free/` paket "Modern Interiors - Free" oleh LimeZu (https://limezu.itch.io/moderninteriors). Dipakai tiga interior
 kota (kafe, toko, apartemen). LISENSI VERSI GRATIS: hanya proyek NON-KOMERSIAL; DILARANG menjual ulang/mendistribusikan ulang (juga yang disunting). Proyek ini pribadi dan non-komersial. Bila kelak dipublikasikan atau
 dikomersialkan: hapus `mi_interior.*` dan tiga templat interior kota, atau beli lisensi penuh. Paket ZIP mentah tidak dimasukkan ke repo.
+
+Step 11: assets/world/food_icons16.png, food_icons32.png dan food_icons.json dibuat tools/build_food_icons.py dari dua paket CC0 (hanya dipotong dan disusun ulang, piksel tidak diubah):
+"Free Pixel Food" oleh Henry Software (art: benmhenry; 64 ikon 16x16) dan "Free Pixel Foods" oleh ghostpixxells (53 dari 102 ikon 32x32; tanpa AI generatif).
+Paket mentah tidak disertakan di repositori.

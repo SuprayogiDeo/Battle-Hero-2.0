@@ -1,5 +1,13 @@
 # Changelog
 
+## Batch 9B-32 (atlas ikon makanan) — 0.4.8-rc.1 — cache v87
+
+Cache v86 -> v87. Hanya aset, alat build, dan tes; belum dirujuk kode game (dipakai Step 12).
+
+- `tools/build_food_icons.py` (baru): memotong 64 ikon 16x16 dari "Free Pixel Food" (Henry Software, CC0) dan 53 dari 102 ikon 32x32 dari "Free Pixel Foods" (ghostpixxells, CC0) menjadi `assets/world/food_icons16.png` (128x128), `food_icons32.png` (256x224), `food_icons.json` (nama -> sheet, x, y; sha256 PNG) dan pratinjau `docs/preview_food_icons.png`. Piksel tidak diubah; ikon 32x32 tidak diperkecil. Nama snake_case; ikon 32x32 berawalan `big_` supaya tak bertabrakan (`fish` 16px, `big_salmon` 32px). Idempoten (dijalankan dua kali menghasilkan PNG identik).
+- `sw.js`: ketiga berkas masuk precache. `CREDITS` dan `docs/LICENSE_AND_ASSETS.md` memuat kedua sumber.
+- `tools/test_food_icons.js` (baru, 507 pemeriksaan, terdaftar di `npm test`): dimensi sheet, jumlah ikon, posisi dalam sheet tanpa tumpang tindih, tiap sel berisi piksel dan unik, sel sisa transparan, nama kunci yang akan dipakai menu ada, sha256 cocok, precache, kredit. Mutasi (ganti nama kunci, ubah satu byte PNG) mematikan tes.
+
 ## Batch 9B-31 (ikon masakan dan umpan di menu) — 0.4.8-rc.1 — cache v86
 
 Cache v85 -> v86. Peta, interior, dan logika pembelian tidak berubah; hanya tampilan menu dan aset baru.

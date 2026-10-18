@@ -59,3 +59,11 @@ Batch 9B-25 menambahkan `assets/world/city/city_tiles.png` dan `city_tiles.json`
 - **Pengungkapan bantuan AI:** README paket menyatakan seninya dihasilkan dengan bantuan AI dan dikurasi manual (diungkap di halaman itch.io penulis). Karena itu aset ini ditandai sebagai AI-assisted; tinjau kebijakan platform tujuan rilis tentang konten AI sebelum publikasi.
 - Pemrosesan: dipotong, latar dibuang menjadi transparan, diperkecil nearest-neighbour. Tidak ada pewarnaan ulang. Tile asli berukuran besar bergaya 16×16 (bukan autotile 16×16 asli), sehingga detail tipis dapat berubah setelah diperkecil.
 - Sejak Batch 9B-26 atlas dipakai peta Kota Kecil (`js/city.js`, `assets/world/city/city.json` + chunk) dan masuk precache. Tata letak peta kota buatan proyek ini (`tools/build_city_map.py`); hanya ubin, prop, dan rubah yang berasal dari paket CC0 di atas.
+
+## Ikon makanan (Henry Software + ghostpixxells)
+
+Step 11 menambahkan `assets/world/food_icons16.png`, `food_icons32.png`, dan `food_icons.json` (dibuat `tools/build_food_icons.py`; pratinjau `docs/preview_food_icons.png`).
+
+- **"Free Pixel Food" (Henry Software; art: benmhenry; lisensi CC0):** 64 ikon 16x16. Penulis menyatakan penggunaan bebas, termasuk komersial. Tanpa kewajiban kredit; tetap dicatat di `CREDITS`.
+- **"Free Pixel Foods" (ghostpixxells; lisensi CC0):** dipakai 53 dari 102 ikon 32x32 (varian dasar + wadah `dish` dan `bowl`). Halaman penulis menyatakan tanpa AI generatif, tanpa kewajiban kredit, dan meminta file asli tidak didistribusikan ulang.
+- Pemrosesan: hanya dipotong dan disusun ulang; piksel tidak diubah; ikon 32x32 tidak diperkecil. Paket mentah tidak masuk repositori; integritas atlas dijaga `sha256` di `food_icons.json` dan `tools/test_food_icons.js`.
