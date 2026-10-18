@@ -43,7 +43,7 @@ const INT_MSG={
  cafe_bob:['Selamat datang di Kafe Kota! Duduk saja, santai.','Welcome to the City Cafe! Take a seat and relax.'],
  cafe_fridge:['Kulkas minuman dingin. Isinya penuh.','A cold drinks fridge. Fully stocked.'],
  cafe_table:['Meja kayu yang hangat. Bekas cangkir kopi masih ada.','A warm wooden table. A coffee-cup ring is still on it.'],
- shop_counter:['Kasir toko kota. Belum ada yang dijual, ini baru etalase.','The city shop counter. Nothing for sale yet, this is just the display.'],
+ shop_counter:['Kasir Toko Kota. Pilih barang di meja BELI.','The City Shop counter. Pick goods at the BUY desk.'],
  shop_clerk:['Halo! Toko ini baru buka. Barangnya menyusul, ya.','Hi! This shop just opened. The goods are coming soon.'],
  shop_fridge:['Lemari pendingin penuh minuman dan makanan kemasan.','A fridge full of drinks and packaged food.'],
  shop_rack:['Rak barang sehari-hari: sabun, gula, dan alat tulis.','A rack of everyday goods: soap, sugar and stationery.'],

@@ -1,5 +1,15 @@
 # Changelog
 
+## Batch 9B-35 (Toko Kota jadi daftar barang) — 0.4.8-rc.1 — cache v90
+
+Cache v89 -> v90. Toko Kota tidak lagi satu barang: daftar 8 barang yang bisa digulir (panah ▲▼ dan roda mouse, 5 baris terlihat).
+
+- `npc.js`: `CSHOP_ITEMS` = Umpan Langka (90 emas, 5/hari) + Telur, Susu, Keju, Buah, Jamur, Mentega, Tepung (harga/batas = PLACEHOLDER keseimbangan). Ikon dari atlas `mart_icons.png` (barang 32px, via `cshopIcon`; Umpan tetap `dishIcon('bait')`). `cshopBuy(id)` (default `bait`, kompatibel) menolak `stock`/`gold`/`none` tanpa efek. Barang masuk stok yang dipakai dapur lewat `cshopGive`: telur/susu -> `S.ranch.stock`, jamur/buah -> `S.gather.items`, keju/mentega/tepung -> `S.kitchen.food`, umpan -> `S.fish.bait`; terbaca `lifeFoodCount` dan dikurangi `lifeConsume`.
+- Stok harian per barang di `S.cshop.sold[id]` (reset saat ganti hari; data rusak/lama dipulihkan; bentuk lama `S.cshop.bait` diabaikan dengan aman).
+- `interior.js`: teks kasir tidak lagi "belum ada yang dijual".
+- `tools/test_city_shops.js` (91 pemeriksaan): daftar, ikon menunjuk sel atlas nyata, beli tiap barang (emas tepat, masuk stok dapur), stok habis, emas kurang, id tak dikenal, masak memakai bahan belian, simpan-muat, reset harian, gulir dan klik, dua bahasa. Mutasi (lewati potong emas, kosongkan stok dapur, matikan cek stok) mematikan tes.
+- `sw.js`, `VERSION`, `README.md`, `test_fish_icons.js`, `test_city_npcs.js`: cache v90.
+
 ## Batch 9B-34 (atlas barang toko + buah) — 0.4.8-rc.1 — cache v89
 
 Cache v88 -> v89. Hanya aset, alat build, dan tes; belum dirujuk kode game (dipakai Step 14).

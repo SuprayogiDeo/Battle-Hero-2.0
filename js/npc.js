@@ -201,21 +201,44 @@ function innDraw(){const R=innRows(innV),b=S.buff&&S.buff.stages>0?S.buff:null;o
 T(smithL('Emas ','Gold ')+S.g+(b?'  ·  '+smithL('Aktif: ','Active: ')+smithL(b.name,b.en||b.name)+' '+b.stages:''),320,50,'#cde',10,'center');
 R.forEach((r,i)=>{const y=62+i*48;card(20,y,600,42,'#f7c45c',r.ok);dishIcon(r.k,28,y+5,32);T(r.t,70,y+17,'#fff',11);T(r.s,70,y+33,'#9cf',9);T(smithL('Bahan','Items'),318,y+10,'#789',8);r.ing.forEach((q,j)=>{const ix=318+j*40;ingIcon(q[0],ix,y+14,16);if(q[1]>1)T('x'+q[1],ix+18,y+27,'#fff',8)});T(r.g+smithL(' emas',' gold'),490,y+17,'#fc4',11,'right');T(smithL('Sisa ','Left ')+r.left+'/'+r.max,490,y+33,'#9ab',9,'right');btn(500,y+8,112,26,r.act?smithL('AKTIF','ACTIVE'):r.left<=0?smithL('HABIS','SOLD OUT'):smithL('BELI','BUY'),r.ok)})}
 function innClick(x,y){if(y<34&&x<85){goBack();return}innRows(innV).forEach((r,i)=>{const y0=62+i*48;if(x>=500&&x<=612&&y>=y0+8&&y<=y0+34)innBuy(r.k,innV)})}
-/* Toko Kota (Step 10): menjual Umpan Langka (S.fish.bait, dipakai saat memancing) - barang yang tidak ada di toko desa. Batas harian CSHOP_CAP, stok di S.cshop.
-   Harga/jumlah = PLACEHOLDER keseimbangan sampai diuji bermain. */
-const CSHOP_BAIT={g:90,cap:5};
-function cshopEnsure(){const d=today();if(!S.cshop||typeof S.cshop!=='object'||S.cshop.d!==d)S.cshop={d,bait:0};S.cshop.bait=Math.max(0,S.cshop.bait|0)}
-const cshopLeft=()=>{cshopEnsure();return Math.max(0,CSHOP_BAIT.cap-S.cshop.bait)};
-function cshopBuy(){cshopEnsure();if(cshopLeft()<=0){say(smithL('Umpan habis hari ini.','Bait sold out for today.'));return'stock'}
-if(S.g<CSHOP_BAIT.g){say(smithL('Emas tidak cukup','Not enough gold'));return'gold'}
-if(!S.fish||typeof S.fish!=='object')lifeEnsure();S.g-=CSHOP_BAIT.g;S.cshop.bait++;S.fish.bait=(S.fish.bait|0)+1;sv();sfx('coin');
-say(smithL('Umpan Langka +1 (punya '+S.fish.bait+')','Rare Bait +1 (you have '+S.fish.bait+')'));return'ok'}
-function cshopOpen(){cshopEnsure();lifeEnsure();if(st==='world')wFrom=1;if(typeof lifeWorldQuick!='undefined')lifeWorldQuick=false;st='cshop';sv()}
-function cshopRow(){const left=cshopLeft();return{left,g:CSHOP_BAIT.g,ok:left>0&&S.g>=CSHOP_BAIT.g}}
-function cshopDraw(){const r=cshopRow();ov(.94);btn(6,5,76,28,'KEMBALI');T(smithL('TOKO KOTA','CITY SHOP'),95,25,'#fc4',17);
+/* Toko Kota (Step 10, daftar Step 14): daftar barang yang bisa digulir. Umpan Langka -> S.fish.bait; bahan masakan masuk stok yang dipakai dapur
+   (egg/milk -> S.ranch.stock, herb/mushroom/fruit -> S.gather.items, lainnya -> S.kitchen.food; lihat lifeFoodCount). Batas harian per barang di S.cshop.sold[id].
+   Harga/batas = PLACEHOLDER keseimbangan sampai diuji bermain. ic = [lembar,x,y] di mart_icons.png (32px) / fruit_icons.png (16px); 'dish' = dishIcon. */
+const CSHOP_ITEMS=[
+{id:'bait',g:90,cap:5,ic:['dish','bait'],n:['Umpan Langka','Rare Bait'],d:['Peluang ikan langka naik saat memancing','Better rare-fish odds when fishing']},
+{id:'egg',g:12,cap:10,ic:['mart',224,64],n:['Telur','Egg'],d:['Bahan masakan, masuk stok ternak','Cooking ingredient, goes to ranch stock']},
+{id:'milk',g:14,cap:10,ic:['mart',384,128],n:['Susu','Milk'],d:['Bahan masakan, masuk stok ternak','Cooking ingredient, goes to ranch stock']},
+{id:'cheese',g:25,cap:6,ic:['mart',224,288],n:['Keju','Cheese'],d:['Bahan dapur','Kitchen ingredient']},
+{id:'fruit',g:10,cap:10,ic:['mart',128,192],n:['Buah','Fruit'],d:['Bahan masakan, masuk stok kumpulan','Cooking ingredient, goes to gathered items']},
+{id:'mushroom',g:12,cap:8,ic:['mart',64,160],n:['Jamur','Mushroom'],d:['Bahan masakan, masuk stok kumpulan','Cooking ingredient, goes to gathered items']},
+{id:'butter',g:20,cap:6,ic:['mart',64,32],n:['Mentega','Butter'],d:['Bahan dapur','Kitchen ingredient']},
+{id:'flour',g:8,cap:10,ic:['mart',32,96],n:['Tepung','Flour'],d:['Bahan dapur','Kitchen ingredient']}];
+const CSHOP_BAIT=CSHOP_ITEMS[0],CSHOP_ROWS=5;let cshopScroll=0;
+const cshopItem=id=>CSHOP_ITEMS.find(i=>i.id===id);
+const MART_IM=typeof Image==='function'?new Image():{complete:false,naturalWidth:0},FRUIT_IM=typeof Image==='function'?new Image():{complete:false,naturalWidth:0};if(typeof Image==='function'){MART_IM.src='assets/world/mart_icons.png';FRUIT_IM.src='assets/world/fruit_icons.png'}
+function cshopIcon(it,x,y,s){const c=it.ic;if(c[0]==='dish')return dishIcon(c[1],x,y,s);const im=c[0]==='fruit'?FRUIT_IM:MART_IM,z=c[0]==='fruit'?16:32;
+if(im.complete&&im.naturalWidth>0){g.save();g.imageSmoothingEnabled=false;g.drawImage(im,c[1],c[2],z,z,Math.round(x),Math.round(y),s,s);g.restore();return true}
+g.fillStyle='#8a6a3a';g.fillRect(x,y,s,s);g.strokeStyle='#1a1220';g.strokeRect(x+.5,y+.5,s-1,s-1);T(it.id.slice(0,1).toUpperCase(),x+s/2,y+s*.68,'#fff',Math.max(7,Math.round(s*.42)),'center');return false}
+function cshopEnsure(){const d=today();if(!S.cshop||typeof S.cshop!=='object'||S.cshop.d!==d)S.cshop={d,sold:{}};if(!S.cshop.sold||typeof S.cshop.sold!=='object'||Array.isArray(S.cshop.sold))S.cshop.sold={};CSHOP_ITEMS.forEach(i=>S.cshop.sold[i.id]=Math.max(0,+S.cshop.sold[i.id]||0))}
+const cshopLeft=id=>{const it=cshopItem(id||'bait');if(!it)return 0;cshopEnsure();return Math.max(0,it.cap-S.cshop.sold[it.id])};
+function cshopGive(id,n){lifeEnsure();if(id==='bait')S.fish.bait=(S.fish.bait|0)+n;else if(id==='egg'||id==='milk'){const r=ranchState();r.stock[id]=Math.max(0,+r.stock[id]||0)+n}else if(['herb','mushroom','fruit'].includes(id))S.gather.items[id]=(S.gather.items[id]||0)+n;else S.kitchen.food[id]=(S.kitchen.food[id]||0)+n}
+function cshopBuy(id){id=id||'bait';const it=cshopItem(id);if(!it)return'none';cshopEnsure();if(cshopLeft(id)<=0){say(smithL('Barang habis hari ini.','Sold out for today.'));return'stock'}
+if(S.g<it.g){say(smithL('Emas tidak cukup','Not enough gold'));return'gold'}
+lifeEnsure();S.g-=it.g;S.cshop.sold[id]++;cshopGive(id,1);sv();sfx('coin');
+say(smithL(it.n[0]+' +1',it.n[1]+' +1')+(id==='bait'?smithL(' (punya ',' (you have ')+S.fish.bait+')':''));return'ok'}
+function cshopOpen(){cshopEnsure();lifeEnsure();cshopScroll=0;if(st==='world')wFrom=1;if(typeof lifeWorldQuick!='undefined')lifeWorldQuick=false;st='cshop';sv()}
+const cshopMaxScroll=()=>Math.max(0,CSHOP_ITEMS.length-CSHOP_ROWS);
+function cshopScrollBy(d){cshopScroll=Math.max(0,Math.min(cshopMaxScroll(),cshopScroll+d))}
+function cshopRows(){return CSHOP_ITEMS.slice(cshopScroll,cshopScroll+CSHOP_ROWS).map(it=>{const left=cshopLeft(it.id);return{it,left,g:it.g,ok:left>0&&S.g>=it.g}})}
+function cshopRow(){const it=CSHOP_BAIT,left=cshopLeft(it.id);return{left,g:it.g,ok:left>0&&S.g>=it.g}}
+function cshopDraw(){ov(.94);btn(6,5,76,28,'KEMBALI');T(smithL('TOKO KOTA','CITY SHOP'),95,25,'#fc4',17);
 T(smithL('Emas ','Gold ')+S.g+'  ·  '+smithL('Umpan Langka: ','Rare Bait: ')+((S.fish&&S.fish.bait)|0),320,50,'#cde',10,'center');
-const y=62;card(20,y,600,42,'#f7c45c',r.ok);dishIcon('bait',28,y+5,32);T(smithL('Umpan Langka','Rare Bait'),70,y+17,'#fff',11);T(smithL('Peluang ikan langka naik saat memancing','Better rare-fish odds when fishing'),70,y+33,'#9cf',9);T(r.g+smithL(' emas',' gold'),490,y+17,'#fc4',11,'right');T(smithL('Sisa ','Left ')+r.left+'/'+CSHOP_BAIT.cap,490,y+33,'#9ab',9,'right');btn(500,y+8,112,26,r.left<=0?smithL('HABIS','SOLD OUT'):smithL('BELI','BUY'),r.ok)}
-function cshopClick(x,y){if(y<34&&x<85){goBack();return}if(x>=500&&x<=612&&y>=70&&y<=96)cshopBuy()}
+cshopRows().forEach((r,i)=>{const y=62+i*48,it=r.it;card(20,y,600,42,'#f7c45c',r.ok);cshopIcon(it,28,y+5,32);T(smithL(it.n[0],it.n[1]),70,y+17,'#fff',11);T(smithL(it.d[0],it.d[1]),70,y+33,'#9cf',9);T(r.g+smithL(' emas',' gold'),490,y+17,'#fc4',11,'right');T(smithL('Sisa ','Left ')+r.left+'/'+it.cap,490,y+33,'#9ab',9,'right');btn(500,y+8,112,26,r.left<=0?smithL('HABIS','SOLD OUT'):smithL('BELI','BUY'),r.ok)});
+if(cshopMaxScroll()>0){btn(20,308,60,28,'▲',cshopScroll>0);btn(90,308,60,28,'▼',cshopScroll<cshopMaxScroll());T((cshopScroll+1)+'-'+Math.min(CSHOP_ITEMS.length,cshopScroll+CSHOP_ROWS)+' / '+CSHOP_ITEMS.length,320,327,'#9ab',9,'center')}}
+function cshopClick(x,y){if(y<34&&x<85){goBack();return}
+if(y>=308&&y<=336&&x>=20&&x<=80){cshopScrollBy(-1);return}if(y>=308&&y<=336&&x>=90&&x<=150){cshopScrollBy(1);return}
+cshopRows().forEach((r,i)=>{const y0=62+i*48;if(x>=500&&x<=612&&y>=y0+8&&y<=y0+34)cshopBuy(r.it.id)})}
+if(typeof cv!=='undefined')cv.addEventListener('wheel',function(ev){if(st!=='cshop')return;ev.preventDefault();cshopScrollBy(ev.deltaY>0?1:-1)},{passive:false});
 function healerOpen(){healerEnsure();if(st==='world')wFrom=1;if(typeof lifeWorldQuick!='undefined')lifeWorldQuick=false;st='healer';sv()}
 function healerRows(){healerEnsure();const A=S.ail,c=[['poison',smithL('Sembuhkan Racun','Cure Poison'),A.poison>0],['burn',smithL('Sembuhkan Luka Bakar','Cure Burn'),A.burn>0]].map(r=>({k:r[0],t:r[1],d:r[2]?smithL('Sakit: ','Afflicted: ')+A[r[0]]+smithL(' stage',' stages'):smithL('Sehat','Healthy'),g:HEALER_CURE,ok:r[2]&&S.g>=HEALER_CURE}));return c.concat(HEALER_BUFFS.map(b=>({k:b.id,buff:1,t:smithL(b.n[0],b.n[1]),d:(b.atk?'ATK +'+Math.round(b.atk*100)+'% ':'')+(b.hp?'HP +'+Math.round(b.hp*100)+'% ':'')+'· '+b.stages+smithL(' stage',' stages'),g:b.g,ok:S.g>=b.g})))}
 function healerDraw(){const R=healerRows(),t=S.tonic;ov(.94);btn(6,5,76,28,'KEMBALI');T(smithL('TABIB DESA','VILLAGE HEALER'),95,25,'#fc4',17);
