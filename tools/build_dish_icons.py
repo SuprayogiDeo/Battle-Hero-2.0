@@ -2,8 +2,8 @@
 """Atlas ikon masakan + umpan runtime: assets/world/dish_icons.png + dish_icons.json.
 
 SEMUA piksel digambar sendiri oleh skrip ini (seni asli proyek; tidak memakai paket pihak ketiga, jadi tanpa batasan lisensi tambahan).
-Sel 16x16, urutan = DISH_ORDER: enam masakan `LIFE_RECIPES` (fish_soup, farm_stew, forest_omelet, moon_broth, village_feast, herbal_broth)
-lalu `bait` (Umpan Langka, Toko Kota). Latar transparan. Kontur gelap otomatis (piksel transparan yang bertetangga dengan bentuk).
+Sel 16x16, urutan = DISH_ORDER: enam masakan `LIFE_RECIPES` (fish_soup, farm_stew, forest_omelet, moon_broth, village_feast, herbal_broth),
+`bait` (Umpan Langka, Toko Kota), lalu sembilan bahan resep `ing_*` (Step 12: egg, mushroom, herb, fish, carrot, fruit, milk, moonflower, pumpkin). Latar transparan. Kontur gelap otomatis (piksel transparan yang bertetangga dengan bentuk).
 Deterministik dan idempoten (PNG tanpa metadata).
 
 Pakai:  python3 tools/build_dish_icons.py [--root DIR]
@@ -13,7 +13,8 @@ from pathlib import Path
 from PIL import Image
 
 CELL = 16
-DISH_ORDER = ['fish_soup', 'farm_stew', 'forest_omelet', 'moon_broth', 'village_feast', 'herbal_broth', 'bait']
+DISH_ORDER = ['fish_soup', 'farm_stew', 'forest_omelet', 'moon_broth', 'village_feast', 'herbal_broth', 'bait',
+              'ing_egg', 'ing_mushroom', 'ing_herb', 'ing_fish', 'ing_carrot', 'ing_fruit', 'ing_milk', 'ing_moonflower', 'ing_pumpkin']
 P = dict(k=(43, 29, 46), g=(214, 221, 228), G=(164, 175, 187), D=(112, 124, 139), W=(246, 239, 226), w=(255, 255, 255),
          o=(240, 178, 79), O=(214, 138, 43), r=(224, 96, 58), n=(163, 92, 48), N=(122, 65, 32), y=(246, 211, 74), Y=(217, 168, 42),
          p=(240, 154, 160), l=(123, 201, 111), L=(78, 154, 74), b=(169, 183, 240), B=(127, 143, 224), m=(232, 224, 255),
@@ -146,8 +147,97 @@ def draw_bait():
     return cv
 
 
+def draw_ing_egg():
+    cv = canvas()
+    rows(cv, {4: (3, 6), 5: (2, 7), 6: (2, 7), 7: (2, 7), 8: (3, 6)}, 'W'); rows(cv, {7: (6, 7), 8: (5, 6)}, 'c')
+    rows(cv, {7: (8, 11), 8: (7, 12), 9: (7, 12), 10: (7, 12), 11: (8, 11)}, 't'); rows(cv, {9: (11, 12), 10: (10, 12), 11: (10, 11)}, 'u')
+    put(cv, 3, 5, 'w'); put(cv, 9, 8, 'c')
+    return cv
+
+
+def draw_ing_mushroom():
+    cv = canvas()
+    rows(cv, {3: (5, 10), 4: (3, 12), 5: (2, 13), 6: (2, 13), 7: (3, 12)}, 'r')
+    for x, y in ((4, 5), (8, 4), (11, 6), (7, 6)): put(cv, x, y, 'w')
+    rows(cv, {7: (11, 12), 6: (13, 13)}, 'Z')
+    rows(cv, {8: (6, 9), 9: (6, 9), 10: (6, 9), 11: (5, 10), 12: (5, 10)}, 'c'); rows(cv, {8: (9, 9), 9: (9, 9), 10: (9, 9), 11: (10, 10), 12: (10, 10)}, 'W')
+    return cv
+
+
+def draw_ing_herb():
+    cv = canvas()
+    for y in range(6, 13): put(cv, 8, y, 'L')
+    rows(cv, {2: (7, 9), 3: (6, 10), 4: (6, 10), 5: (7, 9)}, 'l'); rows(cv, {3: (8, 8), 4: (8, 8)}, 'L')
+    rows(cv, {7: (3, 7), 8: (2, 6), 9: (3, 7)}, 'l'); rows(cv, {8: (4, 4)}, 'L')
+    rows(cv, {8: (10, 14), 9: (9, 13), 10: (10, 14)}, 'l'); rows(cv, {9: (11, 11)}, 'L')
+    rows(cv, {13: (7, 9)}, 'u')
+    return cv
+
+
+def draw_ing_fish():
+    cv = canvas()
+    rows(cv, {4: (5, 9), 5: (4, 10), 6: (3, 11), 7: (2, 11), 8: (3, 11), 9: (4, 10), 10: (5, 9)}, 'B')
+    rows(cv, {6: (4, 10), 7: (3, 10), 8: (4, 10)}, 'b'); rows(cv, {9: (5, 9), 10: (6, 9)}, 'b')
+    rows(cv, {5: (12, 14), 6: (12, 14), 7: (11, 14), 8: (12, 14), 9: (12, 14), 3: (13, 14), 10: (13, 14)}, 'B'); put(cv, 12, 4, 'B'); put(cv, 12, 10, 'B')
+    put(cv, 4, 6, 'k'); put(cv, 4, 5, 'w')
+    for x, y in ((7, 6), (8, 8), (9, 7)): put(cv, x, y, 'p')
+    rows(cv, {2: (6, 8), 3: (6, 8)}, 'B')
+    return cv
+
+
+def draw_ing_carrot():
+    cv = canvas()
+    for x, y in ((11, 1), (12, 2), (13, 1), (10, 3), (12, 3), (11, 2)): put(cv, x, y, 'l')
+    put(cv, 11, 3, 'L'); put(cv, 12, 4, 'L')
+    rows(cv, {4: (10, 13), 5: (9, 13), 6: (8, 12), 7: (7, 11), 8: (6, 10), 9: (5, 9), 10: (4, 8), 11: (3, 7), 12: (3, 5)}, 'o')
+    rows(cv, {4: (13, 13), 5: (12, 13), 6: (11, 12), 7: (10, 11), 8: (9, 10), 9: (8, 9), 10: (7, 8), 11: (6, 7)}, 'O')
+    put(cv, 11, 5, 'r'); put(cv, 9, 7, 'r'); put(cv, 7, 9, 'r')
+    return cv
+
+
+def draw_ing_fruit():
+    cv = canvas()
+    rows(cv, {4: (4, 7), 5: (3, 12), 6: (2, 13), 7: (2, 13), 8: (2, 13), 9: (3, 12), 10: (4, 11), 11: (5, 10)}, 'r')
+    rows(cv, {4: (9, 11), 5: (9, 12)}, 'r'); rows(cv, {7: (11, 13), 8: (11, 13), 9: (10, 12), 10: (9, 11), 11: (8, 10)}, 'Z')
+    put(cv, 4, 6, 'p'); put(cv, 4, 7, 'p'); put(cv, 5, 6, 'p')
+    for y in (2, 3): put(cv, 8, y, 'u')
+    rows(cv, {2: (9, 11), 3: (10, 12)}, 'l'); put(cv, 9, 3, 'L')
+    return cv
+
+
+def draw_ing_milk():
+    cv = canvas()
+    rows(cv, {1: (6, 9), 2: (6, 9)}, 'B'); rows(cv, {3: (5, 10), 4: (4, 11)}, 'W')
+    rows(cv, {5: (4, 11), 6: (4, 11), 7: (4, 11), 8: (4, 11), 9: (4, 11), 10: (4, 11), 11: (4, 11), 12: (4, 11)}, 'W')
+    rows(cv, {7: (4, 11), 8: (4, 11), 9: (4, 11)}, 'b'); rows(cv, {6: (4, 11)}, 'B')
+    rows(cv, {5: (10, 11), 10: (10, 11), 11: (10, 11), 12: (10, 11)}, 'g'); put(cv, 5, 5, 'w'); put(cv, 5, 10, 'w')
+    return cv
+
+
+def draw_ing_moonflower():
+    cv = canvas()
+    for x, y in ((7, 1), (8, 1), (7, 2), (8, 2), (7, 9), (8, 9), (7, 10), (8, 10), (2, 5), (3, 5), (2, 6), (3, 6), (12, 5), (13, 5), (12, 6), (13, 6),
+                 (4, 2), (3, 3), (4, 3), (11, 2), (12, 3), (11, 3), (4, 8), (3, 9), (4, 9), (11, 8), (12, 9), (11, 9)): put(cv, x, y, 'm')
+    rows(cv, {3: (6, 9), 4: (5, 10), 5: (4, 11), 6: (4, 11), 7: (4, 11), 8: (5, 10), 9: (6, 9)}, 'w')
+    rows(cv, {5: (6, 9), 6: (6, 9), 7: (6, 9)}, 'y'); put(cv, 7, 6, 'Y'); put(cv, 8, 5, 'W')
+    rows(cv, {11: (7, 8), 12: (7, 8), 13: (7, 8)}, 'L'); put(cv, 6, 12, 'l'); put(cv, 9, 11, 'l')
+    return cv
+
+
+def draw_ing_pumpkin():
+    cv = canvas()
+    rows(cv, {3: (7, 8), 4: (7, 8)}, 'L'); put(cv, 9, 3, 'l'); put(cv, 10, 3, 'l')
+    rows(cv, {5: (4, 11), 6: (2, 13), 7: (1, 14), 8: (1, 14), 9: (1, 14), 10: (2, 13), 11: (3, 12), 12: (4, 11)}, 'O')
+    rows(cv, {6: (5, 7), 7: (4, 6), 8: (3, 5), 9: (3, 5), 10: (4, 6), 11: (5, 7)}, 'o'); rows(cv, {7: (10, 12), 8: (11, 13), 9: (11, 13), 10: (10, 12)}, 'o')
+    for y in range(5, 12): put(cv, 8, y, 'u')
+    for y in range(6, 11): put(cv, 4 if y in (8, 9) else 5, y, 'u')
+    return cv
+
+
 DRAW = dict(fish_soup=draw_fish_soup, farm_stew=draw_farm_stew, forest_omelet=draw_forest_omelet, moon_broth=draw_moon_broth,
-            village_feast=draw_village_feast, herbal_broth=draw_herbal_broth, bait=draw_bait)
+            village_feast=draw_village_feast, herbal_broth=draw_herbal_broth, bait=draw_bait,
+            ing_egg=draw_ing_egg, ing_mushroom=draw_ing_mushroom, ing_herb=draw_ing_herb, ing_fish=draw_ing_fish, ing_carrot=draw_ing_carrot,
+            ing_fruit=draw_ing_fruit, ing_milk=draw_ing_milk, ing_moonflower=draw_ing_moonflower, ing_pumpkin=draw_ing_pumpkin)
 
 
 def build():

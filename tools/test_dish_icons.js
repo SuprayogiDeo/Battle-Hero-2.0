@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 'use strict';
-/* Tes ikon masakan + umpan (Step 10b): atlas 112x16 (7 sel 16x16) dari tools/build_dish_icons.py, semua resep LIFE_RECIPES + 'bait' punya sel,
+/* Tes ikon masakan + umpan (Step 10b): atlas 16 sel 16x16 (7 masakan/umpan + 9 bahan ing_*) dari tools/build_dish_icons.py, semua resep LIFE_RECIPES + 'bait' punya sel,
    sel tidak kosong dan tidak identik, rebuild deterministik, dishIcon() menggambar sel yang benar dan jatuh ke badge teks bila gambar belum siap,
    menu Penginapan/Kafe/Toko memakainya, dan atlas masuk precache. Seni asli proyek: tanpa paket pihak ketiga. */
 const fs = require('fs'), path = require('path'), assert = require('assert'), cp = require('child_process'), zlib = require('zlib');
@@ -52,8 +52,15 @@ ev('Object.defineProperty(DISH_ICON_IM,"naturalWidth",{value:' + img.w + ',confi
 
 // menu memakai ikon: Penginapan, Kafe, Toko menggambar dishIcon dengan id yang benar dan baris statistik ringkas
 ev("S.set.lang='id';S.g=999;S.buff=null;S.inn=null;S.cshop=null;lifeEnsure();var __ids=[];var __di=dishIcon;dishIcon=function(id){__ids.push(id);return __di.apply(null,arguments)}");
-ev("innV='inn';st='inn'"); ev('__ids.length=0;innDraw()'); ok(JSON.stringify(ev('__ids')) === JSON.stringify(recipes), 'Penginapan menggambar ikon tiap resep berurutan');
-ev("innV='cafe';st='inn'"); ev('__ids.length=0;innDraw()'); ok(JSON.stringify(ev('__ids')) === JSON.stringify(recipes), 'Kafe menggambar ikon tiap resep berurutan');
+const notIng = a => a.filter(i => !i.startsWith('ing_'));
+ev("innV='inn';st='inn'"); ev('__ids.length=0;innDraw()'); ok(JSON.stringify(notIng(ev('__ids'))) === JSON.stringify(recipes), 'Penginapan menggambar ikon tiap resep berurutan');
+// Step 12: tiap resep menggambar ikon bahan sesuai `needs` (urutan kunci), dan semua kunci bahan punya sel ing_<kunci>
+const needs = ev('LIFE_RECIPES.map(r=>Object.keys(r.needs))'), allKeys = [...new Set(needs.flat())];
+ok(allKeys.length >= 9 && allKeys.every(k => J.order.includes('ing_' + k)), 'semua bahan resep (' + allKeys.join(',') + ') punya sel ing_*');
+ok(JSON.stringify(ev('__ids').filter(i => i.startsWith('ing_'))) === JSON.stringify(needs.flat().map(k => 'ing_' + k)), 'Penginapan menggambar ikon bahan tiap resep berurutan');
+ok(ev("innRows().every((r,i)=>JSON.stringify(r.ing.map(q=>q[0]))===JSON.stringify(Object.keys(LIFE_RECIPES[i].needs)))") && ev("innRows().some(r=>r.ing.some(q=>q[1]===2))"), 'baris menu: ing = [kunci, jumlah] dari needs (ada jumlah 2)');
+ev('__ids.length=0;__dr.length=0'); ev("ingIcon('tak_dikenal',0,0,16)"); ok(ev("JSON.stringify(__ids)") === '["ing_tak_dikenal"]' && ev('__dr.length') === 0, 'bahan tak dikenal -> badge teks, tanpa drawImage');
+ev("innV='cafe';st='inn'"); ev('__ids.length=0;innDraw()'); ok(JSON.stringify(notIng(ev('__ids'))) === JSON.stringify(recipes), 'Kafe menggambar ikon tiap resep berurutan');
 ev("st='cshop'"); ev('__ids.length=0;cshopDraw()'); ok(JSON.stringify(ev('__ids')) === '["bait"]', 'Toko Kota menggambar ikon umpan');
 ok(ev("innRows().every(r=>typeof r.s==='string'&&r.s.length>0&&r.s.length<=40&&!r.s.includes('Sisa')&&!r.s.includes('emas')&&r.max===3)"), 'baris menu: s = statistik ringkas (<=40 huruf, tanpa stok/harga), max = stok harian');
 ok(ev("innRows('cafe').every(r=>r.max===2)"), 'stok maksimum kafe = 2');

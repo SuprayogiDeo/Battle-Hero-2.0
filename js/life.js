@@ -96,11 +96,13 @@ function fishIcon(id,x,y,s){s=s||16;const i=fishIconCell(id);
 /* fishIcon:end */
 /* dishIcon:begin - ikon masakan + umpan 16x16 (seni asli, dibuat tools/build_dish_icons.py) di assets/world/dish_icons.png; urutan sel = DISH_ICON_ORDER.
    Gambar belum siap / id tak dikenal -> badge teks (inisial) dan return false. Dipakai menu Penginapan, Kafe Kota, dan Toko Kota. */
-const DISH_ICON_ORDER=['fish_soup','farm_stew','forest_omelet','moon_broth','village_feast','herbal_broth','bait'];
+const DISH_ICON_ORDER=['fish_soup','farm_stew','forest_omelet','moon_broth','village_feast','herbal_broth','bait','ing_egg','ing_mushroom','ing_herb','ing_fish','ing_carrot','ing_fruit','ing_milk','ing_moonflower','ing_pumpkin'];
 const DISH_ICON_IM=typeof Image==='function'?new Image():{complete:false,naturalWidth:0};if(typeof Image==='function')DISH_ICON_IM.src='assets/world/dish_icons.png';
 function dishIcon(id,x,y,s){s=s||16;const i=DISH_ICON_ORDER.indexOf(id);
  if(i>=0&&DISH_ICON_IM.complete&&DISH_ICON_IM.naturalWidth>=DISH_ICON_ORDER.length*16){g.save();g.imageSmoothingEnabled=false;g.drawImage(DISH_ICON_IM,i*16,0,16,16,Math.round(x),Math.round(y),s,s);g.restore();return true}
  g.fillStyle=i>=0?'#8a6a3a':'#6b6b78';g.fillRect(x,y,s,s);g.strokeStyle='#1a1220';g.strokeRect(x+.5,y+.5,s-1,s-1);T((id||'?').slice(0,1).toUpperCase(),x+s/2,y+s*.68,'#fff',Math.max(7,Math.round(s*.42)),'center');return false}
+/* Ikon bahan resep (kunci `needs` di LIFE_RECIPES: egg, mushroom, herb, fish, carrot, fruit, milk, moonflower, pumpkin) = sel `ing_<kunci>`; kunci lain -> badge teks. */
+const ingIcon=(k,x,y,s)=>dishIcon('ing_'+k,x,y,s);
 /* dishIcon:end */
 /* fishUi:begin - HUD memancing (pil ikon tanpa teks di atas tengah) dan popup hasil tangkapan; keduanya memakai fishIcon. */
 function lifeFishHud(f){const ph=f&&f.phase,bite=ph==='bite';

@@ -8,7 +8,16 @@
   "moon_broth",
   "village_feast",
   "herbal_broth",
-  "bait"
+  "bait",
+  "ing_egg",
+  "ing_mushroom",
+  "ing_herb",
+  "ing_fish",
+  "ing_carrot",
+  "ing_fruit",
+  "ing_milk",
+  "ing_moonflower",
+  "ing_pumpkin"
  ],
  "source": "gambar sendiri oleh tools/build_dish_icons.py (seni asli proyek)"
 }

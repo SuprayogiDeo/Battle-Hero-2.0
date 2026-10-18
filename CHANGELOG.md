@@ -1,5 +1,14 @@
 # Changelog
 
+## Batch 9B-33 (ikon bahan di kartu menu) — 0.4.8-rc.1 — cache v88
+
+Cache v87 -> v88. Logika pembelian tidak berubah; hanya tampilan menu dan sel ikon baru.
+
+- `tools/build_dish_icons.py`: sembilan ikon bahan resep digambar sendiri (seni asli, sel `ing_egg`, `ing_mushroom`, `ing_herb`, `ing_fish`, `ing_carrot`, `ing_fruit`, `ing_milk`, `ing_moonflower`, `ing_pumpkin`) ditambahkan setelah tujuh sel lama; urutan sel lama tidak berubah. Atlas `dish_icons.png` kini 256x16 (16 sel). Dipilih gambar sendiri (bukan `food_icons`) supaya gaya satu baris seragam dan karena paket tidak punya wortel/labu/susu/herba/jamur/bunga bulan.
+- `life.js`: `DISH_ICON_ORDER` diperluas; `ingIcon(kunci,x,y,s)` = `dishIcon('ing_'+kunci)` (kunci tak dikenal -> badge huruf).
+- `npc.js`: `innRows` mendapat `ing` = `[[kunci,jumlah],...]` dari `LIFE_RECIPES[].needs`; kartu menu Penginapan/Kafe menampilkan label "Bahan" dan ikon bahan (dengan `xN` bila jumlah > 1) di antara baris statistik dan harga. Ikon bahan hanya informasi (pembelian tidak mengonsumsi bahan).
+- `tools/test_dish_icons.js` (117 pemeriksaan): semua kunci `needs` punya sel `ing_*`, menu menggambar ikon bahan sesuai urutan `needs`, `ing` dan jumlah 2 benar, kunci tak dikenal -> badge. Mutasi (hapus `ing`) mematikan tes.
+
 ## Batch 9B-32 (atlas ikon makanan) — 0.4.8-rc.1 — cache v87
 
 Cache v86 -> v87. Hanya aset, alat build, dan tes; belum dirujuk kode game (dipakai Step 12).
