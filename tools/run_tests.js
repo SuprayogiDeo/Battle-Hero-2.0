@@ -46,6 +46,7 @@ run('Atlas Cute Fantasy (Kenmi, non-komersial): semua entri json ada di atlas', 
 run('Atlas kota CC0 (Venice Menace sampler): 16 tile 16x16, 3 prop, rubah, pratinjau 4x, lisensi + bantuan AI', process.execPath, ['tools/test_city_tiles.js']);
 run('Kota Kecil: data/chunk, tabrakan prop, gerbang masuk/keluar, rubah, peta desa tidak berubah', process.execPath, ['tools/test_city.js']);
 run('NPC Kota: atlas LimeZu, jadwal, jalan antar blok, dialog, sakelar ?mi=0, lisensi', process.execPath, ['tools/test_city_npcs.js']);
+run('Pagar desa utama + kota: data, rute tidak terpotong, kolisi/gambar runtime, cache, lisensi', process.execPath, ['tools/test_fence.js']);
 run('Interior Kota: atlas LimeZu, templat kafe/toko/apartemen, pintu gedung, masuk/keluar, interior desa tidak berubah', process.execPath, ['tools/test_city_interiors.js']);
 run('Sakelar ?cf=1: tanpa flag tidak berubah; hewan Kandang, jembatan, pagar dari atlas; peta/tabrakan/chunk identik', process.execPath, ['tools/test_cf_flag.js']);
 run('Bangunan ?cf=1: Penginapan desa + gedung kota dari atlas Cute Fantasy; pintu, geometri, tabrakan tetap', process.execPath, ['tools/test_cf_buildings.js']);

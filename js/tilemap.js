@@ -10,6 +10,39 @@ var Tmap = (function () {
   var CH = {}, CHL = [], CHSIZE = 32, CHMAX = 25, CHSEQ = 0, CHREQ = {}, CHFAIL = {}; // LRU cache; each baked canvas <=512x512
   var MAPC = null, MAPD = null, MAPSIZE = ''; // cached minimap raster; rebuild only when discovery changes
   var DISC_W = 128;
+  /* Pagar desa/kota (assets/world/fences.json, sprite fence_wood.png dari PetalByte Fence & Barrier Pack 32x32).
+     Dibangkitkan tools/build_fences.py. Gagal muat = tanpa pagar (game tetap jalan). */
+  var FN = null, FNI = null, FSET = null, FPV = [], FPC = [];
+  function fencePanels(cells, f) {
+    var P = [], row = Object.create(null), al = f.artLeft, pt = f.pitch;
+    cells.forEach(function (c) { if (c[2] === 'v') P.push([c[0] * 32 + al, (c[1] + 1) * 32]); else (row[c[1]] = row[c[1]] || []).push(c[0]); });
+    Object.keys(row).forEach(function (y) {
+      var xs = row[y].sort(function (a, b) { return a - b; }), i = 0;
+      while (i < xs.length) {
+        var j = i; while (j + 1 < xs.length && xs[j + 1] === xs[j] + 1) j++;
+        var n = Math.floor(((xs[j] - xs[i] + 1) * 32 - al) / pt);
+        for (var k = 0; k < n; k++) P.push([xs[i] * 32 + al + k * pt, (+y + 1) * 32]);
+        i = j + 1;
+      }
+    });
+    return P;
+  }
+  function fenceLoad() {
+    try {
+      fetch(BASE + 'fences.json').then(function (r) { if (!r.ok) throw 0; return r.json(); }).then(function (f) {
+        FSET = Object.create(null); f.village.cells.forEach(function (c) { FSET[c[1] * 1000 + c[0]] = 1; });
+        FPV = fencePanels(f.village.cells, f); FPC = fencePanels(f.city.cells, f); FN = f;
+        FNI = new Image(); FNI.src = BASE + f.sprite;
+      }).catch(function () { FN = null; FSET = null; });
+    } catch (e) { FN = null; }
+  }
+  function fenceOk() { return !!(FN && FNI && FNI.complete && FNI.naturalWidth); }
+  function fenceDraw(add, g, P) { if (!fenceOk()) return; P.forEach(function (p) { add(p[0], p[1], 40, function (sx, sb) { g.drawImage(FNI, Math.round(sx - FN.artLeft), Math.round(sb - 32)); }); }); }
+  function fenceSolid(tx, ty) { return !!(FSET && FSET[ty * 1000 + tx]); }
+  function fenceCity(items, g, cx, cy, OX, VW) {
+    if (!fenceOk()) return;
+    FPC.forEach(function (p) { var sx = p[0] - cx - OX, sb = p[1] - cy; if (sx > VW || sx < -OX - 40 || sb < 0 || sb > 400) return; items.push({ y: p[1] - 1, f: function () { g.drawImage(FNI, Math.round(sx - FN.artLeft), Math.round(sb - 32)); } }); });
+  }
   var LF = 8, LFT = -9;   /* ukuran font label (px kanvas logis): dijaga >= ~11px layar agar terbaca di HP */
   function labelFont(g) {
     if (T - LFT < 1) return LF; LFT = T;
@@ -75,6 +108,7 @@ var Tmap = (function () {
   function load(src, cb) { pend++; var im = new Image(); im.onload = function () { pend--; cb && cb(im); if (!pend) bake(); }; im.onerror = function () { bad = true; pend--; }; im.src = src; return im; }
   function init(base) {
     if (base) BASE = base;
+    fenceLoad();
     try {
       fetch(BASE + 'index.json').then(function (r) { if (!r.ok) throw 0; return r.json(); }).then(function (j) {
         V = j; CHSIZE = j.chunkSize || 32; ti = load(BASE + j.tiles); si = load(BASE + j.sprites); sea = load(BASE + j.sea);
@@ -462,7 +496,7 @@ var Tmap = (function () {
         if (a > .01) LBL.push({ k: 'label', text: nm, x: Math.round(sx), y: Math.round(sb - 26), a: a });
       });
     });
-    penObjects(add, g); farmFence(add, g);
+    penObjects(add, g); farmFence(add, g); fenceDraw(add, g, FPV);
     if (typeof lifeMovedTrees === 'function') lifeMovedTrees().forEach(function (t) { add(t.x * 2, t.y * 2, 120, function (sx, sb) { Anim.draw(g, t.a, tm + t.x * 41, sx, sb, false, 2); }); });
     g_ = g; farmCrops(add);
     CR.forEach(function (c) { add(c.x * 2, c.y * 2, 70, function (sx, sb) { Anim.draw(g, c.a, c.mv ? tm + c.x * 13 : 0, sx, sb, c.fl, 2); Anim.shadow(g, sx, sb - 1, 9, 3, .25); }); });
@@ -471,6 +505,6 @@ var Tmap = (function () {
     add(w.x * 2, w.y * 2, 140, function (sx, sb) { Anim.draw(g, 'windmill', tm, sx, sb, false, 2); }, tw ? tw.y * 2 + 1 : null);
     return out;
   }
-  return { init: init, ready: ready, data: data, update: update, draw: draw, tall: tall, fx: fx, lights: lights, farm: farm, explore: explore, hud: hud, collisionAt: collisionAt, railSolid: railSolid, hasTag: hasTag, nearService: nearService, nearPen: nearPen, overlay: overlay, labelFont: labelFont };
+  return { init: init, ready: ready, data: data, update: update, draw: draw, tall: tall, fx: fx, lights: lights, farm: farm, explore: explore, hud: hud, collisionAt: collisionAt, railSolid: railSolid, fenceSolid: fenceSolid, fenceCity: fenceCity, hasTag: hasTag, nearService: nearService, nearPen: nearPen, overlay: overlay, labelFont: labelFont };
 })();
 try { Tmap.init(); } catch (e) { }

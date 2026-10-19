@@ -58,3 +58,6 @@ Paket mentah tidak disertakan di repositori.
 Step 13: assets/world/mart_icons.png, fruit_icons.png dan mart_icons.json dibuat tools/build_mart_icons.py (hanya dipotong dan disusun ulang, piksel tidak diubah):
 "Pixel Mart" oleh ghostpixxells (CC0; 150 ikon barang toko 32x32) dan "Fruit" oleh Ninjikin / SciGho (CC BY 4.0, WAJIB KREDIT: "Fruit by SciGho (Ninjikin) - https://ninjikin.itch.io/fruit",
 lisensi https://creativecommons.org/licenses/by/4.0/; 228 ikon buah 16x16). Paket mentah tidak disertakan di repositori.
+
+Batch 9B-39: assets/world/fence_wood.png (Sprite-0005, 32x32, tidak diubah) dari "Pixel Art Fence & Barrier Pack (32x32)" oleh PetalByte
+(https://petalbyte.itch.io/pixel-art-fence-barrier-pack-32x32); halaman produk menyatakan boleh untuk proyek komersial dan nonkomersial. Paket mentah tidak disertakan di repositori.

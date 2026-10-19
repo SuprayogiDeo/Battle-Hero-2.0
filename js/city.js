@@ -145,6 +145,7 @@ function cityDraw(){
  const gt=D.idx.gates.return.tile;items.push({y:(gt[1]+1)*WS,f:()=>cityDrawGate(gt[0]*WS+WS/2-cx-OX,gt[1]*WS+WS/2-cy,'DESA','VILLAGE')});
  NPCS.forEach((o,k)=>{if(typeof npcAwake!=='function'||!npcAwake(o))return;items.push({y:npcY(o),f:()=>cityNpcDraw(o,k,npcX(o)-cx-OX,npcY(o)-cy)})});
  items.push({y:w.y,f:()=>{const px=w.x-cx-OX,py=w.y-cy;if(wAct&&self.Anim&&Anim.has('avatar_'+wAct.state)){Anim.shadow(g,px,py-1,9,3,.3);wAct.draw(g,px,py,performance.now(),WZ)}else{g.fillStyle='rgba(0,0,0,.35)';g.beginPath();g.ellipse(px,py-1,10,4,0,0,7);g.fill();g.fillStyle='#fc4';g.fillRect(px-7,py-26,14,24)}}});
+ if(self.Tmap&&Tmap.fenceCity)Tmap.fenceCity(items,g,cx,cy,OX,VW);
  items.sort((a,b)=>a.y-b.y).forEach(i=>i.f());
  if(typeof wTn!=='undefined'&&wTn[3]>.01){g.fillStyle='rgba('+wTn[0]+','+wTn[1]+','+wTn[2]+','+wTn[3].toFixed(3)+')';g.fillRect(-OX,0,VW,360)}
  if(self.lifeDrawWeather)lifeDrawWeather();

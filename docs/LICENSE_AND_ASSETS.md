@@ -24,6 +24,10 @@ Tahap 9B-19 menambahkan `assets/world/fish_icons.png` dan `assets/world/fish_ico
 
 **Status lisensi: belum terkonfirmasi.** Arsip yang diterima hanya berisi gambar (tanpa berkas lisensi atau README), sehingga syarat penggunaan, atribusi wajib, dan izin distribusi ulang tidak diketahui. Seperti sumber lain di proyek privat ini, ini adalah gerbang pemblokir sebelum rilis publik: periksa halaman resmi paket, simpan salinan syaratnya bersama berkas yang dicakup, dan hapus atau ganti ikon bila syaratnya tidak mengizinkan. Atlas dapat dibuat ulang dengan `python3 tools/build_fish_icons.py --sheet <path>/fishing_icons_sheet_16x16.png`.
 
+## PetalByte Fence & Barrier Pack (32x32)
+
+Batch 9B-39 menambahkan `assets/world/fence_wood.png` (Sprite-0005, 32×32, piksel tidak diubah; sha256 `6120aeb9561cd959f7fc47d8192090f526d26c1a77d9403255ba12d66ad8735e`) dari **Pixel Art Fence & Barrier Pack (32x32)** oleh PetalByte (itch.io). Halaman produk (dibaca 2026-10-19) menyatakan boleh dipakai di proyek komersial dan nonkomersial; teks lisensi terpisah belum dibaca, jadi **verifikasi sebelum rilis publik**. Dipakai untuk pagar keliling desa utama dan kota (`assets/world/fences.json`, dibangkitkan `tools/build_fences.py`). Sprite gerbang paket tidak dipakai. Paket mentah tidak ada di repo.
+
 ## Cute Fantasy (Kenmi)
 
 Batch 9B-23 menambahkan `assets/world/cf_atlas.png` dan `assets/world/cf_atlas.json`: atlas 19 PNG dari paket **Cute Fantasy (Free)** oleh Kenmi (`Tiles/*`, `Outdoor decoration/*`, `Animals/*`), dibuat `tools/build_cf_tiles.py` (hanya digabung). Berkas `read_me.txt` paket menyatakan: boleh dipakai di proyek **non-komersial**, boleh dimodifikasi, **tidak boleh redistribusi atau dijual, meskipun sudah dimodifikasi**. Konsekuensi: repo harus tetap privat dan atlas ini tidak boleh ikut rilis publik atau komersial (gerbang pra-rilis: hapus atlas atau dapatkan lisensi yang sesuai). Atlas belum dirujuk peta/tileset desa; paket mentah tidak ada di repo.

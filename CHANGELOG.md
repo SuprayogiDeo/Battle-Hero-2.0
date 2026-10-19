@@ -1,5 +1,15 @@
 # Changelog
 
+## Batch 9B-39 (pagar keliling desa utama dan kota, tahap 1) — 0.4.8-rc.1 — cache v94
+
+Cache v93 -> v94.
+
+- Pagar kayu dari PetalByte Fence & Barrier Pack 32x32 (Sprite-0005 -> `assets/world/fence_wood.png`; lisensi dicatat di `CREDITS` dan `docs/LICENSE_AND_ASSETS.md`). Data `assets/world/fences.json` dibangkitkan deterministik oleh `tools/build_fences.py`; peta/chunk tidak diubah, jadi hash `city_village_golden.json` tetap.
+- Desa utama (pulau x 6-53, y 6-35): pagar di tepi air luar, kecuali bangunan/penghalang, ladang berpagar, celah Jembatan timur (y 22-24) dan Gerbang utara (x 29-32). Ditambah celah akses memancing 2 petak di tengah tiap bentang >= 10 petak, karena `lifeFishingSpot` mensyaratkan kaki <= 16 px dari air. Petak pagar solid lewat `Tmap.fenceSolid` di `wSolid`.
+- Kota: pagar di cincin luar 40x30 (sudah solid, kolisi tidak berubah) dengan celah di (0,13-15) untuk gerbang kembali.
+- Sprite pagar paket hanya potongan lurus tampak depan tanpa sudut/sisi. Bentang horizontal disambung berjarak 24 px; sisi vertikal memakai sprite yang sama berulang. Sprite gerbang paket tidak dipakai (hanya menghadap depan, tidak cocok untuk jalan barat-timur); akses berupa celah terbuka.
+- Gagal memuat `fences.json` atau gambar: game berjalan tanpa pagar. Tes: `tools/test_fence.js`.
+
 ## Batch 9B-38 (quest Kafe Kota, audit HUD portrait/landscape, cache latar) — 0.4.8-rc.1 — cache v93
 
 Cache v92 -> v93.
